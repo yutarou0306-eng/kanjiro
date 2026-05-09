@@ -214,15 +214,21 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <h3 style="margin:0">🪑 座席配置</h3>
       <div id="pax-badge" class="pax-badge">👤 0名</div>
     </div>
-    <!-- テーブル追加 -->
+    <!-- 参加者追加・カテゴリ設定 -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+      <button class="btn btn-sm" onclick="addPersonFromSeat()">＋ 参加者追加</button>
+      <button class="btn btn-sm" onclick="openAddCatModal(null)">⚖️ カテゴリ追加</button>
+    </div>
+    <p style="font-size:11px;color:#888;margin-bottom:6px">席をタップして参加者を割り当て。± で席数変更。テーブル種別もワンタップで変更できます。</p>
+    <div style="overflow-x:auto">
+      <div class="table-scene" id="table-scene"></div>
+    </div>
+    <!-- テーブル追加ボタン（配置図の下） -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:0.5px solid #e0e0d8">
+      <span style="font-size:11px;color:#888;align-self:center">テーブル追加：</span>
       <button class="btn btn-sm" onclick="addTable('rect');renderScene()">＋ 四角テーブル</button>
       <button class="btn btn-sm" onclick="addTable('round');renderScene()">＋ 円卓</button>
       <button class="btn btn-sm" onclick="addTable('counter');renderScene()">＋ カウンター席</button>
-    </div>
-    <p style="font-size:11px;color:#888;margin-bottom:6px">席をタップして参加者を割り当て。± で席数変更。</p>
-    <div style="overflow-x:auto">
-      <div class="table-scene" id="table-scene"></div>
     </div>
   </div>
 
@@ -341,7 +347,7 @@ const S={
   kanjiSnapshot:null
 };
 let catIdCnt=1,editCatIdx=null,currentPage=0,activeSeatKey=null;
-const fmt=n=>'¥'+Math.round(n).toLocaleString();
+const fmt=n=>{const v=Math.round(n);return isNaN(v)||!isFinite(v)?'¥0':'¥'+v.toLocaleString();};
 const r500up=n=>Math.ceil(n/500)*500;
 const r500dn=n=>Math.floor(n/500)*500;
 const DAYS=['日','月','火','水','木','金','土'];
@@ -476,6 +482,19 @@ function renderCatList(){
 }
 function removeCat(i){if(S.cats.length<=1)return;const rid=S.cats[i].id;S.cats.splice(i,1);S.persons.forEach(p=>{if(p.catId===rid)p.catId=S.cats[0]?.id;});renderCatList();renderPersonList();calcAmounts();}
 
+// ===== 座席ページから参加者追加 =====
+function addPersonFromSeat(){
+  S.count+=1;
+  S.persons.push({name:'',catId:S.cats[0]?.id||'c0',isKanji:false});
+  // 人数セレクトも更新
+  const sel=document.getElementById('count-sel');if(sel)sel.value=S.count;
+  document.getElementById('persons-card').style.display='block';
+  renderPersonList();
+  // 最初のテーブルの席数も増やす
+  if(S.tables.length>0){S.tables[0].seats=(S.tables[0].seats||0)+1;renderScene();}
+  showToast('参加者を追加しました。基本情報タブで名前を入力してください。');
+}
+
 // ===== テーブル =====
 function addTable(type){S.tables.push({id:'t'+Date.now(),type,seats:0});}
 function removeTable(i){
@@ -528,10 +547,15 @@ function renderScene(){
     }
     // コントロール
     const ctrl=document.createElement('div');ctrl.className='tbl-ctrl';
-    // 種別変更セレクト
-    const typesel=document.createElement('select');typesel.className='tbl-type-select';
-    ['rect','round','counter'].forEach(tp=>{const o=document.createElement('option');o.value=tp;o.textContent=TBL_LABELS[tp];if(tp===t.type)o.selected=true;typesel.appendChild(o);});
-    typesel.onchange=()=>changeTableType(ti,typesel.value);
+    // 種別ワンタップ切替ボタン（3択）
+    const typeWrap=document.createElement('div');typeWrap.style.cssText='display:flex;border:0.5px solid #e0e0d8;border-radius:100px;overflow:hidden';
+    ['rect','round','counter'].forEach(tp=>{
+      const tb=document.createElement('button');
+      tb.textContent={rect:'四角',round:'円卓',counter:'カウンター'}[tp];
+      tb.style.cssText=`padding:3px 8px;font-size:11px;border:none;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;background:${t.type===tp?'#e8f0fb':'#f5f5f0'};color:${t.type===tp?'#185FA5':'#888'};font-weight:${t.type===tp?'500':'400'}`;
+      tb.onclick=()=>changeTableType(ti,tp);
+      typeWrap.appendChild(tb);
+    });
     // 席数ステッパー
     const stepper=document.createElement('div');stepper.className='seat-stepper';
     const mb=document.createElement('button');mb.textContent='−';mb.onclick=()=>changeSeats(ti,-1);
@@ -539,7 +563,7 @@ function renderScene(){
     const pb=document.createElement('button');pb.textContent='＋';pb.onclick=()=>changeSeats(ti,1);
     stepper.appendChild(mb);stepper.appendChild(cs);stepper.appendChild(pb);
     const db=document.createElement('button');db.className='tbl-del-btn';db.textContent='削除';db.onclick=()=>removeTable(ti);
-    ctrl.appendChild(typesel);ctrl.appendChild(stepper);ctrl.appendChild(db);
+    ctrl.appendChild(typeWrap);ctrl.appendChild(stepper);ctrl.appendChild(db);
     wrap.appendChild(ctrl);scene.appendChild(wrap);
   });
   updatePaxBadge();renderUnassigned();
@@ -575,14 +599,32 @@ function openSeatPopup(key,anchorEl){
     const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];
     const dot=c?`<span class="pill-tag" style="background:${c.color};color:${c.tc};font-size:10px;padding:1px 6px">${c.name}</span>`:'';
     const kbadge=p.isKanji?'👑 ':'';
-    item.innerHTML=`${kbadge}<span style="flex:1">${p.name}</span>${dot}`;
+    item.innerHTML=`<span style="flex:1">${kbadge}${p.name}</span>${dot}`;
     if(currentPIdx===realIdx)item.style.background='#e8f0fb';
     if(!isAssignedElsewhere){
       item.onclick=()=>{S.assignments[key]=realIdx;closeSeatPopup();renderScene();calcAmounts();};
     }
     popup.appendChild(item);
   });
+  // 現在割り当て済みの人のカテゴリ変更
   if(currentPIdx!==undefined&&currentPIdx!==null){
+    const p=S.persons[currentPIdx];
+    if(p&&S.cats.length>1){
+      const catSection=document.createElement('div');
+      catSection.style.cssText='border-top:0.5px solid #e0e0d8;margin-top:4px;padding-top:4px';
+      const catLabel=document.createElement('div');catLabel.style.cssText='font-size:10px;color:#888;padding:4px 12px';catLabel.textContent='カテゴリ変更：';
+      catSection.appendChild(catLabel);
+      S.cats.forEach(c=>{
+        const ci=document.createElement('div');ci.className='seat-popup-item';
+        const dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText=`background:${c.color};color:${c.tc};padding:2px 7px;font-size:11px`;dot.textContent=c.name;
+        const rate=document.createElement('span');rate.style.cssText='font-size:11px;color:#888';rate.textContent='×'+c.rate;
+        ci.appendChild(dot);ci.appendChild(rate);
+        if(p.catId===c.id)ci.style.background='#f0f8ff';
+        ci.onclick=()=>{S.persons[currentPIdx].catId=c.id;renderPersonList();calcAmounts();closeSeatPopup();renderScene();};
+        catSection.appendChild(ci);
+      });
+      popup.appendChild(catSection);
+    }
     const clearItem=document.createElement('div');clearItem.className='seat-popup-clear';clearItem.textContent='✕ 割り当てを外す';
     clearItem.onclick=()=>{delete S.assignments[key];closeSeatPopup();renderScene();calcAmounts();};
     popup.appendChild(clearItem);
@@ -653,15 +695,29 @@ function updateSummary(){
   if(rndEl){rndEl.textContent=diff>0?`切り上げ（+${fmt(diff)}）`:diff<0?`切り捨て（${fmt(diff)}）`:'ちょうど';rndEl.style.color=diff>0?'#1D9E75':diff<0?'#E24B4A':'#888';}
   document.getElementById('b-paid-count').textContent=`${paidCount}/${people.length}人 支払済`;
   document.getElementById('b-prog').style.width=pct+'%';
-  // 幹事充当
+  // 幹事充当ボタン：余り(>0)または不足(<0)があり幹事がいる場合に表示
   const wrap=document.getElementById('kanji-surplus-wrap');
-  const kanjiIdxs=people.filter(p=>p.isKanji);
+  const kanjiList=people.filter(p=>p.isKanji);
   const revertBtn=document.getElementById('btn-kanji-revert');
   const surplusBtn=document.getElementById('btn-kanji-surplus');
   if(wrap){
-    if(remainder>0&&kanjiIdxs.length>0){const each=Math.floor(remainder/kanjiIdxs.length);surplusBtn.textContent=`👑 余り${fmt(remainder)}を幹事${kanjiIdxs.length>1?kanjiIdxs.length+'人':''}に充当（各${fmt(each)}引く）`;surplusBtn.style.display='block';wrap.style.display='block';if(revertBtn)revertBtn.style.display=S.kanjiSnapshot?'block':'none';}
-    else if(S.kanjiSnapshot){wrap.style.display='block';surplusBtn.style.display='none';if(revertBtn)revertBtn.style.display='block';}
-    else wrap.style.display='none';
+    const hasKanji=kanjiList.length>0;
+    const needsAction=remainder!==0&&hasKanji;
+    if(needsAction){
+      const each=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
+      if(remainder>0){
+        surplusBtn.textContent=`👑 余り${fmt(remainder)}を幹事${kanjiList.length>1?kanjiList.length+'人':''}に充当（各${fmt(each)}引く）`;
+      } else {
+        surplusBtn.textContent=`👑 不足${fmt(Math.abs(remainder))}を幹事${kanjiList.length>1?kanjiList.length+'人':''}が負担（各${fmt(Math.abs(each))}引く）`;
+      }
+      surplusBtn.style.display='block';wrap.style.display='block';
+      if(revertBtn)revertBtn.style.display=S.kanjiSnapshot?'block':'none';
+    } else if(S.kanjiSnapshot){
+      wrap.style.display='block';surplusBtn.style.display='none';
+      if(revertBtn)revertBtn.style.display='block';
+    } else {
+      wrap.style.display='none';
+    }
   }
 }
 
@@ -689,12 +745,19 @@ function closeCatPopupOutside(e){if(!document.getElementById('cat-popup').contai
 // ===== 幹事充当 =====
 function applyRemainderToKanji(){
   const people=getAssignedPersons();const paidPeople=people.filter(p=>S.paid[p.idx]);
-  const collectedAmt=paidPeople.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);const remainder=collectedAmt-S.total;if(remainder<=0)return;
+  const collectedAmt=paidPeople.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);const remainder=collectedAmt-S.total;
+  if(remainder===0)return;
   const kanjiList=people.filter(p=>p.isKanji);if(!kanjiList.length){showToast('幹事が設定されていません');return;}
-  const each=Math.floor(remainder/kanjiList.length);if(each<=0){showToast('充当できる金額がありません');return;}
+  const each=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
+  if(each===0){showToast('充当できる金額がありません');return;}
   S.kanjiSnapshot={};kanjiList.forEach(p=>{S.kanjiSnapshot[p.idx]=S.amounts[p.idx]||0;});
-  kanjiList.forEach(p=>{S.amounts[p.idx]=Math.max(0,(S.amounts[p.idx]||0)-each);const r=S.doneRecords.find(r=>r.idx===p.idx);if(r)r.amount=S.amounts[p.idx];});
-  showToast(`幹事に各${fmt(each)}充当しました`);renderBillingPage();
+  kanjiList.forEach(p=>{
+    S.amounts[p.idx]=Math.max(0,(S.amounts[p.idx]||0)-each);
+    const r=S.doneRecords.find(r=>r.idx===p.idx);if(r)r.amount=S.amounts[p.idx];
+  });
+  if(remainder>0)showToast(`幹事に各${fmt(each)}充当しました`);
+  else showToast(`幹事が各${fmt(Math.abs(each))}負担します`);
+  renderBillingPage();
 }
 function revertKanjiSurplus(){
   if(!S.kanjiSnapshot)return;
