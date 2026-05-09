@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お勘定奉行 幹事郎</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:16px;max-width:780px;margin:0 auto}
+input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-size:13px;width:100%;font-family:inherit;background:#fff;color:#1a1a1a}
+input:focus,select:focus{outline:none;border-color:#378ADD}
+.page{display:none;padding:0.75rem 0}
+.page.active{display:block}
+.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+h3{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px}
+label{font-size:12px;color:#666;display:block;margin-bottom:3px}
+.btn{background:#fff;border:0.5px solid #ccc;border-radius:8px;padding:9px 16px;font-size:13px;cursor:pointer;color:#1a1a1a;font-family:inherit}
+.btn:hover{background:#f5f5f0}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:#e8f0fb;border-color:#a0bfef;color:#185FA5;font-weight:500}
+.btn-primary:hover{background:#d8e8f8}
+.btn-danger{background:#fdeaea;border-color:#f0a0a0;color:#c0392b}
+.btn-success{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-icon{padding:4px 7px;font-size:12px;border:0.5px solid #e0e0d8;border-radius:6px;cursor:pointer;background:transparent;color:#888}
+.btn-icon:hover{background:#f5f5f0}
+.nav{display:flex;gap:6px;margin-bottom:0.75rem;border-bottom:0.5px solid #e0e0d8;padding-bottom:0.5rem;overflow-x:auto}
+.nav-btn{padding:5px 12px;font-size:12px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;background:transparent;color:#888;font-family:inherit}
+.nav-btn.active{background:#e8f0fb;color:#185FA5;font-weight:500}
+.pill-tag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+
+.table-scene{display:flex;flex-direction:column;gap:24px;align-items:center;padding:12px 0}
+.table-viz{position:relative}
+.rect-body{background:#B5D4F4;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute}
+.round-body{background:#C0DD97;border-radius:50%;display:flex;align-items:center;justify-content:center;position:absolute}
+.counter-body{background:#F5C4B3;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute}
+.t-label{font-size:10px;font-weight:500;color:#0C447C;text-align:center;line-height:1.3}
+.round-body .t-label{color:#27500A}
+.counter-body .t-label{color:#993C1D}
+.seat{position:absolute;width:40px;height:40px;border-radius:50%;background:#f0f0ea;border:0.5px solid #ddd;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;text-align:center;color:#888;line-height:1.2;word-break:break-all;overflow:hidden}
+.seat.filled{background:#fff;border:1.5px solid #378ADD;color:#1a1a1a;font-weight:500}
+.seat.counter-seat{border-radius:4px}
+.seat:hover{border-color:#378ADD}
+
+.cat-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:0.5px solid #e0e0d8}
+.cat-row:last-child{border-bottom:none}
+.cat-row.ghost{opacity:0.38}
+.cat-chip{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;white-space:nowrap;margin:2px 2px}
+.cat-chip:hover{opacity:0.8}
+.members-panel{display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto}
+.member-row{padding:6px 8px;background:#fff;border-radius:8px;border:0.5px solid #e0e0d8}
+.member-name{font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
+
+.br{display:flex;align-items:center;padding:13px 4px;border-bottom:0.5px solid #e0e0d8;gap:8px}
+.br:first-child{border-top:0.5px solid #e0e0d8}
+.br.is-paid .br-name{color:#aaa}
+.br.is-paid .br-amt{color:#aaa}
+.br-name{font-size:14px;font-weight:500;color:#1a1a1a;flex:1;min-width:0}
+.br-cat{font-size:11px;flex-shrink:0;cursor:pointer}
+.br-amt{font-size:14px;font-weight:500;color:#1a1a1a;white-space:nowrap;cursor:pointer;padding:2px 6px;border-radius:4px;min-width:64px;text-align:right;flex-shrink:0}
+.br-amt:hover{background:#f5f5f0}
+.br-amt-input{width:80px;font-size:14px;font-weight:500;text-align:right;border:none;border-bottom:1.5px solid #378ADD;background:transparent;color:#1a1a1a;outline:none;padding:2px 4px;flex-shrink:0}
+.br-pay-btn{padding:5px 11px;font-size:12px;border:0.5px solid #ccc;border-radius:100px;cursor:pointer;background:#fff;color:#888;white-space:nowrap;flex-shrink:0;font-family:inherit}
+.br-pay-btn:hover{background:#f5f5f0}
+.br-pay-btn.paid{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
+
+.metric{background:#f5f5f0;border-radius:8px;padding:10px 12px}
+.metric-label{font-size:11px;color:#888;margin-bottom:3px}
+.metric-value{font-size:19px;font-weight:500;color:#1a1a1a}
+.metric-value.hi{color:#185FA5}
+.metric-sub{font-size:11px;margin-top:2px}
+.surplus{color:#1D9E75}.deficit{color:#E24B4A}
+.progress-bar{height:5px;background:#e0e0d8;border-radius:4px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.3s}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal{background:#fff;border-radius:12px;padding:1.25rem;width:270px;border:0.5px solid #e0e0d8;position:relative}
+.modal-del{position:absolute;top:10px;right:10px}
+
+.cat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:140px}
+.cat-popup-item{padding:7px 10px;font-size:13px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px}
+.cat-popup-item:hover,.cat-popup-item.selected{background:#f5f5f0}
+.cat-popup-add{padding:7px 10px;font-size:12px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:6px;color:#888;border-top:0.5px solid #e0e0d8;margin-top:4px}
+.cat-popup-add:hover{background:#f5f5f0;color:#1a1a1a}
+
+.result-header{text-align:center;padding:20px 0 16px}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid #e0e0d8}
+.result-row:last-child{border-bottom:none}
+.result-row-label{font-size:13px;color:#888}
+.result-row-val{font-size:14px;font-weight:500;color:#1a1a1a}
+.share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;margin-bottom:8px;border:none;font-family:inherit}
+.share-line{background:#06C755;color:#fff}
+.share-sms{background:#5856D6;color:#fff}
+.pax-badge{display:inline-flex;align-items:center;gap:5px;background:#f5f5f0;border-radius:100px;padding:4px 12px;font-size:13px;font-weight:500;color:#1a1a1a}
+  </style>
+</head>
+<body>
+
+<div style="display:flex;align-items:baseline;gap:8px;padding-top:0.5rem;margin-bottom:2px">
+  <span style="font-size:20px;font-weight:500;color:#1a1a1a">お勘定奉行</span>
+  <span style="font-size:14px;color:#888">幹事郎</span>
+  <span style="font-size:18px;margin-left:2px">🍺</span>
+</div>
+<p style="font-size:11px;color:#888;margin-bottom:10px">飲み会の集金を、もれなく・かんたんに。</p>
+
+<div class="nav" id="nav">
+  <button class="nav-btn active" onclick="goPage('setup')">⚙️ 基本設定</button>
+  <button class="nav-btn" onclick="goPage('seats')">🪑 座席配置</button>
+  <button class="nav-btn" onclick="goPage('billing')">🧾 お会計</button>
+</div>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page-setup">
+  <div class="card">
+    <h3>🗓 飲み会情報</h3>
+    <label>タイトル</label>
+    <input type="text" id="ev-title" placeholder="例：4月歓迎会" style="margin-bottom:10px">
+    <label>日付</label>
+    <input type="date" id="ev-date" style="margin-bottom:8px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:12px;color:#888">表示：</span>
+      <span id="date-preview" style="font-size:14px;font-weight:500">—</span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🪑 テーブル設定</h3>
+    <div id="tbl-configs" style="margin-bottom:8px"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-sm" onclick="addTable('rect');renderAllTableConfigs()">＋ 四角テーブル</button>
+      <button class="btn btn-sm" onclick="addTable('round');renderAllTableConfigs()">＋ 円卓</button>
+      <button class="btn btn-sm" onclick="addTable('counter');renderAllTableConfigs()">＋ カウンター席</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>⚖️ 傾斜カテゴリ</h3>
+    <p style="font-size:11px;color:#888;margin-bottom:10px">カテゴリ名と倍率を設定。座席配置ページで各人に割り当てできます。</p>
+    <div id="cat-list"></div>
+    <button class="btn btn-sm" onclick="addCat()" style="margin-top:8px">＋ カテゴリ追加</button>
+  </div>
+  <button class="btn btn-primary" onclick="goToSeats()" style="width:100%">座席配置へ →</button>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page-seats">
+  <div class="card" style="margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 style="margin:0">🪑 テーブル管理</h3>
+      <div id="pax-badge" class="pax-badge">👤 0名</div>
+    </div>
+    <div id="seat-tbl-configs" style="margin-bottom:8px"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-sm" onclick="addTable('rect');renderAllTableConfigs();renderScene()">＋ 四角テーブル</button>
+      <button class="btn btn-sm" onclick="addTable('round');renderAllTableConfigs();renderScene()">＋ 円卓</button>
+      <button class="btn btn-sm" onclick="addTable('counter');renderAllTableConfigs();renderScene()">＋ カウンター席</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h3 style="margin:0">⚖️ 傾斜カテゴリ</h3>
+      <button class="btn btn-sm" onclick="addCat();renderCats()">＋ 追加</button>
+    </div>
+    <div id="cat-list-seats"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 178px;gap:10px;align-items:start">
+    <div class="card" style="min-height:200px;overflow-x:auto">
+      <p style="font-size:11px;color:#888;margin-bottom:8px">席をタップして名前を登録</p>
+      <div class="table-scene" id="table-scene"></div>
+    </div>
+    <div class="card" style="min-height:200px">
+      <h3 style="margin-bottom:6px">👥 参加者</h3>
+      <div class="members-panel" id="members-panel">
+        <p style="font-size:11px;color:#888">席をタップして登録</p>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn" onclick="goPage('setup')" style="flex:1;font-size:13px">← 戻る</button>
+    <button class="btn btn-primary" onclick="goPage('billing')" style="flex:2;font-size:13px">🧾 お会計へ</button>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page-billing">
+  <div class="card">
+    <h3 style="margin-bottom:8px">💴 お会計</h3>
+    <div style="margin-bottom:12px">
+      <label>合計金額（円）</label>
+      <input type="number" id="total-input" placeholder="例：50000" oninput="onTotalInput(this.value)">
+    </div>
+    <div class="grid3" style="margin-bottom:8px">
+      <div class="metric">
+        <div class="metric-label">代金合計</div>
+        <div class="metric-value" id="b-total">¥0</div>
+        <div class="metric-sub" id="b-surplus-total"></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">集金金額</div>
+        <div class="metric-value hi" id="b-collected">¥0</div>
+        <div class="metric-sub" id="b-surplus-collected"></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">余り</div>
+        <div class="metric-value" id="b-remainder">¥0</div>
+        <div class="metric-sub" id="b-paid-count" style="color:#888">0/0人</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <h3 style="margin:0">👥 個人別請求</h3>
+      <span style="font-size:11px;color:#888">金額・カテゴリをタップで変更</span>
+    </div>
+    <div id="billing-list"></div>
+  </div>
+  <button class="btn btn-success" onclick="goResult()" style="width:100%;font-size:14px;padding:12px;margin-top:4px">🎉 集金完了・結果を見る</button>
+</div>
+
+<!-- PAGE 4 -->
+<div class="page" id="page-result">
+  <div class="result-header">
+    <div style="font-size:36px;margin-bottom:8px">🎊</div>
+    <div style="font-size:22px;font-weight:500;margin-bottom:4px" id="r-title">飲み会</div>
+    <div style="font-size:13px;color:#888" id="r-date"></div>
+  </div>
+  <div class="card"><div id="result-stats"></div></div>
+  <div class="card">
+    <h3 style="margin-bottom:8px">👥 個人別まとめ</h3>
+    <div id="result-people"></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:10px">📤 シェア</h3>
+    <button class="share-btn share-line" onclick="shareLine()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINEで共有
+    </button>
+    <button class="share-btn share-sms" onclick="shareSMS()">💬 SMSで共有</button>
+    <button class="share-btn btn" onclick="copyResult()" style="margin-bottom:0">📋 テキストをコピー</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:4px">
+    <button class="btn" onclick="goPage('billing')" style="flex:1;font-size:13px">← お会計に戻る</button>
+    <button class="btn btn-primary" onclick="resetAll()" style="flex:1;font-size:13px">🏠 トップに戻る</button>
+  </div>
+</div>
+
+<!-- MODAL: 座席登録 -->
+<div class="modal-bg" id="modal" style="display:none" onclick="if(event.target===this)saveAndClose()">
+  <div class="modal">
+    <button class="btn-icon modal-del" onclick="clearSeat()" style="color:#c0392b;border-color:#f0a0a0">🗑</button>
+    <h3 style="margin-bottom:12px">座席登録</h3>
+    <input type="text" id="m-name" placeholder="名前を入力" style="font-size:14px" onkeydown="if(event.key==='Enter')saveAndClose()">
+    <p style="font-size:11px;color:#888;margin-top:6px">Enterまたは外をタップで登録</p>
+  </div>
+</div>
+
+<div id="cat-popup" class="cat-popup" style="display:none"></div>
+
+<script>
+const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[]};
+let editKey=null,catIdCnt=1;
+const fmt=n=>'¥'+Math.round(n).toLocaleString();
+const round500=n=>Math.ceil(n/500)*500;
+const DAYS=['日','月','火','水','木','金','土'];
+function fmtDate(str){if(!str)return'—';const d=new Date(str+'T00:00:00');return`${d.getMonth()+1}月${d.getDate()}日（${DAYS[d.getDay()]}）`;}
+
+function goPage(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  ['setup','seats','billing','result'].forEach((n,i)=>{const b=document.querySelectorAll('.nav-btn')[i];if(b)b.classList.toggle('active',n===p);});
+  if(p==='seats'){renderAllTableConfigs();renderScene();renderCats();}
+  if(p==='billing'){renderBillingPage();}
+}
+document.getElementById('ev-date').addEventListener('input',function(){document.getElementById('date-preview').textContent=fmtDate(this.value);});
+
+const ghostCats=[{name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'},{name:'遅参',rate:0.5,color:'#F5C4B3',tc:'#993C1D'}];
+const extraColors=[{color:'#D3D1C7',tc:'#444441'},{color:'#CEB5F6',tc:'#3C3489'},{color:'#F4C0D1',tc:'#72243E'},{color:'#FAC775',tc:'#633806'}];
+
+function _buildCatList(el,compact){
+  el.innerHTML='';
+  const fs=compact?'12':'13',nw=compact?'50':'54';
+  S.cats.forEach((c,i)=>{
+    const row=document.createElement('div');row.className='cat-row';
+    const canDel=S.cats.length>1;
+    row.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};padding:${compact?'3px 6px':'4px 6px'}">&nbsp;</span>
+      <input type="text" value="${c.name}" placeholder="カテゴリ名" style="flex:2;min-width:0;font-size:${fs}px" onchange="S.cats[${i}].name=this.value;refreshMembersPanel();renderBillingPageIfActive()">
+      <span style="font-size:11px;color:#888">×</span>
+      <input type="number" value="${c.rate}" min="0.1" max="9.9" step="0.1" style="width:${nw}px;font-size:${fs}px;text-align:center" onchange="S.cats[${i}].rate=parseFloat(this.value)||1;calcAndFill()">
+      ${canDel?`<button class="btn-icon" onclick="removeCat(${i})">🗑</button>`:'<span style="width:28px"></span>'}`;
+    el.appendChild(row);
+  });
+  ghostCats.forEach((g,gi)=>{
+    const row=document.createElement('div');row.className='cat-row ghost';
+    row.innerHTML=`<span class="pill-tag" style="background:${g.color};color:${g.tc};padding:${compact?'3px 6px':'4px 6px'}">&nbsp;</span>
+      <input type="text" value="${g.name}" style="flex:2;min-width:0;font-size:${fs}px;color:#aaa" readonly onclick="activateGhost(${gi})">
+      <span style="font-size:11px;color:#888">×</span>
+      <input type="number" value="${g.rate}" style="width:${nw}px;font-size:${fs}px;text-align:center;color:#aaa" readonly>
+      <button class="btn-icon" onclick="activateGhost(${gi})" style="opacity:0.5">＋</button>`;
+    el.appendChild(row);
+  });
+}
+function renderCats(){const e1=document.getElementById('cat-list');if(e1)_buildCatList(e1,false);const e2=document.getElementById('cat-list-seats');if(e2)_buildCatList(e2,true);}
+function activateGhost(gi){const g=ghostCats[gi];S.cats.push({id:'c'+(catIdCnt++),name:g.name,rate:g.rate,color:g.color,tc:g.tc});ghostCats.splice(gi,1);renderCats();}
+function addCat(){const ci=extraColors[catIdCnt%extraColors.length];S.cats.push({id:'c'+(catIdCnt++),name:'',rate:1.0,...ci});renderCats();}
+function removeCat(i){if(S.cats.length<=1)return;const rid=S.cats[i].id;S.cats.splice(i,1);Object.values(S.seats).forEach(p=>{if(p&&p.catId===rid)p.catId=S.cats[0]?.id;});renderCats();refreshMembersPanel();calcAndFill();}
+function renderBillingPageIfActive(){if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();}
+
+const tableLabels={'rect':'四角テーブル','round':'円卓','counter':'カウンター席'};
+function addTable(type){S.tables.push({id:'t'+Date.now(),type,seats:type==='counter'?6:type==='rect'?8:6});}
+function _renderTableConfigsTo(el){
+  el.innerHTML='';
+  if(!S.tables.length){el.innerHTML='<p style="font-size:12px;color:#888;margin-bottom:6px">テーブルを追加してください</p>';return;}
+  S.tables.forEach((t,i)=>{
+    const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:7px';
+    row.innerHTML=`<span style="font-size:12px;color:#888;min-width:82px">${tableLabels[t.type]||'テーブル'}${i+1}</span>
+      <input type="number" min="1" max="20" value="${t.seats}" style="width:52px;font-size:13px" onchange="S.tables[${i}].seats=parseInt(this.value)||1;renderScene();renderAllTableConfigs()">
+      <span style="font-size:12px;color:#888">席</span>
+      <button class="btn-icon" onclick="removeTable(${i})">🗑</button>`;
+    el.appendChild(row);
+  });
+}
+function renderAllTableConfigs(){const e1=document.getElementById('tbl-configs');const e2=document.getElementById('seat-tbl-configs');if(e1)_renderTableConfigsTo(e1);if(e2)_renderTableConfigsTo(e2);}
+function removeTable(i){const t=S.tables[i];Object.keys(S.seats).filter(k=>k.startsWith(t.id+'_')).forEach(k=>delete S.seats[k]);S.tables.splice(i,1);renderAllTableConfigs();renderScene();}
+function goToSeats(){S.title=document.getElementById('ev-title').value||'飲み会';S.date=document.getElementById('ev-date').value;if(!S.tables.length){alert('テーブルを追加してください');return;}goPage('seats');}
+
+function countRegistered(){return Object.values(S.seats).filter(p=>p&&p.name).length;}
+function updatePaxBadge(){const el=document.getElementById('pax-badge');if(el)el.textContent='👤 '+countRegistered()+'名';}
+
+function renderScene(){
+  const scene=document.getElementById('table-scene');if(!scene)return;scene.innerHTML='';
+  S.tables.forEach((t,ti)=>{
+    const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px';
+    const viz=document.createElement('div');viz.className='table-viz';const n=t.seats;
+    if(t.type==='rect'){
+      const cols=Math.ceil(n/2),W=Math.max(130,cols*44),H=76;
+      viz.style.cssText=`width:${W+80}px;height:${H+84}px;position:relative`;
+      const body=document.createElement('div');body.className='rect-body';body.style.cssText=`width:${W}px;height:${H}px;left:40px;top:42px`;body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';viz.appendChild(body);
+      const top=Math.ceil(n/2),bot=Math.floor(n/2);
+      for(let i=0;i<top;i++){const s=mkSeat(t.id,i);s.style.cssText=`left:${40+(i/(top-1||1))*(W-40)}px;top:1px`;viz.appendChild(s);}
+      for(let i=0;i<bot;i++){const s=mkSeat(t.id,top+i);s.style.cssText=`left:${40+(i/(bot-1||1))*(W-40)}px;top:${H+44}px`;viz.appendChild(s);}
+    } else if(t.type==='round'){
+      const r=60,pad=44,sz=r*2+pad*2;viz.style.cssText=`width:${sz}px;height:${sz}px;position:relative`;
+      const body=document.createElement('div');body.className='round-body';body.style.cssText=`width:${r}px;height:${r}px;left:${pad+r/2}px;top:${pad+r/2}px`;body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';viz.appendChild(body);
+      for(let i=0;i<n;i++){const a=(2*Math.PI/n)*i-Math.PI/2,cx=pad+r;const s=mkSeat(t.id,i);s.style.cssText=`left:${cx+Math.cos(a)*(r+pad/2)-20}px;top:${cx+Math.sin(a)*(r+pad/2)-20}px`;viz.appendChild(s);}
+    } else if(t.type==='counter'){
+      const sW=44,barH=28,bPad=20,W=Math.max(100,n*sW+bPad*2);viz.style.cssText=`width:${W}px;height:${barH+70}px;position:relative`;
+      const body=document.createElement('div');body.className='counter-body';body.style.cssText=`width:${W}px;height:${barH}px;left:0;top:${barH+42}px`;body.innerHTML='<span class="t-label">カウンター'+(ti+1)+'</span>';viz.appendChild(body);
+      for(let i=0;i<n;i++){const s=mkSeat(t.id,i,'counter-seat');s.style.cssText=`left:${bPad+i*sW}px;top:0`;viz.appendChild(s);}
+    }
+    const lbl=document.createElement('p');lbl.style.cssText='font-size:10px;color:#888;text-align:center';lbl.textContent=(tableLabels[t.type]||'テーブル')+' '+n+'席';
+    wrap.appendChild(viz);wrap.appendChild(lbl);scene.appendChild(wrap);
+  });
+  refreshMembersPanel();updatePaxBadge();
+}
+
+function mkSeat(tid,idx,extraClass=''){
+  const key=`${tid}_${idx}`;const s=document.createElement('div');s.className='seat'+(S.seats[key]?' filled':'')+(extraClass?' '+extraClass:'');
+  const p=S.seats[key];if(p){const nm=p.name;s.textContent=nm.length>4?nm.slice(0,3)+'…':nm;s.title=nm;}else s.innerHTML='<span style="font-size:14px;opacity:0.4">＋</span>';
+  s.onclick=()=>openModal(key);return s;
+}
+function openModal(key){editKey=key;document.getElementById('m-name').value=S.seats[key]?.name||'';document.getElementById('modal').style.display='flex';setTimeout(()=>document.getElementById('m-name').focus(),80);}
+function saveAndClose(){const name=document.getElementById('m-name').value.trim();if(name)S.seats[editKey]={name,catId:S.seats[editKey]?.catId||S.cats[0]?.id||''};document.getElementById('modal').style.display='none';editKey=null;renderScene();calcAndFill();}
+function clearSeat(){if(editKey)delete S.seats[editKey];document.getElementById('modal').style.display='none';editKey=null;renderScene();calcAndFill();}
+
+function refreshMembersPanel(){
+  const panel=document.getElementById('members-panel');if(!panel)return;
+  const people=getPeople();if(!people.length){panel.innerHTML='<p style="font-size:11px;color:#888">席をタップして登録</p>';return;}
+  panel.innerHTML='';
+  people.forEach(p=>{
+    const row=document.createElement('div');row.className='member-row';
+    const nameEl=document.createElement('div');nameEl.className='member-name';nameEl.textContent=p.name;row.appendChild(nameEl);
+    const chips=document.createElement('div');
+    S.cats.forEach(c=>{
+      const chip=document.createElement('span');chip.className='cat-chip';const active=p.catId===c.id;
+      chip.style.cssText=active?`background:${c.color};color:${c.tc};border-color:${c.color}`:'background:#f5f5f0;color:#888;border-color:#ddd';
+      chip.textContent=c.name||'?';chip.onclick=()=>{p.catId=c.id;refreshMembersPanel();calcAndFill();};chips.appendChild(chip);
+    });
+    row.appendChild(chips);panel.appendChild(row);
+  });
+}
+
+function getPeople(){return Object.values(S.seats).filter(p=>p&&p.name);}
+function calcAndFill(){
+  const total=S.total,people=getPeople();if(!total||!people.length)return;
+  const weightSum=people.reduce((s,p)=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];return s+(c?c.rate:1);},0);if(!weightSum)return;
+  people.forEach(p=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];S.amounts[p.name]=round500(((c?c.rate:1)/weightSum)*total);});
+  renderBillingPageIfActive();
+}
+function onTotalInput(v){S.total=parseInt(v)||0;S.amounts={};calcAndFill();updateSummary();}
+function updateSummary(){
+  const total=S.total,people=getPeople();
+  const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
+  const paidPeople=people.filter(p=>S.paid[p.name]);
+  const collectedAmt=paidPeople.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
+  const paidCount=paidPeople.length,pct=total?Math.min(100,Math.round(collectedAmt/total*100)):0,remainder=collectedAmt-total;
+  document.getElementById('b-total').textContent=fmt(total);
+  document.getElementById('b-collected').textContent=fmt(allAmt);
+  const rem=document.getElementById('b-remainder');rem.textContent=remainder>=0?fmt(remainder):('−'+fmt(Math.abs(remainder)));rem.className='metric-value '+(remainder>=0?'':'deficit');
+  const surplusAll=allAmt-total;
+  const stEl=document.getElementById('b-surplus-total');stEl.textContent=surplusAll>0?`集計差 +${fmt(surplusAll)}`:(surplusAll<0?`集計差 −${fmt(Math.abs(surplusAll))}`:'');stEl.className='metric-sub '+(surplusAll>=0?'surplus':'deficit');
+  const scEl=document.getElementById('b-surplus-collected');scEl.textContent=remainder>0?`余り +${fmt(remainder)}`:remainder<0?`不足 ${fmt(Math.abs(remainder))}`:'';scEl.className='metric-sub '+(remainder>0?'surplus':remainder<0?'deficit':'');
+  document.getElementById('b-paid-count').textContent=`${paidCount}/${people.length}人 支払済`;
+  document.getElementById('b-prog').style.width=pct+'%';
+}
+
+function showCatPopup(name,anchorEl){
+  const popup=document.getElementById('cat-popup');popup.innerHTML='';
+  const p=getPeople().find(p=>p.name===name);
+  S.cats.forEach(c=>{
+    const item=document.createElement('div');item.className='cat-popup-item'+(p&&p.catId===c.id?' selected':'');
+    const dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText=`background:${c.color};color:${c.tc};padding:3px 7px`;dot.textContent=c.name||'?';
+    const rateTxt=document.createElement('span');rateTxt.style.cssText='font-size:11px;color:#888';rateTxt.textContent='×'+c.rate;
+    item.appendChild(dot);item.appendChild(rateTxt);item.onclick=()=>{if(p){p.catId=c.id;calcAndFill();renderBillingPage();}closeCatPopup();};popup.appendChild(item);
+  });
+  const addItem=document.createElement('div');addItem.className='cat-popup-add';addItem.innerHTML='＋ 新しいカテゴリを追加';addItem.onclick=()=>{addCat();renderBillingPage();closeCatPopup();};popup.appendChild(addItem);
+  popup.style.display='block';const rect=anchorEl.getBoundingClientRect();let left=rect.left,top=rect.bottom+4;if(left+150>window.innerWidth)left=window.innerWidth-158;popup.style.left=left+'px';popup.style.top=top+'px';
+  setTimeout(()=>document.addEventListener('click',closeCatPopupOutside),10);
+}
+function closeCatPopup(){document.getElementById('cat-popup').style.display='none';document.removeEventListener('click',closeCatPopupOutside);}
+function closeCatPopupOutside(e){if(!document.getElementById('cat-popup').contains(e.target))closeCatPopup();}
+
+function renderBillingPage(){
+  if(S.total&&!document.getElementById('total-input').value)document.getElementById('total-input').value=S.total;
+  updateSummary();
+  const list=document.getElementById('billing-list');list.innerHTML='';
+  const people=getPeople();
+  if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">参加者を座席に登録してください</p>';return;}
+  people.forEach(p=>{
+    const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];const isPaid=!!S.paid[p.name];
+    const row=document.createElement('div');row.className='br'+(isPaid?' is-paid':'');
+    const nameEl=document.createElement('span');nameEl.className='br-name';nameEl.textContent=p.name;
+    const catEl=document.createElement('span');catEl.className='br-cat';catEl.title='タップでカテゴリ変更';
+    if(c)catEl.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};cursor:pointer">${c.name||'?'}</span>`;
+    catEl.onclick=function(e){e.stopPropagation();showCatPopup(p.name,this);};
+    const amtWrap=document.createElement('span');amtWrap.className='br-amt';amtWrap.textContent=S.amounts[p.name]?fmt(S.amounts[p.name]):'—';amtWrap.title='タップで金額編集';amtWrap.onclick=function(){if(!isPaid)startEditAmt(p.name,this);};
+    const payBtn=document.createElement('button');payBtn.className='br-pay-btn'+(isPaid?' paid':'');payBtn.textContent=isPaid?'✓ 支払済み':'支払済み';payBtn.onclick=()=>togglePaid(p.name);
+    row.appendChild(nameEl);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(payBtn);list.appendChild(row);
+  });
+}
+
+function togglePaid(name){
+  if(S.paid[name]){S.paid[name]=false;const idx=S.doneRecords.findIndex(r=>r.name===name);if(idx>=0)S.doneRecords.splice(idx,1);}
+  else{S.paid[name]=true;const time=new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});if(!S.doneRecords.find(r=>r.name===name))S.doneRecords.push({name,amount:S.amounts[name]||0,time});}
+  renderBillingPage();updateSummary();
+}
+function startEditAmt(name,el){
+  const cur=S.amounts[name]||'';const inp=document.createElement('input');inp.type='number';inp.className='br-amt-input';inp.value=cur;inp.step=500;el.replaceWith(inp);inp.focus();inp.select();
+  function commit(){const v=parseInt(inp.value)||0;S.amounts[name]=v;const r=S.doneRecords.find(r=>r.name===name);if(r)r.amount=v;const span=document.createElement('span');span.className='br-amt';span.textContent=v?fmt(v):'—';span.title='タップで金額編集';span.onclick=function(){startEditAmt(name,this);};inp.replaceWith(span);updateSummary();}
+  inp.onblur=commit;inp.onkeydown=e=>{if(e.key==='Enter')inp.blur();};
+}
+
+function goResult(){
+  const people=getPeople(),total=S.total;
+  const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
+  const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);
+  const paidCount=people.filter(p=>S.paid[p.name]).length,remainder=paidAmt-total;
+  document.getElementById('r-title').textContent=S.title||'飲み会';document.getElementById('r-date').textContent=fmtDate(S.date);
+  const stats=document.getElementById('result-stats');stats.innerHTML='';
+  [['参加人数',people.length+'名'],['代金合計',fmt(total)],['集計金額（500円刻み）',fmt(allAmt)],['実際の集金額',fmt(paidAmt)],['余り / 不足',remainder>=0?`+${fmt(remainder)} 余り`:`${fmt(Math.abs(remainder))} 不足`],['支払済み',`${paidCount}/${people.length}名`]].forEach(([label,val])=>{const row=document.createElement('div');row.className='result-row';row.innerHTML=`<span class="result-row-label">${label}</span><span class="result-row-val">${val}</span>`;stats.appendChild(row);});
+  const rp=document.getElementById('result-people');rp.innerHTML='';
+  people.forEach(p=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];const row=document.createElement('div');row.className='result-row';const catTag=c?`<span class="pill-tag" style="background:${c.color};color:${c.tc};font-size:10px">${c.name}</span>`:'';row.innerHTML=`<span class="result-row-label" style="display:flex;align-items:center;gap:6px">${S.paid[p.name]?'✅':'⬜'} ${p.name} ${catTag}</span><span class="result-row-val">${fmt(S.amounts[p.name]||0)}</span>`;rp.appendChild(row);});
+  goPage('result');
+}
+
+function buildShareText(){
+  const people=getPeople(),total=S.total;const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);const remainder=paidAmt-total;
+  let txt=`🍺 ${S.title||'飲み会'} ${fmtDate(S.date)}\n━━━━━━━━━━━━\n代金合計：${fmt(total)}\n集計金額：${fmt(allAmt)}\n実集金額：${fmt(paidAmt)}\n`;
+  txt+=remainder>=0?`余り：+${fmt(remainder)}\n`:`不足：${fmt(Math.abs(remainder))}\n`;txt+='━━━━━━━━━━━━\n';
+  people.forEach(p=>{txt+=`${S.paid[p.name]?'✅':'⬜'} ${p.name}：${fmt(S.amounts[p.name]||0)}\n`;});return txt;
+}
+function shareLine(){window.open(`https://line.me/R/share?text=${encodeURIComponent(buildShareText())}`,'_blank');}
+function shareSMS(){window.open(`sms:?body=${encodeURIComponent(buildShareText())}`,'_blank');}
+function copyResult(){const txt=buildShareText();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>alert('コピーしました！'));}else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('コピーしました！');}}
+function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amounts={};S.paid={};S.doneRecords=[];document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';document.getElementById('total-input').value='';addTable('rect');renderAllTableConfigs();renderCats();goPage('setup');}
+
+addTable('rect');renderAllTableConfigs();renderCats();
+const today=new Date().toISOString().slice(0,10);document.getElementById('ev-date').value=today;document.getElementById('date-preview').textContent=fmtDate(today);
+</script>
+</body>
+</html>
