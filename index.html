@@ -214,21 +214,17 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <h3 style="margin:0">🪑 座席配置</h3>
       <div id="pax-badge" class="pax-badge">👤 0名</div>
     </div>
-    <!-- 参加者追加・カテゴリ設定 -->
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-      <button class="btn btn-sm" onclick="addPersonFromSeat()">＋ 参加者追加</button>
-      <button class="btn btn-sm" onclick="openAddCatModal(null)">⚖️ カテゴリ追加</button>
-    </div>
-    <p style="font-size:11px;color:#888;margin-bottom:6px">席をタップして参加者を割り当て。± で席数変更。テーブル種別もワンタップで変更できます。</p>
-    <div style="overflow-x:auto">
+    <p style="font-size:11px;color:#888;margin-bottom:8px">席の＋をタップ→参加者割り当て・カテゴリ変更・新規追加。テーブルをタップ→種別変更。</p>
+    <!-- 座席図：横スクロール可 -->
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px">
       <div class="table-scene" id="table-scene"></div>
     </div>
-    <!-- テーブル追加ボタン（配置図の下） -->
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:0.5px solid #e0e0d8">
-      <span style="font-size:11px;color:#888;align-self:center">テーブル追加：</span>
-      <button class="btn btn-sm" onclick="addTable('rect');renderScene()">＋ 四角テーブル</button>
+    <!-- テーブル追加（配置図の下） -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:0.5px solid #e0e0d8;align-items:center">
+      <span style="font-size:11px;color:#888">テーブル追加：</span>
+      <button class="btn btn-sm" onclick="addTable('rect');renderScene()">＋ 四角</button>
       <button class="btn btn-sm" onclick="addTable('round');renderScene()">＋ 円卓</button>
-      <button class="btn btn-sm" onclick="addTable('counter');renderScene()">＋ カウンター席</button>
+      <button class="btn btn-sm" onclick="addTable('counter');renderScene()">＋ カウンター</button>
     </div>
   </div>
 
@@ -519,62 +515,76 @@ function updatePaxBadge(){const el=document.getElementById('pax-badge');if(el)el
 
 function renderScene(){
   const scene=document.getElementById('table-scene');if(!scene)return;scene.innerHTML='';
-  if(!S.tables.length){scene.innerHTML='<p style="font-size:12px;color:#888;padding:8px 0">上のボタンでテーブルを追加してください</p>';updatePaxBadge();renderUnassigned();return;}
+  if(!S.tables.length){scene.innerHTML='<p style="font-size:12px;color:#888;padding:8px 0">下のボタンでテーブルを追加してください</p>';updatePaxBadge();renderUnassigned();return;}
+  // スマホ幅に合わせて座席サイズを動的に決定
+  const availW=Math.min(window.innerWidth-40,560);
+  const SEAT_SIZE=availW<340?34:38;
   S.tables.forEach((t,ti)=>{
     const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:4px';
     const n=t.seats||0;
     if(n>0){
       const viz=document.createElement('div');viz.className='table-viz';
+      const SS=SEAT_SIZE,SH=Math.floor(SS*1.05);
       if(t.type==='rect'){
-        const cols=Math.ceil(n/2),W=Math.max(120,cols*46),H=72;
-        viz.style.cssText=`width:${W+80}px;height:${H+84}px;position:relative`;
-        const body=document.createElement('div');body.className='rect-body';body.style.cssText=`width:${W}px;height:${H}px;left:40px;top:42px`;body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';viz.appendChild(body);
+        const cols=Math.ceil(n/2),W=Math.max(100,cols*(SS+4)),H=Math.max(50,Math.floor(SS*0.8));
+        const vW=W+SS*2+4,vH=H+SH*2+8;
+        viz.style.cssText=`width:${vW}px;height:${vH}px;position:relative`;
+        const body=document.createElement('div');body.className='rect-body';
+        body.style.cssText=`width:${W}px;height:${H}px;left:${SS+2}px;top:${SH+4}px;cursor:pointer`;
+        body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';
+        body.onclick=e=>{e.stopPropagation();openTableTypePopup(ti,body);};
+        viz.appendChild(body);
         const top=Math.ceil(n/2),bot=Math.floor(n/2);
-        for(let i=0;i<top;i++){const s=mkSeat(t.id,i);s.style.cssText=`left:${40+(i/(top-1||1))*(W-42)}px;top:1px`;viz.appendChild(s);}
-        for(let i=0;i<bot;i++){const s=mkSeat(t.id,top+i);s.style.cssText=`left:${40+(i/(bot-1||1))*(W-42)}px;top:${H+42}px`;viz.appendChild(s);}
+        for(let i=0;i<top;i++){const s=mkSeat(t.id,i,SS,SH);s.style.cssText=`left:${SS+2+(i/(top-1||1))*(W-SS)}px;top:0`;viz.appendChild(s);}
+        for(let i=0;i<bot;i++){const s=mkSeat(t.id,top+i,SS,SH);s.style.cssText=`left:${SS+2+(i/(bot-1||1))*(W-SS)}px;top:${H+SH+8}px`;viz.appendChild(s);}
       } else if(t.type==='round'){
-        const r=60,pad=44,sz=r*2+pad*2;viz.style.cssText=`width:${sz}px;height:${sz}px;position:relative`;
-        const body=document.createElement('div');body.className='round-body';body.style.cssText=`width:${r}px;height:${r}px;left:${pad+r/2}px;top:${pad+r/2}px`;body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';viz.appendChild(body);
-        for(let i=0;i<n;i++){const a=(2*Math.PI/n)*i-Math.PI/2,cx=pad+r;const s=mkSeat(t.id,i);s.style.cssText=`left:${cx+Math.cos(a)*(r+pad/2)-21}px;top:${cx+Math.sin(a)*(r+pad/2)-21}px`;viz.appendChild(s);}
+        const r=Math.max(40,Math.floor(SS*1.5)),pad=Math.floor(SS*1.1),sz=r*2+pad*2;
+        viz.style.cssText=`width:${sz}px;height:${sz}px;position:relative`;
+        const body=document.createElement('div');body.className='round-body';
+        body.style.cssText=`width:${r}px;height:${r}px;left:${pad+r/2}px;top:${pad+r/2}px;cursor:pointer`;
+        body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';
+        body.onclick=e=>{e.stopPropagation();openTableTypePopup(ti,body);};
+        viz.appendChild(body);
+        for(let i=0;i<n;i++){const a=(2*Math.PI/n)*i-Math.PI/2,cx=pad+r;const s=mkSeat(t.id,i,SS,SH);s.style.cssText=`left:${cx+Math.cos(a)*(r+pad/2)-SS/2}px;top:${cx+Math.sin(a)*(r+pad/2)-SH/2}px`;viz.appendChild(s);}
       } else {
-        const sW=46,barH=26,bPad=18,W=Math.max(100,n*sW+bPad*2);viz.style.cssText=`width:${W}px;height:${barH+66}px;position:relative`;
-        const body=document.createElement('div');body.className='counter-body';body.style.cssText=`width:${W}px;height:${barH}px;left:0;top:${barH+40}px`;body.innerHTML='<span class="t-label">カウンター'+(ti+1)+'</span>';viz.appendChild(body);
-        for(let i=0;i<n;i++){const s=mkSeat(t.id,i,'counter-seat');s.style.cssText=`left:${bPad+i*sW}px;top:0`;viz.appendChild(s);}
+        const sW=SS+4,barH=22,bPad=14,W=Math.max(80,n*sW+bPad*2);
+        viz.style.cssText=`width:${W}px;height:${barH+SH+10}px;position:relative`;
+        const body=document.createElement('div');body.className='counter-body';
+        body.style.cssText=`width:${W}px;height:${barH}px;left:0;top:${SH+10}px;cursor:pointer`;
+        body.innerHTML='<span class="t-label">カウンター'+(ti+1)+'</span>';
+        body.onclick=e=>{e.stopPropagation();openTableTypePopup(ti,body);};
+        viz.appendChild(body);
+        for(let i=0;i<n;i++){const s=mkSeat(t.id,i,SS,SH,'counter-seat');s.style.cssText=`left:${bPad+i*sW}px;top:0`;viz.appendChild(s);}
       }
       wrap.appendChild(viz);
     } else {
-      const ph=document.createElement('div');ph.style.cssText='padding:10px 20px;background:#f5f5f0;border-radius:8px;font-size:12px;color:#888;text-align:center';ph.textContent=`${TBL_LABELS[t.type]}${ti+1}（＋で席数設定）`;wrap.appendChild(ph);
+      const ph=document.createElement('div');
+      ph.style.cssText='padding:8px 16px;background:#f5f5f0;border-radius:8px;font-size:12px;color:#888;text-align:center;cursor:pointer';
+      ph.textContent=`${TBL_LABELS[t.type]}${ti+1}（＋で席数設定）`;
+      ph.onclick=e=>{e.stopPropagation();openTableTypePopup(ti,ph);};
+      wrap.appendChild(ph);
     }
-    // コントロール
+    // コントロール（席数ステッパー＋削除）
     const ctrl=document.createElement('div');ctrl.className='tbl-ctrl';
-    // 種別ワンタップ切替ボタン（3択）
-    const typeWrap=document.createElement('div');typeWrap.style.cssText='display:flex;border:0.5px solid #e0e0d8;border-radius:100px;overflow:hidden';
-    ['rect','round','counter'].forEach(tp=>{
-      const tb=document.createElement('button');
-      tb.textContent={rect:'四角',round:'円卓',counter:'カウンター'}[tp];
-      tb.style.cssText=`padding:3px 8px;font-size:11px;border:none;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;background:${t.type===tp?'#e8f0fb':'#f5f5f0'};color:${t.type===tp?'#185FA5':'#888'};font-weight:${t.type===tp?'500':'400'}`;
-      tb.onclick=()=>changeTableType(ti,tp);
-      typeWrap.appendChild(tb);
-    });
-    // 席数ステッパー
     const stepper=document.createElement('div');stepper.className='seat-stepper';
     const mb=document.createElement('button');mb.textContent='−';mb.onclick=()=>changeSeats(ti,-1);
     const cs=document.createElement('span');cs.textContent=n?n+'席':'席数';
     const pb=document.createElement('button');pb.textContent='＋';pb.onclick=()=>changeSeats(ti,1);
     stepper.appendChild(mb);stepper.appendChild(cs);stepper.appendChild(pb);
     const db=document.createElement('button');db.className='tbl-del-btn';db.textContent='削除';db.onclick=()=>removeTable(ti);
-    ctrl.appendChild(typeWrap);ctrl.appendChild(stepper);ctrl.appendChild(db);
+    ctrl.appendChild(stepper);ctrl.appendChild(db);
     wrap.appendChild(ctrl);scene.appendChild(wrap);
   });
   updatePaxBadge();renderUnassigned();
 }
 
-function mkSeat(tid,idx,extraClass=''){
+function mkSeat(tid,idx,SS=38,SH=40,extraClass=''){
   const key=`${tid}_${idx}`;
   const pIdx=S.assignments[key];
   const person=pIdx!==undefined&&pIdx!==null?S.persons[pIdx]:null;
   const s=document.createElement('div');
   s.className='seat'+(person?' assigned':'')+(extraClass?' '+extraClass:'');
+  s.style.width=SS+'px';s.style.height=SH+'px';s.style.fontSize=Math.max(8,Math.floor(SS*0.22))+'px';
   if(person){
     const nm=person.name||'?';s.textContent=nm.length>4?nm.slice(0,3)+'…':nm;s.title=nm;
     if(person.isKanji){const star=document.createElement('span');star.style.cssText='position:absolute;top:1px;right:2px;font-size:8px';star.textContent='👑';s.appendChild(star);}
@@ -591,8 +601,12 @@ function openSeatPopup(key,anchorEl){
   const assigned=assignedPersons();
   const currentPIdx=S.assignments[key];
   const namedPersons=S.persons.filter(p=>p.name);
-  if(!namedPersons.length){showToast('先に基本情報タブで参加者名を入力してください');return;}
-  namedPersons.forEach((p,_)=>{
+
+  // ヘッダー
+  const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;color:#888;padding:4px 10px 6px';hdr.textContent='参加者を選択';popup.appendChild(hdr);
+
+  // 参加者一覧
+  namedPersons.forEach(p=>{
     const realIdx=S.persons.indexOf(p);
     const isAssignedElsewhere=assigned.has(realIdx)&&currentPIdx!==realIdx;
     const item=document.createElement('div');item.className='seat-popup-item'+(isAssignedElsewhere?' assigned-elsewhere':'');
@@ -606,38 +620,81 @@ function openSeatPopup(key,anchorEl){
     }
     popup.appendChild(item);
   });
-  // 現在割り当て済みの人のカテゴリ変更
+
+  // 新規参加者追加
+  const addNew=document.createElement('div');addNew.className='seat-popup-item';addNew.style.cssText='color:#185FA5;font-weight:500';
+  addNew.innerHTML='＋ 新しい参加者を追加';
+  addNew.onclick=()=>{
+    const name=prompt('新しい参加者の名前を入力してください');
+    if(!name||!name.trim())return;
+    const n=name.trim();
+    S.count+=1;
+    S.persons.push({name:n,catId:S.cats[0]?.id||'c0',isKanji:false});
+    const sel=document.getElementById('count-sel');if(sel)sel.value=S.count;
+    document.getElementById('persons-card').style.display='block';
+    renderPersonList();
+    const newIdx=S.persons.length-1;
+    S.assignments[key]=newIdx;
+    closeSeatPopup();renderScene();calcAmounts();
+    showToast(`${n}さんを追加しました`);
+  };
+  popup.appendChild(addNew);
+
+  // 割り当て済みの人のカテゴリ変更
   if(currentPIdx!==undefined&&currentPIdx!==null){
     const p=S.persons[currentPIdx];
-    if(p&&S.cats.length>1){
+    if(p){
       const catSection=document.createElement('div');
       catSection.style.cssText='border-top:0.5px solid #e0e0d8;margin-top:4px;padding-top:4px';
-      const catLabel=document.createElement('div');catLabel.style.cssText='font-size:10px;color:#888;padding:4px 12px';catLabel.textContent='カテゴリ変更：';
+      const catLabel=document.createElement('div');catLabel.style.cssText='font-size:10px;color:#888;padding:4px 10px';catLabel.textContent='カテゴリ変更：';
       catSection.appendChild(catLabel);
       S.cats.forEach(c=>{
         const ci=document.createElement('div');ci.className='seat-popup-item';
         const dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText=`background:${c.color};color:${c.tc};padding:2px 7px;font-size:11px`;dot.textContent=c.name;
         const rate=document.createElement('span');rate.style.cssText='font-size:11px;color:#888';rate.textContent='×'+c.rate;
         ci.appendChild(dot);ci.appendChild(rate);
-        if(p.catId===c.id)ci.style.background='#f0f8ff';
+        if(p.catId===c.id)ci.style.background='#e8f0fb';
         ci.onclick=()=>{S.persons[currentPIdx].catId=c.id;renderPersonList();calcAmounts();closeSeatPopup();renderScene();};
         catSection.appendChild(ci);
       });
       popup.appendChild(catSection);
+      const clearItem=document.createElement('div');clearItem.className='seat-popup-clear';clearItem.textContent='✕ 割り当てを外す';
+      clearItem.onclick=()=>{delete S.assignments[key];closeSeatPopup();renderScene();calcAmounts();};
+      popup.appendChild(clearItem);
     }
-    const clearItem=document.createElement('div');clearItem.className='seat-popup-clear';clearItem.textContent='✕ 割り当てを外す';
-    clearItem.onclick=()=>{delete S.assignments[key];closeSeatPopup();renderScene();calcAmounts();};
-    popup.appendChild(clearItem);
   }
+
   popup.style.display='block';
-  const rect=anchorEl.getBoundingClientRect();let left=rect.left,top=rect.bottom+6;
-  if(left+220>window.innerWidth)left=window.innerWidth-226;
-  if(top+200>window.innerHeight)top=rect.top-206;
+  const rect=anchorEl.getBoundingClientRect();
+  let left=rect.left,top=rect.bottom+6;
+  if(left+230>window.innerWidth)left=Math.max(4,window.innerWidth-234);
+  if(top+300>window.innerHeight)top=Math.max(4,rect.top-304);
   popup.style.left=left+'px';popup.style.top=top+'px';
   setTimeout(()=>document.addEventListener('click',closeSeatPopupOutside),10);
 }
 function closeSeatPopup(){document.getElementById('seat-popup').style.display='none';document.removeEventListener('click',closeSeatPopupOutside);activeSeatKey=null;}
 function closeSeatPopupOutside(e){if(!document.getElementById('seat-popup').contains(e.target))closeSeatPopup();}
+
+/* テーブル種別変更ポップオーバー（テーブル本体タップ） */
+function openTableTypePopup(ti,anchorEl){
+  const popup=document.getElementById('seat-popup');popup.innerHTML='';
+  const t=S.tables[ti];
+  const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;color:#888;padding:4px 10px 6px';hdr.textContent='テーブル種別を変更';popup.appendChild(hdr);
+  [{v:'rect',label:'四角テーブル',emoji:'⬛'},{v:'round',label:'円卓',emoji:'⭕'},{v:'counter',label:'カウンター席',emoji:'🟧'}].forEach(opt=>{
+    const item=document.createElement('div');item.className='seat-popup-item';
+    item.innerHTML=`<span style="font-size:14px">${opt.emoji}</span><span style="flex:1">${opt.label}</span>`;
+    if(t.type===opt.v)item.style.background='#e8f0fb';
+    item.onclick=()=>{S.tables[ti].type=opt.v;closeSeatPopup();renderScene();};
+    popup.appendChild(item);
+  });
+  popup.style.display='block';
+  const rect=anchorEl.getBoundingClientRect();
+  let left=rect.left,top=rect.bottom+6;
+  if(left+200>window.innerWidth)left=Math.max(4,window.innerWidth-204);
+  if(top+180>window.innerHeight)top=Math.max(4,rect.top-184);
+  popup.style.left=left+'px';popup.style.top=top+'px';
+  setTimeout(()=>document.addEventListener('click',closeSeatPopupOutside),10);
+}
 
 function renderUnassigned(){
   const el=document.getElementById('unassigned-list');if(!el)return;
