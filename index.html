@@ -2,44 +2,39 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>お勘定奉行 幹事郎</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:16px;max-width:780px;margin:0 auto}
-input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-size:13px;width:100%;font-family:inherit;background:#fff;color:#1a1a1a}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:12px;max-width:780px;margin:0 auto;-webkit-text-size-adjust:100%}
+input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-size:16px;/* 16px以上でiOSズーム防止 */width:100%;font-family:inherit;background:#fff;color:#1a1a1a}
 input:focus,select:focus{outline:none;border-color:#378ADD}
-.page{display:none;padding:0.75rem 0}
+.page{display:none;padding:0.5rem 0}
 .page.active{display:block}
-.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:0.875rem 1rem;margin-bottom:10px}
 h3{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px}
 label{font-size:12px;color:#666;display:block;margin-bottom:3px}
-.btn{background:#fff;border:0.5px solid #ccc;border-radius:8px;padding:9px 16px;font-size:13px;cursor:pointer;color:#1a1a1a;font-family:inherit}
-.btn:hover{background:#f5f5f0}
-.btn:active{transform:scale(0.97)}
+.btn{background:#fff;border:0.5px solid #ccc;border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer;color:#1a1a1a;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.btn:active{opacity:0.7}
 .btn-primary{background:#e8f0fb;border-color:#a0bfef;color:#185FA5;font-weight:500}
-.btn-primary:hover{background:#d8e8f8}
 .btn-danger{background:#fdeaea;border-color:#f0a0a0;color:#c0392b}
 .btn-success{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn-icon{padding:4px 7px;font-size:12px;border:0.5px solid #e0e0d8;border-radius:6px;cursor:pointer;background:transparent;color:#888}
-.btn-icon:hover{background:#f5f5f0}
-.nav{display:flex;gap:6px;margin-bottom:0.75rem;border-bottom:0.5px solid #e0e0d8;padding-bottom:0.5rem;overflow-x:auto}
-.nav-btn{padding:5px 12px;font-size:12px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;background:transparent;color:#888;font-family:inherit}
+.btn-sm{padding:6px 11px;font-size:12px}
+.btn-icon{padding:5px 8px;font-size:13px;border:0.5px solid #e0e0d8;border-radius:6px;cursor:pointer;background:transparent;color:#888;-webkit-tap-highlight-color:transparent}
+.nav{display:flex;gap:5px;margin-bottom:0.75rem;border-bottom:0.5px solid #e0e0d8;padding-bottom:0.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav-btn{padding:6px 12px;font-size:12px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;background:transparent;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent}
 .nav-btn.active{background:#e8f0fb;color:#185FA5;font-weight:500}
 .pill-tag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
 
 /* ヘッダー */
-.app-header{display:flex;align-items:center;justify-content:space-between;padding-top:0.5rem;margin-bottom:2px}
-.app-header-left{display:flex;align-items:baseline;gap:8px}
-.app-header-right{display:flex;align-items:center;gap:6px}
-.share-mini-btn{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;font-family:inherit;white-space:nowrap}
-.share-mini-line{background:#06C755;color:#fff;border-color:#06C755}
-.share-mini-line:hover{opacity:0.85}
+.app-header{display:flex;align-items:center;justify-content:space-between;padding-top:0.25rem;margin-bottom:2px}
+.app-header-left{display:flex;align-items:baseline;gap:6px}
+.app-header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.share-mini-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;font-family:inherit;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.share-mini-line{background:#06C755;color:#fff}
 .share-mini-copy{background:#f0f0ea;color:#555;border-color:#ddd}
-.share-mini-copy:hover{background:#e5e5df}
 
+/* テーブル */
 .table-scene{display:flex;flex-direction:column;gap:24px;align-items:center;padding:12px 0}
 .table-viz{position:relative}
 .rect-body{background:#B5D4F4;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute}
@@ -48,76 +43,103 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .t-label{font-size:10px;font-weight:500;color:#0C447C;text-align:center;line-height:1.3}
 .round-body .t-label{color:#27500A}
 .counter-body .t-label{color:#993C1D}
-.seat{position:absolute;width:40px;height:40px;border-radius:50%;background:#f0f0ea;border:0.5px solid #ddd;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;text-align:center;color:#888;line-height:1.2;word-break:break-all;overflow:hidden}
+.seat{position:absolute;width:40px;height:40px;border-radius:50%;background:#f0f0ea;border:0.5px solid #ddd;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;text-align:center;color:#888;line-height:1.2;word-break:break-all;overflow:hidden;-webkit-tap-highlight-color:transparent}
 .seat.filled{background:#fff;border:1.5px solid #378ADD;color:#1a1a1a;font-weight:500}
 .seat.counter-seat{border-radius:4px}
-.seat:hover{border-color:#378ADD}
+
+/* 座席ページレイアウト：スマホは縦並び */
+.seats-layout{display:grid;grid-template-columns:1fr 170px;gap:10px;align-items:start}
+@media(max-width:540px){
+  .seats-layout{grid-template-columns:1fr}
+  .members-side{display:none}/* スマホでは右パネル非表示、参加者は座席図下に表示 */
+}
 
 .cat-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:0.5px solid #e0e0d8}
 .cat-row:last-child{border-bottom:none}
 .cat-row.ghost{opacity:0.38}
-.cat-chip{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;white-space:nowrap;margin:2px 2px}
-.cat-chip:hover{opacity:0.8}
+.cat-chip{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;white-space:nowrap;margin:2px 2px;-webkit-tap-highlight-color:transparent}
 .members-panel{display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto}
-.member-row{padding:6px 8px;background:#fff;border-radius:8px;border:0.5px solid #e0e0d8}
-.member-name{font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
+.member-row{padding:7px 8px;background:#fff;border-radius:8px;border:0.5px solid #e0e0d8}
+.member-name{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
 
-.br{display:flex;align-items:center;padding:13px 4px;border-bottom:0.5px solid #e0e0d8;gap:8px}
+/* 個人別請求 */
+.br{display:flex;align-items:center;padding:13px 2px;border-bottom:0.5px solid #e0e0d8;gap:8px}
 .br:first-child{border-top:0.5px solid #e0e0d8}
-.br.is-paid .br-name{color:#aaa}
-.br.is-paid .br-amt{color:#aaa}
-.br-name{font-size:14px;font-weight:500;color:#1a1a1a;flex:1;min-width:0}
-.br-cat{font-size:11px;flex-shrink:0;cursor:pointer}
-.br-amt{font-size:14px;font-weight:500;color:#1a1a1a;white-space:nowrap;cursor:pointer;padding:2px 6px;border-radius:4px;min-width:64px;text-align:right;flex-shrink:0}
-.br-amt:hover{background:#f5f5f0}
-.br-amt-input{width:80px;font-size:14px;font-weight:500;text-align:right;border:none;border-bottom:1.5px solid #378ADD;background:transparent;color:#1a1a1a;outline:none;padding:2px 4px;flex-shrink:0}
-.br-pay-btn{padding:5px 11px;font-size:12px;border:0.5px solid #ccc;border-radius:100px;cursor:pointer;background:#fff;color:#888;white-space:nowrap;flex-shrink:0;font-family:inherit}
-.br-pay-btn:hover{background:#f5f5f0}
+.br.is-paid .br-name,.br.is-paid .br-amt{color:#aaa}
+.br-name{font-size:14px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br-cat{font-size:11px;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.br-amt{font-size:14px;font-weight:500;color:#1a1a1a;white-space:nowrap;cursor:pointer;padding:3px 6px;border-radius:4px;min-width:60px;text-align:right;flex-shrink:0}
+.br-amt:active{background:#f0f0ea}
+.br-amt-input{width:80px;font-size:16px;font-weight:500;text-align:right;border:none;border-bottom:1.5px solid #378ADD;background:transparent;color:#1a1a1a;outline:none;padding:2px 4px;flex-shrink:0}
+.br-pay-btn{padding:6px 11px;font-size:12px;border:0.5px solid #ccc;border-radius:100px;cursor:pointer;background:#fff;color:#888;white-space:nowrap;flex-shrink:0;font-family:inherit;-webkit-tap-highlight-color:transparent}
 .br-pay-btn.paid{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
 
-.metric{background:#f5f5f0;border-radius:8px;padding:10px 12px}
+/* サマリー */
+.metric{background:#f5f5f0;border-radius:8px;padding:10px 10px}
 .metric-label{font-size:11px;color:#888;margin-bottom:3px}
-.metric-value{font-size:19px;font-weight:500;color:#1a1a1a}
+.metric-value{font-size:18px;font-weight:500;color:#1a1a1a}
 .metric-value.hi{color:#185FA5}
-.metric-sub{font-size:11px;margin-top:2px}
+.metric-sub{font-size:10px;margin-top:2px}
 .surplus{color:#1D9E75}.deficit{color:#E24B4A}
 .progress-bar{height:5px;background:#e0e0d8;border-radius:4px;overflow:hidden;margin:8px 0}
 .progress-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.3s}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:100}
-.modal{background:#fff;border-radius:12px;padding:1.25rem;width:270px;border:0.5px solid #e0e0d8;position:relative}
+/* モーダル */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:300px;border:0.5px solid #e0e0d8;position:relative}
 .modal-del{position:absolute;top:10px;right:10px}
+.modal input{font-size:16px}/* iOSズーム防止 */
 
-.cat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:140px}
-.cat-popup-item{padding:7px 10px;font-size:13px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px}
-.cat-popup-item:hover,.cat-popup-item.selected{background:#f5f5f0}
-.cat-popup-add{padding:7px 10px;font-size:12px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:6px;color:#888;border-top:0.5px solid #e0e0d8;margin-top:4px}
-.cat-popup-add:hover{background:#f5f5f0;color:#1a1a1a}
+/* カテゴリ追加モーダル */
+.cat-add-modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:300px;border:0.5px solid #e0e0d8}
+.cat-add-modal h3{margin-bottom:12px}
+.cat-add-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cat-add-row label{min-width:52px;font-size:12px;color:#666;margin:0}
+.cat-add-row input{font-size:15px}
+.color-picker{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
+.color-dot.selected{border-color:#1a1a1a}
 
-.result-header{text-align:center;padding:20px 0 16px}
+/* カテゴリポップオーバー */
+.cat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.14);min-width:150px;max-width:200px}
+.cat-popup-item{padding:8px 10px;font-size:13px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.cat-popup-item:active,.cat-popup-item.selected{background:#f5f5f0}
+.cat-popup-add{padding:8px 10px;font-size:12px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:6px;color:#185FA5;border-top:0.5px solid #e0e0d8;margin-top:4px;font-weight:500}
+.cat-popup-add:active{background:#f0f0ea}
+
+/* 結果ページ */
+.result-header{text-align:center;padding:16px 0 14px}
 .result-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid #e0e0d8}
 .result-row:last-child{border-bottom:none}
 .result-row-label{font-size:13px;color:#888}
 .result-row-val{font-size:14px;font-weight:500;color:#1a1a1a}
-.share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;margin-bottom:8px;border:none;font-family:inherit}
+.share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;font-size:14px;font-weight:500;border-radius:10px;cursor:pointer;margin-bottom:8px;border:none;font-family:inherit;-webkit-tap-highlight-color:transparent}
 .share-line{background:#06C755;color:#fff}
 .share-sms{background:#5856D6;color:#fff}
 .pax-badge{display:inline-flex;align-items:center;gap:5px;background:#f5f5f0;border-radius:100px;padding:4px 12px;font-size:13px;font-weight:500;color:#1a1a1a}
 
-/* コピー完了トースト */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:8px 18px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
+
+/* スマホ用フォームラベル調整 */
+@media(max-width:480px){
+  body{padding:10px}
+  .grid3{gap:5px}
+  .metric-value{font-size:16px}
+  .br-name{font-size:13px}
+  .br-amt{font-size:13px;min-width:52px}
+  .br-pay-btn{padding:5px 9px;font-size:11px}
+}
   </style>
 </head>
 <body>
 
-<!-- ヘッダー -->
 <div class="app-header">
   <div class="app-header-left">
-    <span style="font-size:20px;font-weight:500;color:#1a1a1a">お勘定奉行</span>
-    <span style="font-size:14px;color:#888">幹事郎</span>
-    <span style="font-size:18px;margin-left:2px">🍺</span>
+    <span style="font-size:19px;font-weight:500">お勘定奉行</span>
+    <span style="font-size:13px;color:#888">幹事郎</span>
+    <span style="font-size:17px;margin-left:1px">🍺</span>
   </div>
   <div class="app-header-right">
     <button class="share-mini-btn share-mini-copy" onclick="copyAppLink()">🔗 リンク</button>
@@ -161,7 +183,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <h3>⚖️ 傾斜カテゴリ</h3>
     <p style="font-size:11px;color:#888;margin-bottom:10px">カテゴリ名と倍率を設定。座席配置ページで各人に割り当てできます。</p>
     <div id="cat-list"></div>
-    <button class="btn btn-sm" onclick="addCat()" style="margin-top:8px">＋ カテゴリ追加</button>
+    <button class="btn btn-sm" onclick="openAddCatModal(null)" style="margin-top:8px">＋ カテゴリ追加</button>
   </div>
   <button class="btn btn-primary" onclick="goToSeats()" style="width:100%">座席配置へ →</button>
 </div>
@@ -183,23 +205,30 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <div class="card" style="margin-bottom:8px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <h3 style="margin:0">⚖️ 傾斜カテゴリ</h3>
-      <button class="btn btn-sm" onclick="addCat();renderCats()">＋ 追加</button>
+      <button class="btn btn-sm" onclick="openAddCatModal(null)">＋ 追加</button>
     </div>
     <div id="cat-list-seats"></div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 178px;gap:10px;align-items:start">
-    <div class="card" style="min-height:200px;overflow-x:auto">
+  <div class="seats-layout">
+    <div class="card" style="min-height:180px;overflow-x:auto">
       <p style="font-size:11px;color:#888;margin-bottom:8px">席をタップして名前を登録</p>
       <div class="table-scene" id="table-scene"></div>
     </div>
-    <div class="card" style="min-height:200px">
+    <div class="card members-side" style="min-height:180px">
       <h3 style="margin-bottom:6px">👥 参加者</h3>
       <div class="members-panel" id="members-panel">
         <p style="font-size:11px;color:#888">席をタップして登録</p>
       </div>
     </div>
   </div>
-  <div style="display:flex;gap:8px">
+  <!-- スマホ用：参加者リスト（縦並び時に表示） -->
+  <div class="card" id="members-panel-sp" style="display:none">
+    <h3 style="margin-bottom:6px">👥 参加者</h3>
+    <div class="members-panel" id="members-panel-mobile">
+      <p style="font-size:11px;color:#888">席をタップして登録</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:4px">
     <button class="btn" onclick="goPage('setup')" style="flex:1;font-size:13px">← 戻る</button>
     <button class="btn btn-primary" onclick="goPage('billing')" style="flex:2;font-size:13px">🧾 お会計へ</button>
   </div>
@@ -211,7 +240,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <h3 style="margin-bottom:8px">💴 お会計</h3>
     <div style="margin-bottom:12px">
       <label>合計金額（円）</label>
-      <input type="number" id="total-input" placeholder="例：50000" oninput="onTotalInput(this.value)">
+      <input type="number" id="total-input" placeholder="例：50000" oninput="onTotalInput(this.value)" inputmode="numeric">
     </div>
     <div class="grid3" style="margin-bottom:8px">
       <div class="metric"><div class="metric-label">代金合計</div><div class="metric-value" id="b-total">¥0</div><div class="metric-sub" id="b-surplus-total"></div></div>
@@ -223,18 +252,18 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <h3 style="margin:0">👥 個人別請求</h3>
-      <span style="font-size:11px;color:#888">金額・カテゴリをタップで変更</span>
+      <span style="font-size:11px;color:#888">タップで変更</span>
     </div>
     <div id="billing-list"></div>
   </div>
-  <button class="btn btn-success" onclick="goResult()" style="width:100%;font-size:14px;padding:12px;margin-top:4px">🎉 集金完了・結果を見る</button>
+  <button class="btn btn-success" onclick="goResult()" style="width:100%;font-size:14px;padding:13px;margin-top:4px">🎉 集金完了・結果を見る</button>
 </div>
 
 <!-- PAGE 4 -->
 <div class="page" id="page-result">
   <div class="result-header">
-    <div style="font-size:36px;margin-bottom:8px">🎊</div>
-    <div style="font-size:22px;font-weight:500;margin-bottom:4px" id="r-title">飲み会</div>
+    <div style="font-size:34px;margin-bottom:8px">🎊</div>
+    <div style="font-size:21px;font-weight:500;margin-bottom:4px" id="r-title">飲み会</div>
     <div style="font-size:13px;color:#888" id="r-date"></div>
   </div>
   <div class="card"><div id="result-stats"></div></div>
@@ -249,88 +278,140 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <button class="share-btn btn" onclick="copyResult()" style="margin-bottom:0">📋 テキストをコピー</button>
   </div>
   <div style="display:flex;gap:8px;margin-top:4px">
-    <button class="btn" onclick="goPage('billing')" style="flex:1;font-size:13px">← お会計に戻る</button>
+    <button class="btn" onclick="goPage('billing')" style="flex:1;font-size:13px">← 戻る</button>
     <button class="btn btn-primary" onclick="resetAll()" style="flex:1;font-size:13px">🏠 トップに戻る</button>
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL: 座席登録 -->
 <div class="modal-bg" id="modal" style="display:none" onclick="if(event.target===this)saveAndClose()">
   <div class="modal">
     <button class="btn-icon modal-del" onclick="clearSeat()" style="color:#c0392b;border-color:#f0a0a0">🗑</button>
     <h3 style="margin-bottom:12px">座席登録</h3>
-    <input type="text" id="m-name" placeholder="名前を入力" style="font-size:14px" onkeydown="if(event.key==='Enter')saveAndClose()">
+    <input type="text" id="m-name" placeholder="名前を入力" onkeydown="if(event.key==='Enter')saveAndClose()">
     <p style="font-size:11px;color:#888;margin-top:6px">Enterまたは外をタップで登録</p>
   </div>
 </div>
 
+<!-- MODAL: カテゴリ追加・編集 -->
+<div class="modal-bg" id="cat-add-modal-bg" style="display:none" onclick="if(event.target===this)closeAddCatModal()">
+  <div class="cat-add-modal">
+    <h3 id="cat-modal-title">カテゴリを追加</h3>
+    <div class="cat-add-row">
+      <label>名前</label>
+      <input type="text" id="cat-modal-name" placeholder="例：若手" maxlength="10">
+    </div>
+    <div class="cat-add-row">
+      <label>倍率</label>
+      <input type="number" id="cat-modal-rate" value="1.0" min="0.1" max="9.9" step="0.1" inputmode="decimal" style="width:90px">
+      <span style="font-size:13px;color:#888">倍</span>
+    </div>
+    <label style="margin-bottom:6px">カラー</label>
+    <div class="color-picker" id="cat-color-picker"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="closeAddCatModal()" style="flex:1">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveAddCatModal()" style="flex:2">保存</button>
+    </div>
+  </div>
+</div>
+
 <div id="cat-popup" class="cat-popup" style="display:none"></div>
-<div id="toast" class="toast">リンクをコピーしました！</div>
+<div id="toast" class="toast">コピーしました！</div>
 
 <script>
 const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[]};
-let editKey=null,catIdCnt=1;
+let editKey=null,catIdCnt=1,editCatIdx=null;
 const fmt=n=>'¥'+Math.round(n).toLocaleString();
 const round500=n=>Math.ceil(n/500)*500;
 const DAYS=['日','月','火','水','木','金','土'];
 function fmtDate(str){if(!str)return'—';const d=new Date(str+'T00:00:00');return`${d.getMonth()+1}月${d.getDate()}日（${DAYS[d.getDay()]}）`;}
 
-/* ---- ヘッダーのシェアボタン ---- */
-function copyAppLink(){
-  const url=location.href;
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(()=>showToast('リンクをコピーしました！'));
-  } else {
-    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    showToast('リンクをコピーしました！');
-  }
-}
-function shareAppLine(){
-  const url=encodeURIComponent(location.href);
-  const txt=encodeURIComponent('🍺 飲み会の集金管理アプリ「お勘定奉行 幹事郎」\n');
-  window.open(`https://line.me/R/share?text=${txt}${url}`,'_blank');
-}
-function showToast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);
-}
+const CAT_COLORS=[
+  {color:'#C0DD97',tc:'#27500A'},{color:'#B5D4F4',tc:'#0C447C'},
+  {color:'#F5C4B3',tc:'#993C1D'},{color:'#CEB5F6',tc:'#3C3489'},
+  {color:'#FAC775',tc:'#633806'},{color:'#F4C0D1',tc:'#72243E'},
+  {color:'#D3D1C7',tc:'#444441'},{color:'#A8E6CF',tc:'#1A5E40'},
+];
+
+/* ---- ヘッダーシェア ---- */
+function copyAppLink(){const url=location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast('リンクをコピーしました！'));}else{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('リンクをコピーしました！');}}
+function shareAppLine(){const url=encodeURIComponent(location.href);const txt=encodeURIComponent('🍺 飲み会の集金管理「お勘定奉行 幹事郎」\n');window.open(`https://line.me/R/share?text=${txt}${url}`,'_blank');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
 function goPage(p){
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   ['setup','seats','billing','result'].forEach((n,i)=>{const b=document.querySelectorAll('.nav-btn')[i];if(b)b.classList.toggle('active',n===p);});
   if(p==='seats'){renderAllTableConfigs();renderScene();renderCats();}
-  if(p==='billing'){renderBillingPage();}
+  if(p==='billing')renderBillingPage();
 }
 document.getElementById('ev-date').addEventListener('input',function(){document.getElementById('date-preview').textContent=fmtDate(this.value);});
 
+/* ---- カテゴリ追加モーダル ---- */
+function openAddCatModal(editIdx){
+  editCatIdx=editIdx;
+  const isEdit=editIdx!==null;
+  document.getElementById('cat-modal-title').textContent=isEdit?'カテゴリを編集':'カテゴリを追加';
+  const c=isEdit?S.cats[editIdx]:null;
+  document.getElementById('cat-modal-name').value=c?c.name:'';
+  document.getElementById('cat-modal-rate').value=c?c.rate:1.0;
+  // カラーピッカー
+  const picker=document.getElementById('cat-color-picker');picker.innerHTML='';
+  CAT_COLORS.forEach((col,i)=>{
+    const dot=document.createElement('div');dot.className='color-dot'+((!c&&i===0)||(c&&c.color===col.color)?' selected':'');
+    dot.style.background=col.color;dot.dataset.idx=i;
+    dot.onclick=function(){document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));this.classList.add('selected');};
+    picker.appendChild(dot);
+  });
+  document.getElementById('cat-add-modal-bg').style.display='flex';
+  setTimeout(()=>document.getElementById('cat-modal-name').focus(),100);
+}
+function closeAddCatModal(){document.getElementById('cat-add-modal-bg').style.display='none';editCatIdx=null;}
+function saveAddCatModal(){
+  const name=document.getElementById('cat-modal-name').value.trim();
+  const rate=parseFloat(document.getElementById('cat-modal-rate').value)||1.0;
+  const selDot=document.querySelector('.color-dot.selected');
+  const colIdx=selDot?parseInt(selDot.dataset.idx):0;
+  const col=CAT_COLORS[colIdx];
+  if(!name){alert('カテゴリ名を入力してください');return;}
+  if(editCatIdx!==null){
+    S.cats[editCatIdx]={...S.cats[editCatIdx],name,rate,color:col.color,tc:col.tc};
+  } else {
+    S.cats.push({id:'c'+(catIdCnt++),name,rate,color:col.color,tc:col.tc});
+  }
+  closeAddCatModal();renderCats();refreshMembersPanel();calcAndFill();
+  if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();
+}
+
 const ghostCats=[{name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'},{name:'遅参',rate:0.5,color:'#F5C4B3',tc:'#993C1D'}];
-const extraColors=[{color:'#D3D1C7',tc:'#444441'},{color:'#CEB5F6',tc:'#3C3489'},{color:'#F4C0D1',tc:'#72243E'},{color:'#FAC775',tc:'#633806'}];
 
 function _buildCatList(el,compact){
   el.innerHTML='';
-  const fs=compact?'12':'13',nw=compact?'50':'54';
+  const fs=compact?'12':'13';
   S.cats.forEach((c,i)=>{
-    const row=document.createElement('div');row.className='cat-row';const canDel=S.cats.length>1;
-    row.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};padding:${compact?'3px 6px':'4px 6px'}">&nbsp;</span>
-      <input type="text" value="${c.name}" placeholder="カテゴリ名" style="flex:2;min-width:0;font-size:${fs}px" onchange="S.cats[${i}].name=this.value;refreshMembersPanel();renderBillingPageIfActive()">
-      <span style="font-size:11px;color:#888">×</span>
-      <input type="number" value="${c.rate}" min="0.1" max="9.9" step="0.1" style="width:${nw}px;font-size:${fs}px;text-align:center" onchange="S.cats[${i}].rate=parseFloat(this.value)||1;calcAndFill()">
-      ${canDel?`<button class="btn-icon" onclick="removeCat(${i})">🗑</button>`:'<span style="width:28px"></span>'}`;
-    el.appendChild(row);
+    const row=document.createElement('div');row.className='cat-row';
+    const canDel=S.cats.length>1;
+    const left=document.createElement('div');left.style.cssText='display:flex;align-items:center;gap:6px;flex:1;min-width:0;cursor:pointer';
+    left.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};padding:3px 8px;flex-shrink:0">${c.name||'?'}</span><span style="font-size:${fs}px;color:#888">×${c.rate}</span>`;
+    left.onclick=()=>openAddCatModal(i);
+    const btns=document.createElement('div');btns.style.cssText='display:flex;gap:4px;flex-shrink:0';
+    const editBtn=document.createElement('button');editBtn.className='btn-icon';editBtn.textContent='✏️';editBtn.onclick=()=>openAddCatModal(i);
+    btns.appendChild(editBtn);
+    if(canDel){const delBtn=document.createElement('button');delBtn.className='btn-icon';delBtn.textContent='🗑';delBtn.onclick=()=>removeCat(i);btns.appendChild(delBtn);}
+    row.appendChild(left);row.appendChild(btns);el.appendChild(row);
   });
   ghostCats.forEach((g,gi)=>{
     const row=document.createElement('div');row.className='cat-row ghost';
-    row.innerHTML=`<span class="pill-tag" style="background:${g.color};color:${g.tc};padding:${compact?'3px 6px':'4px 6px'}">&nbsp;</span>
-      <input type="text" value="${g.name}" style="flex:2;min-width:0;font-size:${fs}px;color:#aaa" readonly onclick="activateGhost(${gi})">
-      <span style="font-size:11px;color:#888">×</span>
-      <input type="number" value="${g.rate}" style="width:${nw}px;font-size:${fs}px;text-align:center;color:#aaa" readonly>
-      <button class="btn-icon" onclick="activateGhost(${gi})" style="opacity:0.5">＋</button>`;
+    row.innerHTML=`<span class="pill-tag" style="background:${g.color};color:${g.tc};padding:3px 8px">${g.name}</span><span style="font-size:${fs}px;color:#aaa;flex:1;margin-left:6px">×${g.rate}（タップで追加）</span>`;
+    row.style.cursor='pointer';row.onclick=()=>activateGhost(gi);
     el.appendChild(row);
   });
 }
-function renderCats(){const e1=document.getElementById('cat-list');if(e1)_buildCatList(e1,false);const e2=document.getElementById('cat-list-seats');if(e2)_buildCatList(e2,true);}
+function renderCats(){
+  const e1=document.getElementById('cat-list');if(e1)_buildCatList(e1,false);
+  const e2=document.getElementById('cat-list-seats');if(e2)_buildCatList(e2,true);
+}
 function activateGhost(gi){const g=ghostCats[gi];S.cats.push({id:'c'+(catIdCnt++),name:g.name,rate:g.rate,color:g.color,tc:g.tc});ghostCats.splice(gi,1);renderCats();}
-function addCat(){const ci=extraColors[catIdCnt%extraColors.length];S.cats.push({id:'c'+(catIdCnt++),name:'',rate:1.0,...ci});renderCats();}
 function removeCat(i){if(S.cats.length<=1)return;const rid=S.cats[i].id;S.cats.splice(i,1);Object.values(S.seats).forEach(p=>{if(p&&p.catId===rid)p.catId=S.cats[0]?.id;});renderCats();refreshMembersPanel();calcAndFill();}
 function renderBillingPageIfActive(){if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();}
 
@@ -341,10 +422,7 @@ function _renderTableConfigsTo(el){
   if(!S.tables.length){el.innerHTML='<p style="font-size:12px;color:#888;margin-bottom:6px">テーブルを追加してください</p>';return;}
   S.tables.forEach((t,i)=>{
     const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:7px';
-    row.innerHTML=`<span style="font-size:12px;color:#888;min-width:82px">${tableLabels[t.type]||'テーブル'}${i+1}</span>
-      <input type="number" min="1" max="20" value="${t.seats}" style="width:52px;font-size:13px" onchange="S.tables[${i}].seats=parseInt(this.value)||1;renderScene();renderAllTableConfigs()">
-      <span style="font-size:12px;color:#888">席</span>
-      <button class="btn-icon" onclick="removeTable(${i})">🗑</button>`;
+    row.innerHTML=`<span style="font-size:12px;color:#888;min-width:80px">${tableLabels[t.type]}${i+1}</span><input type="number" min="1" max="20" value="${t.seats}" style="width:52px;font-size:14px;padding:5px 8px" inputmode="numeric" onchange="S.tables[${i}].seats=parseInt(this.value)||1;renderScene();renderAllTableConfigs()"><span style="font-size:12px;color:#888">席</span><button class="btn-icon" onclick="removeTable(${i})">🗑</button>`;
     el.appendChild(row);
   });
 }
@@ -355,28 +433,34 @@ function goToSeats(){S.title=document.getElementById('ev-title').value||'飲み�
 function countRegistered(){return Object.values(S.seats).filter(p=>p&&p.name).length;}
 function updatePaxBadge(){const el=document.getElementById('pax-badge');if(el)el.textContent='👤 '+countRegistered()+'名';}
 
+function isMobile(){return window.innerWidth<=540;}
+
 function renderScene(){
   const scene=document.getElementById('table-scene');if(!scene)return;scene.innerHTML='';
+  // スマホ判定でモバイル参加者パネルの表示切替
+  const spPanel=document.getElementById('members-panel-sp');
+  if(spPanel)spPanel.style.display=isMobile()?'block':'none';
+
   S.tables.forEach((t,ti)=>{
     const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px';
     const viz=document.createElement('div');viz.className='table-viz';const n=t.seats;
     if(t.type==='rect'){
-      const cols=Math.ceil(n/2),W=Math.max(130,cols*44),H=76;
+      const cols=Math.ceil(n/2),W=Math.max(120,cols*44),H=72;
       viz.style.cssText=`width:${W+80}px;height:${H+84}px;position:relative`;
       const body=document.createElement('div');body.className='rect-body';body.style.cssText=`width:${W}px;height:${H}px;left:40px;top:42px`;body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';viz.appendChild(body);
       const top=Math.ceil(n/2),bot=Math.floor(n/2);
       for(let i=0;i<top;i++){const s=mkSeat(t.id,i);s.style.cssText=`left:${40+(i/(top-1||1))*(W-40)}px;top:1px`;viz.appendChild(s);}
       for(let i=0;i<bot;i++){const s=mkSeat(t.id,top+i);s.style.cssText=`left:${40+(i/(bot-1||1))*(W-40)}px;top:${H+44}px`;viz.appendChild(s);}
     } else if(t.type==='round'){
-      const r=60,pad=44,sz=r*2+pad*2;viz.style.cssText=`width:${sz}px;height:${sz}px;position:relative`;
+      const r=58,pad=42,sz=r*2+pad*2;viz.style.cssText=`width:${sz}px;height:${sz}px;position:relative`;
       const body=document.createElement('div');body.className='round-body';body.style.cssText=`width:${r}px;height:${r}px;left:${pad+r/2}px;top:${pad+r/2}px`;body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';viz.appendChild(body);
       for(let i=0;i<n;i++){const a=(2*Math.PI/n)*i-Math.PI/2,cx=pad+r;const s=mkSeat(t.id,i);s.style.cssText=`left:${cx+Math.cos(a)*(r+pad/2)-20}px;top:${cx+Math.sin(a)*(r+pad/2)-20}px`;viz.appendChild(s);}
     } else if(t.type==='counter'){
-      const sW=44,barH=28,bPad=20,W=Math.max(100,n*sW+bPad*2);viz.style.cssText=`width:${W}px;height:${barH+70}px;position:relative`;
-      const body=document.createElement('div');body.className='counter-body';body.style.cssText=`width:${W}px;height:${barH}px;left:0;top:${barH+42}px`;body.innerHTML='<span class="t-label">カウンター'+(ti+1)+'</span>';viz.appendChild(body);
+      const sW=44,barH=26,bPad=18,W=Math.max(100,n*sW+bPad*2);viz.style.cssText=`width:${W}px;height:${barH+66}px;position:relative`;
+      const body=document.createElement('div');body.className='counter-body';body.style.cssText=`width:${W}px;height:${barH}px;left:0;top:${barH+40}px`;body.innerHTML='<span class="t-label">カウンター'+(ti+1)+'</span>';viz.appendChild(body);
       for(let i=0;i<n;i++){const s=mkSeat(t.id,i,'counter-seat');s.style.cssText=`left:${bPad+i*sW}px;top:0`;viz.appendChild(s);}
     }
-    const lbl=document.createElement('p');lbl.style.cssText='font-size:10px;color:#888;text-align:center';lbl.textContent=(tableLabels[t.type]||'テーブル')+' '+n+'席';
+    const lbl=document.createElement('p');lbl.style.cssText='font-size:10px;color:#888;text-align:center';lbl.textContent=(tableLabels[t.type])+' '+n+'席';
     wrap.appendChild(viz);wrap.appendChild(lbl);scene.appendChild(wrap);
   });
   refreshMembersPanel();updatePaxBadge();
@@ -392,19 +476,26 @@ function saveAndClose(){const name=document.getElementById('m-name').value.trim(
 function clearSeat(){if(editKey)delete S.seats[editKey];document.getElementById('modal').style.display='none';editKey=null;renderScene();calcAndFill();}
 
 function refreshMembersPanel(){
-  const panel=document.getElementById('members-panel');if(!panel)return;
-  const people=getPeople();if(!people.length){panel.innerHTML='<p style="font-size:11px;color:#888">席をタップして登録</p>';return;}
-  panel.innerHTML='';
-  people.forEach(p=>{
-    const row=document.createElement('div');row.className='member-row';
-    const nameEl=document.createElement('div');nameEl.className='member-name';nameEl.textContent=p.name;row.appendChild(nameEl);
-    const chips=document.createElement('div');
-    S.cats.forEach(c=>{
-      const chip=document.createElement('span');chip.className='cat-chip';const active=p.catId===c.id;
-      chip.style.cssText=active?`background:${c.color};color:${c.tc};border-color:${c.color}`:'background:#f5f5f0;color:#888;border-color:#ddd';
-      chip.textContent=c.name||'?';chip.onclick=()=>{p.catId=c.id;refreshMembersPanel();calcAndFill();};chips.appendChild(chip);
+  const people=getPeople();
+  // デスクトップ用
+  const panel=document.getElementById('members-panel');
+  // スマホ用
+  const panelMob=document.getElementById('members-panel-mobile');
+  [panel,panelMob].forEach(p=>{
+    if(!p)return;
+    if(!people.length){p.innerHTML='<p style="font-size:11px;color:#888">席をタップして登録</p>';return;}
+    p.innerHTML='';
+    people.forEach(person=>{
+      const row=document.createElement('div');row.className='member-row';
+      const nameEl=document.createElement('div');nameEl.className='member-name';nameEl.textContent=person.name;row.appendChild(nameEl);
+      const chips=document.createElement('div');
+      S.cats.forEach(c=>{
+        const chip=document.createElement('span');chip.className='cat-chip';const active=person.catId===c.id;
+        chip.style.cssText=active?`background:${c.color};color:${c.tc};border-color:${c.color}`:'background:#f5f5f0;color:#888;border-color:#ddd';
+        chip.textContent=c.name||'?';chip.onclick=()=>{person.catId=c.id;refreshMembersPanel();calcAndFill();};chips.appendChild(chip);
+      });
+      row.appendChild(chips);p.appendChild(row);
     });
-    row.appendChild(chips);panel.appendChild(row);
   });
 }
 
@@ -426,23 +517,30 @@ function updateSummary(){
   document.getElementById('b-collected').textContent=fmt(allAmt);
   const rem=document.getElementById('b-remainder');rem.textContent=remainder>=0?fmt(remainder):('−'+fmt(Math.abs(remainder)));rem.className='metric-value '+(remainder>=0?'':'deficit');
   const surplusAll=allAmt-total;
-  const stEl=document.getElementById('b-surplus-total');stEl.textContent=surplusAll>0?`集計差 +${fmt(surplusAll)}`:(surplusAll<0?`集計差 −${fmt(Math.abs(surplusAll))}`:'');stEl.className='metric-sub '+(surplusAll>=0?'surplus':'deficit');
-  const scEl=document.getElementById('b-surplus-collected');scEl.textContent=remainder>0?`余り +${fmt(remainder)}`:remainder<0?`不足 ${fmt(Math.abs(remainder))}`:'';scEl.className='metric-sub '+(remainder>0?'surplus':remainder<0?'deficit':'');
+  const stEl=document.getElementById('b-surplus-total');stEl.textContent=surplusAll>0?`+${fmt(surplusAll)}`:(surplusAll<0?`−${fmt(Math.abs(surplusAll))}`:'');stEl.className='metric-sub '+(surplusAll>=0?'surplus':'deficit');
+  const scEl=document.getElementById('b-surplus-collected');scEl.textContent=remainder>0?`+${fmt(remainder)}`:remainder<0?`不足 ${fmt(Math.abs(remainder))}`:'';scEl.className='metric-sub '+(remainder>0?'surplus':remainder<0?'deficit':'');
   document.getElementById('b-paid-count').textContent=`${paidCount}/${people.length}人 支払済`;
   document.getElementById('b-prog').style.width=pct+'%';
 }
 
+/* カテゴリポップオーバー（お会計ページ） */
 function showCatPopup(name,anchorEl){
   const popup=document.getElementById('cat-popup');popup.innerHTML='';
   const p=getPeople().find(p=>p.name===name);
   S.cats.forEach(c=>{
     const item=document.createElement('div');item.className='cat-popup-item'+(p&&p.catId===c.id?' selected':'');
-    const dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText=`background:${c.color};color:${c.tc};padding:3px 7px`;dot.textContent=c.name||'?';
+    const dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText=`background:${c.color};color:${c.tc};padding:3px 8px`;dot.textContent=c.name||'?';
     const rateTxt=document.createElement('span');rateTxt.style.cssText='font-size:11px;color:#888';rateTxt.textContent='×'+c.rate;
     item.appendChild(dot);item.appendChild(rateTxt);item.onclick=()=>{if(p){p.catId=c.id;calcAndFill();renderBillingPage();}closeCatPopup();};popup.appendChild(item);
   });
-  const addItem=document.createElement('div');addItem.className='cat-popup-add';addItem.innerHTML='＋ 新しいカテゴリを追加';addItem.onclick=()=>{addCat();renderBillingPage();closeCatPopup();};popup.appendChild(addItem);
-  popup.style.display='block';const rect=anchorEl.getBoundingClientRect();let left=rect.left,top=rect.bottom+4;if(left+150>window.innerWidth)left=window.innerWidth-158;popup.style.left=left+'px';popup.style.top=top+'px';
+  const addItem=document.createElement('div');addItem.className='cat-popup-add';addItem.innerHTML='＋ 新しいカテゴリを追加';
+  addItem.onclick=()=>{closeCatPopup();openAddCatModal(null);};
+  popup.appendChild(addItem);
+  popup.style.display='block';
+  const rect=anchorEl.getBoundingClientRect();let left=rect.left,top=rect.bottom+4;
+  if(left+160>window.innerWidth)left=window.innerWidth-166;
+  if(top+S.cats.length*44+50>window.innerHeight)top=rect.top-(S.cats.length*44+54);
+  popup.style.left=left+'px';popup.style.top=top+'px';
   setTimeout(()=>document.addEventListener('click',closeCatPopupOutside),10);
 }
 function closeCatPopup(){document.getElementById('cat-popup').style.display='none';document.removeEventListener('click',closeCatPopupOutside);}
@@ -458,10 +556,10 @@ function renderBillingPage(){
     const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];const isPaid=!!S.paid[p.name];
     const row=document.createElement('div');row.className='br'+(isPaid?' is-paid':'');
     const nameEl=document.createElement('span');nameEl.className='br-name';nameEl.textContent=p.name;
-    const catEl=document.createElement('span');catEl.className='br-cat';catEl.title='タップでカテゴリ変更';
+    const catEl=document.createElement('span');catEl.className='br-cat';
     if(c)catEl.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};cursor:pointer">${c.name||'?'}</span>`;
     catEl.onclick=function(e){e.stopPropagation();showCatPopup(p.name,this);};
-    const amtWrap=document.createElement('span');amtWrap.className='br-amt';amtWrap.textContent=S.amounts[p.name]?fmt(S.amounts[p.name]):'—';amtWrap.title='タップで金額編集';amtWrap.onclick=function(){if(!isPaid)startEditAmt(p.name,this);};
+    const amtWrap=document.createElement('span');amtWrap.className='br-amt';amtWrap.textContent=S.amounts[p.name]?fmt(S.amounts[p.name]):'—';amtWrap.onclick=function(){if(!isPaid)startEditAmt(p.name,this);};
     const payBtn=document.createElement('button');payBtn.className='br-pay-btn'+(isPaid?' paid':'');payBtn.textContent=isPaid?'✓ 支払済み':'支払済み';payBtn.onclick=()=>togglePaid(p.name);
     row.appendChild(nameEl);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(payBtn);list.appendChild(row);
   });
@@ -472,8 +570,8 @@ function togglePaid(name){
   renderBillingPage();updateSummary();
 }
 function startEditAmt(name,el){
-  const cur=S.amounts[name]||'';const inp=document.createElement('input');inp.type='number';inp.className='br-amt-input';inp.value=cur;inp.step=500;el.replaceWith(inp);inp.focus();inp.select();
-  function commit(){const v=parseInt(inp.value)||0;S.amounts[name]=v;const r=S.doneRecords.find(r=>r.name===name);if(r)r.amount=v;const span=document.createElement('span');span.className='br-amt';span.textContent=v?fmt(v):'—';span.title='タップで金額編集';span.onclick=function(){startEditAmt(name,this);};inp.replaceWith(span);updateSummary();}
+  const cur=S.amounts[name]||'';const inp=document.createElement('input');inp.type='number';inp.className='br-amt-input';inp.value=cur;inp.step=500;inp.inputMode='numeric';el.replaceWith(inp);inp.focus();inp.select();
+  function commit(){const v=parseInt(inp.value)||0;S.amounts[name]=v;const r=S.doneRecords.find(r=>r.name===name);if(r)r.amount=v;const span=document.createElement('span');span.className='br-amt';span.textContent=v?fmt(v):'—';span.onclick=function(){startEditAmt(name,this);};inp.replaceWith(span);updateSummary();}
   inp.onblur=commit;inp.onkeydown=e=>{if(e.key==='Enter')inp.blur();};
 }
 function goResult(){
@@ -498,6 +596,7 @@ function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amou
 
 addTable('rect');renderAllTableConfigs();renderCats();
 const today=new Date().toISOString().slice(0,10);document.getElementById('ev-date').value=today;document.getElementById('date-preview').textContent=fmtDate(today);
+window.addEventListener('resize',()=>{if(document.getElementById('page-seats').classList.contains('active'))renderScene();});
 </script>
 </body>
 </html>
