@@ -145,7 +145,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <p style="font-size:11px;color:#888;margin-bottom:10px">飲み会の集金を、もれなく・かんたんに。</p>
 
 <div class="nav" id="nav">
-  <button class="nav-btn active" onclick="goPage(0)">🪑 設定・座席</button>
+  <button class="nav-btn active" onclick="goPage(0)">🗓 飲み会情報</button>
   <button class="nav-btn" onclick="goPage(1)">🧾 お会計</button>
 </div>
 
@@ -213,6 +213,15 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <div class="billing-input-area">
       <label>💴 お会計の合計金額を入力してください</label>
       <input type="number" id="total-input" placeholder="例：50000" oninput="onTotalInput(this.value)" inputmode="numeric">
+    </div>
+    <!-- 端数処理切替 -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-size:12px;color:#888;flex-shrink:0">500円刻み：</span>
+      <div style="display:flex;border:0.5px solid #ccc;border-radius:100px;overflow:hidden;flex-shrink:0">
+        <button id="rnd-up-btn" onclick="setRounding('up')" style="padding:5px 12px;font-size:12px;border:none;cursor:pointer;font-family:inherit;background:#e8f0fb;color:#185FA5;font-weight:500">切り上げ（余りを幹事に）</button>
+        <button id="rnd-down-btn" onclick="setRounding('down')" style="padding:5px 12px;font-size:12px;border:none;cursor:pointer;font-family:inherit;background:#fff;color:#888">切り捨て（不足を幹事に）</button>
+      </div>
+      <span id="rnd-hint" style="font-size:11px;color:#1D9E75"></span>
     </div>
     <div class="grid3" style="margin-bottom:6px">
       <div class="metric">
@@ -307,15 +316,32 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <div id="toast" class="toast">コピーしました！</div>
 
 <script>
-const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[],kanji:new Set(),kanjiSnapshot:null};
+const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[],kanji:new Set(),kanjiSnapshot:null,roundMode:'auto'};
 let editKey=null,catIdCnt=1,editCatIdx=null,currentPage=0;
 const fmt=n=>'¥'+Math.round(n).toLocaleString();
-const round500=n=>Math.ceil(n/500)*500;
+const round500up=n=>Math.ceil(n/500)*500;
+const round500down=n=>Math.floor(n/500)*500;
 const DAYS=['日','月','火','水','木','金','土'];
 const tableLabels={'rect':'四角テーブル','round':'円卓','counter':'カウンター席'};
 const CAT_COLORS=[{color:'#C0DD97',tc:'#27500A'},{color:'#B5D4F4',tc:'#0C447C'},{color:'#F5C4B3',tc:'#993C1D'},{color:'#CEB5F6',tc:'#3C3489'},{color:'#FAC775',tc:'#633806'},{color:'#F4C0D1',tc:'#72243E'},{color:'#D3D1C7',tc:'#444441'},{color:'#A8E6CF',tc:'#1A5E40'}];
 function fmtDate(str){if(!str)return'—';const d=new Date(str+'T00:00:00');return`${d.getMonth()+1}月${d.getDate()}日（${DAYS[d.getDay()]}）`;}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+function setRounding(mode){
+  S.roundMode=mode;
+  document.getElementById('rnd-up-btn').style.cssText='padding:5px 12px;font-size:12px;border:none;cursor:pointer;font-family:inherit;'+(mode==='up'?'background:#e8f0fb;color:#185FA5;font-weight:500':'background:#fff;color:#888');
+  document.getElementById('rnd-down-btn').style.cssText='padding:5px 12px;font-size:12px;border:none;cursor:pointer;font-family:inherit;'+(mode==='down'?'background:#e8f0fb;color:#185FA5;font-weight:500':'background:#fff;color:#888');
+  S.amounts={};S.kanjiSnapshot=null;calcAndFill();
+}
+function autoSelectRounding(){
+  if(!S.total)return'up';
+  const people=getPeople();if(!people.length)return'up';
+  const ws=people.reduce((s,p)=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];return s+(c?c.rate:1);},0);
+  const sumUp=people.reduce((s,p)=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];return s+round500up(((c?c.rate:1)/ws)*S.total);},0);
+  const sumDown=people.reduce((s,p)=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];return s+round500down(((c?c.rate:1)/ws)*S.total);},0);
+  // 余り(up)と不足(down)の絶対値が小さい方を選ぶ
+  return Math.abs(sumUp-S.total)<=Math.abs(sumDown-S.total)?'up':'down';
+}
 
 /* ---- ページ遷移 ---- */
 function goPage(idx){
@@ -323,6 +349,8 @@ function goPage(idx){
   document.getElementById('pages').style.transform=`translateX(-${idx*100}%)`;
   document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
   document.getElementById('nav').style.display=idx===2?'none':'flex';
+  // ページ切替時に最上部へスクロール
+  window.scrollTo({top:0,behavior:'instant'});
   if(idx===0)renderScene();
   if(idx===1)renderBillingPage();
   history.pushState({page:idx},'',location.href.split('#')[0]+'#p'+idx);
@@ -502,7 +530,22 @@ function getPeople(){return Object.values(S.seats).filter(p=>p&&p.name);}
 function calcAndFill(){
   const total=S.total,people=getPeople();if(!total||!people.length)return;
   const ws=people.reduce((s,p)=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];return s+(c?c.rate:1);},0);if(!ws)return;
-  people.forEach(p=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];S.amounts[p.name]=round500(((c?c.rate:1)/ws)*total);});
+  // autoの場合は誤差が小さい方を自動選択
+  const mode=S.roundMode==='auto'?autoSelectRounding():S.roundMode;
+  const roundFn=mode==='up'?round500up:round500down;
+  people.forEach(p=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];S.amounts[p.name]=roundFn(((c?c.rate:1)/ws)*total);});
+  // UIのボタン状態を反映
+  const upBtn=document.getElementById('rnd-up-btn');const downBtn=document.getElementById('rnd-down-btn');
+  if(upBtn)upBtn.style.cssText='padding:5px 12px;font-size:12px;border:none;cursor:pointer;font-family:inherit;'+(mode==='up'?'background:#e8f0fb;color:#185FA5;font-weight:500':'background:#fff;color:#888');
+  if(downBtn)downBtn.style.cssText='padding:5px 12px;font-size:12px;border:none;cursor:pointer;font-family:inherit;'+(mode==='down'?'background:#e8f0fb;color:#185FA5;font-weight:500':'background:#fff;color:#888');
+  const hint=document.getElementById('rnd-hint');
+  if(hint){
+    const sum=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
+    const diff=sum-total;
+    if(S.roundMode==='auto')hint.textContent=`自動選択（誤差 ${diff>=0?'+':''}${fmt(diff)}）`;
+    else hint.textContent=diff>=0?`余り ${fmt(diff)}`:`不足 ${fmt(Math.abs(diff))}`;
+    hint.style.color=diff>0?'#1D9E75':diff<0?'#E24B4A':'#888';
+  }
   S.kanjiSnapshot=null;if(currentPage===1)renderBillingPage();
 }
 function onTotalInput(v){S.total=parseInt(v)||0;S.amounts={};S.kanjiSnapshot=null;calcAndFill();updateSummary();}
@@ -617,7 +660,7 @@ function shareLine(){window.open(`https://line.me/R/share?text=${encodeURICompon
 function shareViber(){window.open(`viber://forward?text=${encodeURIComponent(buildShareText())}`,'_blank');}
 function shareSMS(){window.open(`sms:?body=${encodeURIComponent(buildShareText())}`,'_blank');}
 function copyResult(){const txt=buildShareText();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>showToast('コピーしました！'));}else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました！');}}
-function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amounts={};S.paid={};S.doneRecords=[];S.kanji=new Set();S.kanjiSnapshot=null;document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';document.getElementById('total-input').value='';renderCats();renderScene();goPage(0);}
+function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amounts={};S.paid={};S.doneRecords=[];S.kanji=new Set();S.kanjiSnapshot=null;S.roundMode='auto';document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';document.getElementById('total-input').value='';renderCats();renderScene();goPage(0);}
 
 /* ---- 初期化 ---- */
 renderCats();renderScene();
