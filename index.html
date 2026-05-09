@@ -7,10 +7,9 @@
   <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:12px;max-width:780px;margin:0 auto;-webkit-text-size-adjust:100%}
-input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-size:16px;/* 16px以上でiOSズーム防止 */width:100%;font-family:inherit;background:#fff;color:#1a1a1a}
+input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-size:16px;width:100%;font-family:inherit;background:#fff;color:#1a1a1a}
 input:focus,select:focus{outline:none;border-color:#378ADD}
-.page{display:none;padding:0.5rem 0}
-.page.active{display:block}
+.page{display:none;padding:0.5rem 0}.page.active{display:block}
 .card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:0.875rem 1rem;margin-bottom:10px}
 h3{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px}
 label{font-size:12px;color:#666;display:block;margin-bottom:3px}
@@ -27,13 +26,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .pill-tag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
 
 /* ヘッダー */
-.app-header{display:flex;align-items:center;justify-content:space-between;padding-top:0.25rem;margin-bottom:2px}
-.app-header-left{display:flex;align-items:baseline;gap:6px}
-.app-header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.share-mini-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;font-family:inherit;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.share-mini-line{background:#06C755;color:#fff}
-.share-mini-viber{background:#7360F2;color:#fff}
-.share-mini-copy{background:#f0f0ea;color:#555;border-color:#ddd}
+.app-header{display:flex;align-items:center;justify-content:flex-start;padding-top:0.25rem;margin-bottom:2px;gap:8px}
 
 /* テーブル */
 .table-scene{display:flex;flex-direction:column;gap:24px;align-items:center;padding:12px 0}
@@ -47,33 +40,36 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .seat{position:absolute;width:40px;height:40px;border-radius:50%;background:#f0f0ea;border:0.5px solid #ddd;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;text-align:center;color:#888;line-height:1.2;word-break:break-all;overflow:hidden;-webkit-tap-highlight-color:transparent}
 .seat.filled{background:#fff;border:1.5px solid #378ADD;color:#1a1a1a;font-weight:500}
 .seat.counter-seat{border-radius:4px}
-
-/* 座席ページレイアウト：スマホは縦並び */
 .seats-layout{display:grid;grid-template-columns:1fr 170px;gap:10px;align-items:start}
-@media(max-width:540px){
-  .seats-layout{grid-template-columns:1fr}
-  .members-side{display:none}/* スマホでは右パネル非表示、参加者は座席図下に表示 */
-}
+@media(max-width:540px){.seats-layout{grid-template-columns:1fr}.members-side{display:none}}
 
+/* 席数ロール選択 */
+.seat-count-select{width:70px;font-size:14px;padding:5px 6px;appearance:auto}
+
+/* カテゴリ */
 .cat-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:0.5px solid #e0e0d8}
 .cat-row:last-child{border-bottom:none}
 .cat-row.ghost{opacity:0.38}
 .cat-chip{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;white-space:nowrap;margin:2px 2px;-webkit-tap-highlight-color:transparent}
-.members-panel{display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto}
+
+/* 参加者パネル */
+.members-panel{display:flex;flex-direction:column;gap:5px;max-height:340px;overflow-y:auto}
 .member-row{padding:7px 8px;background:#fff;border-radius:8px;border:0.5px solid #e0e0d8}
-.member-name{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
 
 /* 個人別請求 */
-.br{display:flex;align-items:center;padding:13px 2px;border-bottom:0.5px solid #e0e0d8;gap:8px}
+.br{display:flex;align-items:center;padding:13px 2px;border-bottom:0.5px solid #e0e0d8;gap:6px}
 .br:first-child{border-top:0.5px solid #e0e0d8}
 .br.is-paid .br-name,.br.is-paid .br-amt{color:#aaa}
-.br-name{font-size:14px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br-name{font-size:14px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:4px}
 .br-cat{font-size:11px;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.br-amt{font-size:14px;font-weight:500;color:#1a1a1a;white-space:nowrap;cursor:pointer;padding:3px 6px;border-radius:4px;min-width:60px;text-align:right;flex-shrink:0}
+.br-amt{font-size:14px;font-weight:500;color:#1a1a1a;white-space:nowrap;cursor:pointer;padding:3px 6px;border-radius:4px;min-width:58px;text-align:right;flex-shrink:0}
 .br-amt:active{background:#f0f0ea}
-.br-amt-input{width:80px;font-size:16px;font-weight:500;text-align:right;border:none;border-bottom:1.5px solid #378ADD;background:transparent;color:#1a1a1a;outline:none;padding:2px 4px;flex-shrink:0}
-.br-pay-btn{padding:6px 11px;font-size:12px;border:0.5px solid #ccc;border-radius:100px;cursor:pointer;background:#fff;color:#888;white-space:nowrap;flex-shrink:0;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.br-amt-input{width:78px;font-size:16px;font-weight:500;text-align:right;border:none;border-bottom:1.5px solid #378ADD;background:transparent;color:#1a1a1a;outline:none;padding:2px 4px;flex-shrink:0}
+.br-pay-btn{padding:5px 10px;font-size:11px;border:0.5px solid #ccc;border-radius:100px;cursor:pointer;background:#fff;color:#888;white-space:nowrap;flex-shrink:0;font-family:inherit;-webkit-tap-highlight-color:transparent}
 .br-pay-btn.paid{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
+/* 個人別の幹事ボタン（小） */
+.br-kanji-btn{padding:3px 7px;font-size:10px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0}
+.br-kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
 
 /* サマリー */
 .metric{background:#f5f5f0;border-radius:8px;padding:10px 10px}
@@ -86,11 +82,17 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .progress-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.3s}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 
+/* お会計入力エリア */
+.billing-input-area{background:#eaf3ff;border:1.5px solid #a0bfef;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.billing-input-area label{font-size:13px;color:#185FA5;font-weight:500;margin-bottom:6px}
+.billing-input-area input{font-size:20px;font-weight:500;border:none;border-bottom:2px solid #378ADD;border-radius:0;background:transparent;color:#1a1a1a;padding:4px 2px}
+.billing-input-area input:focus{outline:none;border-bottom-color:#185FA5}
+
 /* モーダル */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
 .modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:300px;border:0.5px solid #e0e0d8;position:relative}
 .modal-del{position:absolute;top:10px;right:10px}
-.modal input{font-size:16px}/* iOSズーム防止 */
+.modal input{font-size:16px}
 
 /* カテゴリ追加モーダル */
 .cat-add-modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:300px;border:0.5px solid #e0e0d8}
@@ -103,13 +105,20 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .color-dot.selected{border-color:#1a1a1a}
 
 /* カテゴリポップオーバー */
-.cat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.14);min-width:150px;max-width:200px}
+.cat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.14);min-width:150px;max-width:210px}
 .cat-popup-item{padding:8px 10px;font-size:13px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
 .cat-popup-item:active,.cat-popup-item.selected{background:#f5f5f0}
 .cat-popup-add{padding:8px 10px;font-size:12px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:6px;color:#185FA5;border-top:0.5px solid #e0e0d8;margin-top:4px;font-weight:500}
-.cat-popup-add:active{background:#f0f0ea}
 
-/* 結果ページ */
+/* 幹事 */
+.kanji-badge{display:inline-block;padding:1px 5px;border-radius:100px;font-size:10px;font-weight:500;background:#FFF3CD;color:#856404;border:0.5px solid #FFDA6A;flex-shrink:0}
+.kanji-btn{padding:3px 8px;font-size:11px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
+.btn-kanji-surplus{width:100%;margin-top:6px;padding:9px;font-size:12px;background:#FFF3CD;border:0.5px solid #FFDA6A;color:#856404;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent;display:block}
+.btn-kanji-surplus:active{opacity:0.7}
+.btn-kanji-revert{width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+
+/* 結果 */
 .result-header{text-align:center;padding:16px 0 14px}
 .result-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid #e0e0d8}
 .result-row:last-child{border-bottom:none}
@@ -120,47 +129,24 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .share-viber{background:#7360F2;color:#fff}
 .share-sms{background:#5856D6;color:#fff}
 .pax-badge{display:inline-flex;align-items:center;gap:5px;background:#f5f5f0;border-radius:100px;padding:4px 12px;font-size:13px;font-weight:500;color:#1a1a1a}
-
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
-
-/* 幹事バッジ */
-.kanji-badge{display:inline-block;padding:1px 6px;border-radius:100px;font-size:10px;font-weight:500;background:#FFF3CD;color:#856404;border:0.5px solid #FFDA6A;margin-left:4px;flex-shrink:0}
-.kanji-btn{padding:3px 8px;font-size:11px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap}
-.kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
-/* 余りを幹事に */
-.btn-kanji-surplus{width:100%;margin-top:8px;padding:8px;font-size:12px;background:#FFF3CD;border:0.5px solid #FFDA6A;color:#856404;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
-.btn-kanji-surplus:active{opacity:0.7}
-/* スマホ用フォームラベル調整 */
 @media(max-width:480px){
   body{padding:10px}
   .grid3{gap:5px}
   .metric-value{font-size:16px}
   .br-name{font-size:13px}
-  .br-amt{font-size:13px;min-width:52px}
-  .br-pay-btn{padding:5px 9px;font-size:11px}
+  .br-amt{font-size:13px;min-width:50px}
+  .br-pay-btn{padding:4px 8px;font-size:11px}
 }
   </style>
 </head>
 <body>
 
 <div class="app-header">
-  <div class="app-header-left">
-    <span style="font-size:19px;font-weight:500">お勘定奉行</span>
-    <span style="font-size:13px;color:#888">幹事郎</span>
-    <span style="font-size:17px;margin-left:1px">🍺</span>
-  </div>
-  <div class="app-header-right">
-    <button class="share-mini-btn share-mini-copy" onclick="copyAppLink()">🔗 リンク</button>
-    <button class="share-mini-btn share-mini-viber" onclick="shareAppViber()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11.985 0C5.37 0 .015 5.355.015 11.97c0 2.84.995 5.445 2.64 7.485L.9 23.25l3.975-1.725A11.88 11.88 0 0011.985 24C18.6 24 24 18.645 24 12.03 24 5.37 18.6 0 11.985 0zm6.15 16.665c-.27.765-1.35 1.41-2.205 1.59-.585.12-1.35.21-3.93-.84-3.285-1.335-5.415-4.665-5.58-4.875-.165-.225-1.32-1.755-1.32-3.345s.84-2.37 1.14-2.685c.27-.285.585-.36.78-.36s.39 0 .555.015c.18.015.42-.06.66.495.24.585.81 1.98.885 2.13.075.135.12.3.03.48-.09.195-.135.315-.27.48-.135.165-.285.36-.405.48-.135.135-.27.285-.12.555.15.27.675 1.11 1.455 1.8 1.005.885 1.845 1.17 2.115 1.305.27.12.42.105.585-.06.165-.18.705-.825.885-1.11.18-.27.36-.225.615-.135.255.09 1.62.765 1.89.9.27.135.45.21.525.315.06.12.06.675-.21 1.44z"/></svg>
-      Viber
-    </button>
-    <button class="share-mini-btn share-mini-line" onclick="shareAppLine()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      LINE
-    </button>
-  </div>
+  <span style="font-size:19px;font-weight:500">お勘定奉行</span>
+  <span style="font-size:13px;color:#888">幹事郎</span>
+  <span style="font-size:17px">🍺</span>
 </div>
 <p style="font-size:11px;color:#888;margin-bottom:10px">飲み会の集金を、もれなく・かんたんに。</p>
 
@@ -234,7 +220,6 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       </div>
     </div>
   </div>
-  <!-- スマホ用：参加者リスト（縦並び時に表示） -->
   <div class="card" id="members-panel-sp" style="display:none">
     <h3 style="margin-bottom:6px">👥 参加者</h3>
     <div class="members-panel" id="members-panel-mobile">
@@ -250,31 +235,38 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <!-- PAGE 3 -->
 <div class="page" id="page-billing">
   <div class="card">
-    <h3 style="margin-bottom:8px">💴 お会計</h3>
-    <div style="margin-bottom:12px">
-      <label>合計金額（円）</label>
+    <!-- 目立つ入力エリア -->
+    <div class="billing-input-area">
+      <label>💴 お会計の合計金額を入力してください</label>
       <input type="number" id="total-input" placeholder="例：50000" oninput="onTotalInput(this.value)" inputmode="numeric">
     </div>
-    <div class="grid3" style="margin-bottom:8px">
+    <div class="grid3" style="margin-bottom:6px">
       <div class="metric">
         <div class="metric-label">代金合計</div>
         <div class="metric-value" id="b-total">¥0</div>
-        <div class="metric-sub surplus" id="b-per-person" style="color:#888"></div>
+        <div class="metric-sub" id="b-per-person" style="color:#888"></div>
       </div>
-      <div class="metric"><div class="metric-label">集金金額</div><div class="metric-value hi" id="b-collected">¥0</div><div class="metric-sub" id="b-surplus-collected"></div></div>
+      <div class="metric">
+        <div class="metric-label">集金金額</div>
+        <div class="metric-value hi" id="b-collected">¥0</div>
+        <div class="metric-sub" id="b-surplus-collected"></div>
+      </div>
       <div class="metric">
         <div class="metric-label">余り</div>
         <div class="metric-value" id="b-remainder">¥0</div>
         <div class="metric-sub" id="b-paid-count" style="color:#888">0/0人</div>
       </div>
     </div>
-    <button class="btn-kanji-surplus" id="btn-kanji-surplus" onclick="applyRemainderToKanji()" style="display:none">👑 余りを幹事に充当する</button>
+    <div id="kanji-surplus-wrap" style="display:none">
+      <button class="btn-kanji-surplus" id="btn-kanji-surplus" onclick="applyRemainderToKanji()">👑 余りを幹事に充当する</button>
+      <button class="btn-kanji-revert" id="btn-kanji-revert" onclick="revertKanjiSurplus()" style="display:none">↩️ 幹事充当を元に戻す</button>
+    </div>
     <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
   </div>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <h3 style="margin:0">👥 個人別請求</h3>
-      <span style="font-size:11px;color:#888">タップで変更</span>
+      <span style="font-size:11px;color:#888">金額・カテゴリ・幹事をタップで変更</span>
     </div>
     <div id="billing-list"></div>
   </div>
@@ -292,7 +284,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <div class="card"><h3 style="margin-bottom:8px">👥 個人別まとめ</h3><div id="result-people"></div></div>
   <div class="card">
     <h3 style="margin-bottom:10px">📤 シェア</h3>
-
+    <button class="share-btn share-line" onclick="shareLine()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       LINEで共有
     </button>
@@ -319,7 +311,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   </div>
 </div>
 
-<!-- MODAL: カテゴリ追加・編集 -->
+<!-- MODAL: カテゴリ追加 -->
 <div class="modal-bg" id="cat-add-modal-bg" style="display:none" onclick="if(event.target===this)closeAddCatModal()">
   <div class="cat-add-modal">
     <h3 id="cat-modal-title">カテゴリを追加</h3>
@@ -345,7 +337,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <div id="toast" class="toast">コピーしました！</div>
 
 <script>
-const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[],kanji:new Set()};
+const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[],kanji:new Set(),kanjiSnapshot:null};
 let editKey=null,catIdCnt=1,editCatIdx=null;
 const fmt=n=>'¥'+Math.round(n).toLocaleString();
 const round500=n=>Math.ceil(n/500)*500;
@@ -359,10 +351,6 @@ const CAT_COLORS=[
   {color:'#D3D1C7',tc:'#444441'},{color:'#A8E6CF',tc:'#1A5E40'},
 ];
 
-/* ---- ヘッダーシェア ---- */
-function copyAppLink(){const url=location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast('リンクをコピーしました！'));}else{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('リンクをコピーしました！');}}
-function shareAppLine(){const url=encodeURIComponent(location.href);const txt=encodeURIComponent('🍺 飲み会の集金管理「お勘定奉行 幹事郎」\n');window.open(`https://line.me/R/share?text=${txt}${url}`,'_blank');}
-function shareAppViber(){const url=encodeURIComponent(location.href);const txt=encodeURIComponent('🍺 飲み会の集金管理「お勘定奉行 幹事郎」\n'+location.href);window.open(`viber://forward?text=${txt}`,'_blank');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
 function goPage(p){
@@ -374,7 +362,7 @@ function goPage(p){
 }
 document.getElementById('ev-date').addEventListener('input',function(){document.getElementById('date-preview').textContent=fmtDate(this.value);});
 
-/* ---- カテゴリ追加モーダル ---- */
+/* ---- カテゴリ ---- */
 function openAddCatModal(editIdx){
   editCatIdx=editIdx;
   const isEdit=editIdx!==null;
@@ -382,7 +370,6 @@ function openAddCatModal(editIdx){
   const c=isEdit?S.cats[editIdx]:null;
   document.getElementById('cat-modal-name').value=c?c.name:'';
   document.getElementById('cat-modal-rate').value=c?c.rate:1.0;
-  // カラーピッカー
   const picker=document.getElementById('cat-color-picker');picker.innerHTML='';
   CAT_COLORS.forEach((col,i)=>{
     const dot=document.createElement('div');dot.className='color-dot'+((!c&&i===0)||(c&&c.color===col.color)?' selected':'');
@@ -398,14 +385,10 @@ function saveAddCatModal(){
   const name=document.getElementById('cat-modal-name').value.trim();
   const rate=parseFloat(document.getElementById('cat-modal-rate').value)||1.0;
   const selDot=document.querySelector('.color-dot.selected');
-  const colIdx=selDot?parseInt(selDot.dataset.idx):0;
-  const col=CAT_COLORS[colIdx];
+  const col=CAT_COLORS[selDot?parseInt(selDot.dataset.idx):0];
   if(!name){alert('カテゴリ名を入力してください');return;}
-  if(editCatIdx!==null){
-    S.cats[editCatIdx]={...S.cats[editCatIdx],name,rate,color:col.color,tc:col.tc};
-  } else {
-    S.cats.push({id:'c'+(catIdCnt++),name,rate,color:col.color,tc:col.tc});
-  }
+  if(editCatIdx!==null){S.cats[editCatIdx]={...S.cats[editCatIdx],name,rate,color:col.color,tc:col.tc};}
+  else{S.cats.push({id:'c'+(catIdCnt++),name,rate,color:col.color,tc:col.tc});}
   closeAddCatModal();renderCats();refreshMembersPanel();calcAndFill();
   if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();
 }
@@ -414,24 +397,21 @@ const ghostCats=[{name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'},{name:'�
 
 function _buildCatList(el,compact){
   el.innerHTML='';
-  const fs=compact?'12':'13';
   S.cats.forEach((c,i)=>{
     const row=document.createElement('div');row.className='cat-row';
     const canDel=S.cats.length>1;
     const left=document.createElement('div');left.style.cssText='display:flex;align-items:center;gap:6px;flex:1;min-width:0;cursor:pointer';
-    left.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};padding:3px 8px;flex-shrink:0">${c.name||'?'}</span><span style="font-size:${fs}px;color:#888">×${c.rate}</span>`;
+    left.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};padding:3px 8px">${c.name||'?'}</span><span style="font-size:${compact?'12':'13'}px;color:#888">×${c.rate}</span>`;
     left.onclick=()=>openAddCatModal(i);
-    const btns=document.createElement('div');btns.style.cssText='display:flex;gap:4px;flex-shrink:0';
-    const editBtn=document.createElement('button');editBtn.className='btn-icon';editBtn.textContent='✏️';editBtn.onclick=()=>openAddCatModal(i);
-    btns.appendChild(editBtn);
-    if(canDel){const delBtn=document.createElement('button');delBtn.className='btn-icon';delBtn.textContent='🗑';delBtn.onclick=()=>removeCat(i);btns.appendChild(delBtn);}
+    const btns=document.createElement('div');btns.style.cssText='display:flex;gap:4px';
+    const eb=document.createElement('button');eb.className='btn-icon';eb.textContent='✏️';eb.onclick=()=>openAddCatModal(i);btns.appendChild(eb);
+    if(canDel){const db=document.createElement('button');db.className='btn-icon';db.textContent='🗑';db.onclick=()=>removeCat(i);btns.appendChild(db);}
     row.appendChild(left);row.appendChild(btns);el.appendChild(row);
   });
   ghostCats.forEach((g,gi)=>{
     const row=document.createElement('div');row.className='cat-row ghost';
-    row.innerHTML=`<span class="pill-tag" style="background:${g.color};color:${g.tc};padding:3px 8px">${g.name}</span><span style="font-size:${fs}px;color:#aaa;flex:1;margin-left:6px">×${g.rate}（タップで追加）</span>`;
-    row.style.cursor='pointer';row.onclick=()=>activateGhost(gi);
-    el.appendChild(row);
+    row.innerHTML=`<span class="pill-tag" style="background:${g.color};color:${g.tc};padding:3px 8px">${g.name}</span><span style="font-size:${compact?'12':'13'}px;color:#aaa;flex:1;margin-left:6px">×${g.rate}（タップで追加）</span>`;
+    row.style.cursor='pointer';row.onclick=()=>activateGhost(gi);el.appendChild(row);
   });
 }
 function renderCats(){
@@ -440,35 +420,63 @@ function renderCats(){
 }
 function activateGhost(gi){const g=ghostCats[gi];S.cats.push({id:'c'+(catIdCnt++),name:g.name,rate:g.rate,color:g.color,tc:g.tc});ghostCats.splice(gi,1);renderCats();}
 function removeCat(i){if(S.cats.length<=1)return;const rid=S.cats[i].id;S.cats.splice(i,1);Object.values(S.seats).forEach(p=>{if(p&&p.catId===rid)p.catId=S.cats[0]?.id;});renderCats();refreshMembersPanel();calcAndFill();}
-function renderBillingPageIfActive(){if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();}
 
+/* ---- テーブル（席数：ロール選択、デフォルト空） ---- */
 const tableLabels={'rect':'四角テーブル','round':'円卓','counter':'カウンター席'};
-function addTable(type){S.tables.push({id:'t'+Date.now(),type,seats:type==='counter'?6:type==='rect'?8:6});}
+function addTable(type){S.tables.push({id:'t'+Date.now(),type,seats:null});} // デフォルト null = 未選択
+
 function _renderTableConfigsTo(el){
   el.innerHTML='';
   if(!S.tables.length){el.innerHTML='<p style="font-size:12px;color:#888;margin-bottom:6px">テーブルを追加してください</p>';return;}
   S.tables.forEach((t,i)=>{
     const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:7px';
-    row.innerHTML=`<span style="font-size:12px;color:#888;min-width:80px">${tableLabels[t.type]}${i+1}</span><input type="number" min="1" max="20" value="${t.seats}" style="width:52px;font-size:14px;padding:5px 8px" inputmode="numeric" onchange="S.tables[${i}].seats=parseInt(this.value)||1;renderScene();renderAllTableConfigs()"><span style="font-size:12px;color:#888">席</span><button class="btn-icon" onclick="removeTable(${i})">🗑</button>`;
-    el.appendChild(row);
+    const sel=document.createElement('select');sel.className='seat-count-select';
+    const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='席数';placeholder.disabled=true;placeholder.selected=!t.seats;sel.appendChild(placeholder);
+    for(let v=1;v<=20;v++){const opt=document.createElement('option');opt.value=v;opt.textContent=v+'席';if(t.seats===v)opt.selected=true;sel.appendChild(opt);}
+    sel.onchange=function(){
+      const newSeats=parseInt(this.value)||0;
+      const old=S.tables[i].seats||0;
+      // 席数が減った場合、余剰席のデータを削除
+      if(newSeats<old){
+        for(let k=newSeats;k<old;k++){
+          const key=`${S.tables[i].id}_${k}`;
+          delete S.seats[key];
+        }
+      }
+      S.tables[i].seats=newSeats;
+      renderScene();renderAllTableConfigs();
+    };
+    const label=document.createElement('span');label.style.cssText='font-size:12px;color:#888;min-width:80px';label.textContent=`${tableLabels[t.type]||'テーブル'}${i+1}`;
+    const delBtn=document.createElement('button');delBtn.className='btn-icon';delBtn.textContent='🗑';delBtn.onclick=()=>removeTable(i);
+    row.appendChild(label);row.appendChild(sel);row.appendChild(delBtn);el.appendChild(row);
   });
 }
-function renderAllTableConfigs(){const e1=document.getElementById('tbl-configs');const e2=document.getElementById('seat-tbl-configs');if(e1)_renderTableConfigsTo(e1);if(e2)_renderTableConfigsTo(e2);}
-function removeTable(i){const t=S.tables[i];Object.keys(S.seats).filter(k=>k.startsWith(t.id+'_')).forEach(k=>delete S.seats[k]);S.tables.splice(i,1);renderAllTableConfigs();renderScene();}
-function goToSeats(){S.title=document.getElementById('ev-title').value||'飲み会';S.date=document.getElementById('ev-date').value;if(!S.tables.length){alert('テーブルを追加してください');return;}goPage('seats');}
+function renderAllTableConfigs(){
+  const e1=document.getElementById('tbl-configs');const e2=document.getElementById('seat-tbl-configs');
+  if(e1)_renderTableConfigsTo(e1);if(e2)_renderTableConfigsTo(e2);
+}
+function removeTable(i){
+  const t=S.tables[i];Object.keys(S.seats).filter(k=>k.startsWith(t.id+'_')).forEach(k=>delete S.seats[k]);
+  S.tables.splice(i,1);renderAllTableConfigs();renderScene();
+}
+function goToSeats(){
+  S.title=document.getElementById('ev-title').value||'飲み会';
+  S.date=document.getElementById('ev-date').value;
+  if(!S.tables.length){alert('テーブルを追加してください');return;}
+  goPage('seats');
+}
 
+/* ---- 座席 ---- */
 function countRegistered(){return Object.values(S.seats).filter(p=>p&&p.name).length;}
 function updatePaxBadge(){const el=document.getElementById('pax-badge');if(el)el.textContent='👤 '+countRegistered()+'名';}
-
 function isMobile(){return window.innerWidth<=540;}
 
 function renderScene(){
   const scene=document.getElementById('table-scene');if(!scene)return;scene.innerHTML='';
-  // スマホ判定でモバイル参加者パネルの表示切替
   const spPanel=document.getElementById('members-panel-sp');
   if(spPanel)spPanel.style.display=isMobile()?'block':'none';
-
   S.tables.forEach((t,ti)=>{
+    if(!t.seats)return; // 席数未設定は描画しない
     const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px';
     const viz=document.createElement('div');viz.className='table-viz';const n=t.seats;
     if(t.type==='rect'){
@@ -487,66 +495,67 @@ function renderScene(){
       const body=document.createElement('div');body.className='counter-body';body.style.cssText=`width:${W}px;height:${barH}px;left:0;top:${barH+40}px`;body.innerHTML='<span class="t-label">カウンター'+(ti+1)+'</span>';viz.appendChild(body);
       for(let i=0;i<n;i++){const s=mkSeat(t.id,i,'counter-seat');s.style.cssText=`left:${bPad+i*sW}px;top:0`;viz.appendChild(s);}
     }
-    const lbl=document.createElement('p');lbl.style.cssText='font-size:10px;color:#888;text-align:center';lbl.textContent=(tableLabels[t.type])+' '+n+'席';
+    const lbl=document.createElement('p');lbl.style.cssText='font-size:10px;color:#888;text-align:center';lbl.textContent=tableLabels[t.type]+' '+n+'席';
     wrap.appendChild(viz);wrap.appendChild(lbl);scene.appendChild(wrap);
   });
   refreshMembersPanel();updatePaxBadge();
 }
 
 function mkSeat(tid,idx,extraClass=''){
-  const key=`${tid}_${idx}`;const s=document.createElement('div');s.className='seat'+(S.seats[key]?' filled':'')+(extraClass?' '+extraClass:'');
-  const p=S.seats[key];if(p){const nm=p.name;s.textContent=nm.length>4?nm.slice(0,3)+'…':nm;s.title=nm;}else s.innerHTML='<span style="font-size:14px;opacity:0.4">＋</span>';
+  const key=`${tid}_${idx}`;const s=document.createElement('div');
+  s.className='seat'+(S.seats[key]?' filled':'')+(extraClass?' '+extraClass:'');
+  const p=S.seats[key];if(p){const nm=p.name;s.textContent=nm.length>4?nm.slice(0,3)+'…':nm;s.title=nm;}
+  else s.innerHTML='<span style="font-size:14px;opacity:0.4">＋</span>';
   s.onclick=()=>openModal(key);return s;
 }
 function openModal(key){editKey=key;document.getElementById('m-name').value=S.seats[key]?.name||'';document.getElementById('modal').style.display='flex';setTimeout(()=>document.getElementById('m-name').focus(),80);}
 function saveAndClose(){const name=document.getElementById('m-name').value.trim();if(name)S.seats[editKey]={name,catId:S.seats[editKey]?.catId||S.cats[0]?.id||''};document.getElementById('modal').style.display='none';editKey=null;renderScene();calcAndFill();}
 function clearSeat(){if(editKey)delete S.seats[editKey];document.getElementById('modal').style.display='none';editKey=null;renderScene();calcAndFill();}
 
+/* ---- 参加者パネル（幹事ボタン付き） ---- */
+function buildMemberRow(person){
+  const row=document.createElement('div');row.className='member-row';
+  const nameRow=document.createElement('div');nameRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:5px';
+  const nameLeft=document.createElement('div');nameLeft.style.cssText='display:flex;align-items:center;gap:4px;flex:1;min-width:0';
+  const nameEl=document.createElement('span');nameEl.style.cssText='font-size:13px;font-weight:500;color:#1a1a1a';nameEl.textContent=person.name;
+  nameLeft.appendChild(nameEl);
+  if(S.kanji.has(person.name)){const badge=document.createElement('span');badge.className='kanji-badge';badge.textContent='👑 幹事';nameLeft.appendChild(badge);}
+  const kb=document.createElement('button');kb.className='kanji-btn'+(S.kanji.has(person.name)?' active':'');
+  kb.textContent=S.kanji.has(person.name)?'幹事解除':'幹事';
+  kb.onclick=()=>{
+    if(S.kanji.has(person.name))S.kanji.delete(person.name);else S.kanji.add(person.name);
+    refreshMembersPanel();
+    if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();
+  };
+  nameRow.appendChild(nameLeft);nameRow.appendChild(kb);row.appendChild(nameRow);
+  const chips=document.createElement('div');
+  S.cats.forEach(c=>{
+    const chip=document.createElement('span');chip.className='cat-chip';const active=person.catId===c.id;
+    chip.style.cssText=active?`background:${c.color};color:${c.tc};border-color:${c.color}`:'background:#f5f5f0;color:#888;border-color:#ddd';
+    chip.textContent=c.name||'?';chip.onclick=()=>{person.catId=c.id;refreshMembersPanel();calcAndFill();};chips.appendChild(chip);
+  });
+  row.appendChild(chips);return row;
+}
 function refreshMembersPanel(){
   const people=getPeople();
-  const panel=document.getElementById('members-panel');
-  const panelMob=document.getElementById('members-panel-mobile');
-  [panel,panelMob].forEach(p=>{
-    if(!p)return;
-    if(!people.length){p.innerHTML='<p style="font-size:11px;color:#888">席をタップして登録</p>';return;}
-    p.innerHTML='';
-    people.forEach(person=>{
-      const row=document.createElement('div');row.className='member-row';
-      // 名前行：名前 + 幹事バッジ + 幹事ボタン
-      const nameRow=document.createElement('div');nameRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:4px';
-      const nameLeft=document.createElement('div');nameLeft.style.cssText='display:flex;align-items:center;gap:2px;flex:1;min-width:0';
-      const nameEl=document.createElement('span');nameEl.className='member-name';nameEl.style.margin='0';nameEl.textContent=person.name;
-      nameLeft.appendChild(nameEl);
-      if(S.kanji.has(person.name)){const badge=document.createElement('span');badge.className='kanji-badge';badge.textContent='👑 幹事';nameLeft.appendChild(badge);}
-      const kanjiBtn=document.createElement('button');
-      kanjiBtn.className='kanji-btn'+(S.kanji.has(person.name)?' active':'');
-      kanjiBtn.textContent=S.kanji.has(person.name)?'幹事解除':'幹事';
-      kanjiBtn.onclick=()=>{
-        if(S.kanji.has(person.name))S.kanji.delete(person.name);else S.kanji.add(person.name);
-        refreshMembersPanel();
-        if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();
-      };
-      nameRow.appendChild(nameLeft);nameRow.appendChild(kanjiBtn);
-      row.appendChild(nameRow);
-      const chips=document.createElement('div');
-      S.cats.forEach(c=>{
-        const chip=document.createElement('span');chip.className='cat-chip';const active=person.catId===c.id;
-        chip.style.cssText=active?`background:${c.color};color:${c.tc};border-color:${c.color}`:'background:#f5f5f0;color:#888;border-color:#ddd';
-        chip.textContent=c.name||'?';chip.onclick=()=>{person.catId=c.id;refreshMembersPanel();calcAndFill();};chips.appendChild(chip);
-      });
-      row.appendChild(chips);p.appendChild(row);
-    });
+  [document.getElementById('members-panel'),document.getElementById('members-panel-mobile')].forEach(panel=>{
+    if(!panel)return;
+    if(!people.length){panel.innerHTML='<p style="font-size:11px;color:#888">席をタップして登録</p>';return;}
+    panel.innerHTML='';people.forEach(p=>panel.appendChild(buildMemberRow(p)));
   });
 }
 
+/* ---- 請求計算 ---- */
 function getPeople(){return Object.values(S.seats).filter(p=>p&&p.name);}
 function calcAndFill(){
   const total=S.total,people=getPeople();if(!total||!people.length)return;
   const weightSum=people.reduce((s,p)=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];return s+(c?c.rate:1);},0);if(!weightSum)return;
   people.forEach(p=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];S.amounts[p.name]=round500(((c?c.rate:1)/weightSum)*total);});
-  renderBillingPageIfActive();
+  S.kanjiSnapshot=null; // 再計算したらスナップショット破棄
+  if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();
 }
-function onTotalInput(v){S.total=parseInt(v)||0;S.amounts={};calcAndFill();updateSummary();}
+function onTotalInput(v){S.total=parseInt(v)||0;S.amounts={};S.kanjiSnapshot=null;calcAndFill();updateSummary();}
+
 function updateSummary(){
   const total=S.total,people=getPeople();
   const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
@@ -556,48 +565,50 @@ function updateSummary(){
   document.getElementById('b-total').textContent=fmt(total);
   document.getElementById('b-collected').textContent=fmt(allAmt);
   const rem=document.getElementById('b-remainder');rem.textContent=remainder>=0?fmt(remainder):('−'+fmt(Math.abs(remainder)));rem.className='metric-value '+(remainder>=0?'':'deficit');
-
-  // 一人当たり
+  // 一人当たり（均等参考値）
   const perEl=document.getElementById('b-per-person');
-  if(people.length>0&&total>0){perEl.textContent=`1人均等 ${fmt(Math.round(total/people.length))}`;perEl.style.color='#888';}
-  else perEl.textContent='';
-
-  const surplusAll=allAmt-total;
-  const stEl=document.getElementById('b-surplus-total');if(stEl){stEl.textContent=surplusAll>0?`+${fmt(surplusAll)}`:(surplusAll<0?`−${fmt(Math.abs(surplusAll))}`:'');stEl.className='metric-sub '+(surplusAll>=0?'surplus':'deficit');}
+  perEl.textContent=people.length>0&&total>0?`均等 ${fmt(Math.round(total/people.length))}/人`:'';
+  perEl.style.color='#888';
   const scEl=document.getElementById('b-surplus-collected');scEl.textContent=remainder>0?`+${fmt(remainder)}`:remainder<0?`不足 ${fmt(Math.abs(remainder))}`:'';scEl.className='metric-sub '+(remainder>0?'surplus':remainder<0?'deficit':'');
   document.getElementById('b-paid-count').textContent=`${paidCount}/${people.length}人 支払済`;
   document.getElementById('b-prog').style.width=pct+'%';
-
-  // 「余りを幹事に」ボタン：余りがあり幹事がいる場合のみ表示
-  const kanjiBtn=document.getElementById('btn-kanji-surplus');
+  // 幹事充当ボタン
+  const wrap=document.getElementById('kanji-surplus-wrap');
   const kanjiNames=[...S.kanji].filter(n=>people.find(p=>p.name===n));
-  if(kanjiBtn){
+  const revertBtn=document.getElementById('btn-kanji-revert');
+  if(wrap){
     if(remainder>0&&kanjiNames.length>0){
       const each=Math.floor(remainder/kanjiNames.length);
-      kanjiBtn.textContent=`👑 余り${fmt(remainder)}を幹事${kanjiNames.length>1?kanjiNames.length+'人':''}に充当する（各${fmt(each)}引く）`;
-      kanjiBtn.style.display='block';
+      document.getElementById('btn-kanji-surplus').textContent=`👑 余り${fmt(remainder)}を幹事${kanjiNames.length>1?kanjiNames.length+'人':''}に充当（各${fmt(each)}引く）`;
+      wrap.style.display='block';
+      if(revertBtn)revertBtn.style.display=S.kanjiSnapshot?'block':'none';
+    } else if(S.kanjiSnapshot){
+      wrap.style.display='block';
+      document.getElementById('btn-kanji-surplus').style.display='none';
+      if(revertBtn)revertBtn.style.display='block';
     } else {
-      kanjiBtn.style.display='none';
+      wrap.style.display='none';
     }
   }
+  const surplusBtn=document.getElementById('btn-kanji-surplus');
+  if(surplusBtn)surplusBtn.style.display=(remainder>0&&kanjiNames.length>0)?'block':'none';
 }
 
-/* カテゴリポップオーバー（お会計ページ） */
+/* ---- カテゴリポップオーバー ---- */
 function showCatPopup(name,anchorEl){
   const popup=document.getElementById('cat-popup');popup.innerHTML='';
   const p=getPeople().find(p=>p.name===name);
   S.cats.forEach(c=>{
     const item=document.createElement('div');item.className='cat-popup-item'+(p&&p.catId===c.id?' selected':'');
     const dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText=`background:${c.color};color:${c.tc};padding:3px 8px`;dot.textContent=c.name||'?';
-    const rateTxt=document.createElement('span');rateTxt.style.cssText='font-size:11px;color:#888';rateTxt.textContent='×'+c.rate;
-    item.appendChild(dot);item.appendChild(rateTxt);item.onclick=()=>{if(p){p.catId=c.id;calcAndFill();renderBillingPage();}closeCatPopup();};popup.appendChild(item);
+    const rate=document.createElement('span');rate.style.cssText='font-size:11px;color:#888';rate.textContent='×'+c.rate;
+    item.appendChild(dot);item.appendChild(rate);item.onclick=()=>{if(p){p.catId=c.id;calcAndFill();renderBillingPage();}closeCatPopup();};popup.appendChild(item);
   });
   const addItem=document.createElement('div');addItem.className='cat-popup-add';addItem.innerHTML='＋ 新しいカテゴリを追加';
-  addItem.onclick=()=>{closeCatPopup();openAddCatModal(null);};
-  popup.appendChild(addItem);
+  addItem.onclick=()=>{closeCatPopup();openAddCatModal(null);};popup.appendChild(addItem);
   popup.style.display='block';
   const rect=anchorEl.getBoundingClientRect();let left=rect.left,top=rect.bottom+4;
-  if(left+160>window.innerWidth)left=window.innerWidth-166;
+  if(left+165>window.innerWidth)left=window.innerWidth-170;
   if(top+S.cats.length*44+50>window.innerHeight)top=rect.top-(S.cats.length*44+54);
   popup.style.left=left+'px';popup.style.top=top+'px';
   setTimeout(()=>document.addEventListener('click',closeCatPopupOutside),10);
@@ -605,6 +616,7 @@ function showCatPopup(name,anchorEl){
 function closeCatPopup(){document.getElementById('cat-popup').style.display='none';document.removeEventListener('click',closeCatPopupOutside);}
 function closeCatPopupOutside(e){if(!document.getElementById('cat-popup').contains(e.target))closeCatPopup();}
 
+/* ---- 幹事充当 ---- */
 function applyRemainderToKanji(){
   const people=getPeople();
   const paidPeople=people.filter(p=>S.paid[p.name]);
@@ -615,14 +627,28 @@ function applyRemainderToKanji(){
   if(!kanjiNames.length){showToast('幹事が設定されていません');return;}
   const each=Math.floor(remainder/kanjiNames.length);
   if(each<=0){showToast('充当できる金額がありません');return;}
+  // スナップショット保存
+  S.kanjiSnapshot={};kanjiNames.forEach(n=>{S.kanjiSnapshot[n]=S.amounts[n]||0;});
   kanjiNames.forEach(name=>{
     S.amounts[name]=Math.max(0,(S.amounts[name]||0)-each);
     const r=S.doneRecords.find(r=>r.name===name);if(r)r.amount=S.amounts[name];
   });
-  showToast(`幹事${kanjiNames.length>1?kanjiNames.length+'人':''}に各${fmt(each)}充当しました`);
+  showToast(`幹事に各${fmt(each)}充当しました`);
   renderBillingPage();
 }
 
+function revertKanjiSurplus(){
+  if(!S.kanjiSnapshot)return;
+  Object.entries(S.kanjiSnapshot).forEach(([name,amt])=>{
+    S.amounts[name]=amt;
+    const r=S.doneRecords.find(r=>r.name===name);if(r)r.amount=amt;
+  });
+  S.kanjiSnapshot=null;
+  showToast('元の金額に戻しました');
+  renderBillingPage();
+}
+
+/* ---- 個人別請求ページ ---- */
 function renderBillingPage(){
   if(S.total&&!document.getElementById('total-input').value)document.getElementById('total-input').value=S.total;
   updateSummary();
@@ -632,16 +658,30 @@ function renderBillingPage(){
   people.forEach(p=>{
     const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];const isPaid=!!S.paid[p.name];
     const row=document.createElement('div');row.className='br'+(isPaid?' is-paid':'');
-    const nameEl=document.createElement('span');nameEl.className='br-name';
-    nameEl.innerHTML=p.name+(S.kanji.has(p.name)?'<span class="kanji-badge">👑 幹事</span>':'');
+    // 名前＋幹事バッジ
+    const nameSpan=document.createElement('span');nameSpan.className='br-name';
+    const nameText=document.createElement('span');nameText.textContent=p.name;nameText.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0';
+    nameSpan.appendChild(nameText);
+    if(S.kanji.has(p.name)){const badge=document.createElement('span');badge.className='kanji-badge';badge.textContent='👑';nameSpan.appendChild(badge);}
+    // カテゴリ
     const catEl=document.createElement('span');catEl.className='br-cat';
     if(c)catEl.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};cursor:pointer">${c.name||'?'}</span>`;
     catEl.onclick=function(e){e.stopPropagation();showCatPopup(p.name,this);};
+    // 金額
     const amtWrap=document.createElement('span');amtWrap.className='br-amt';amtWrap.textContent=S.amounts[p.name]?fmt(S.amounts[p.name]):'—';amtWrap.onclick=function(){if(!isPaid)startEditAmt(p.name,this);};
-    const payBtn=document.createElement('button');payBtn.className='br-pay-btn'+(isPaid?' paid':'');payBtn.textContent=isPaid?'✓ 支払済み':'支払済み';payBtn.onclick=()=>togglePaid(p.name);
-    row.appendChild(nameEl);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(payBtn);list.appendChild(row);
+    // 幹事ボタン（お会計ページ）
+    const kBtn=document.createElement('button');kBtn.className='br-kanji-btn'+(S.kanji.has(p.name)?' active':'');
+    kBtn.textContent=S.kanji.has(p.name)?'👑':'幹事';kBtn.title=S.kanji.has(p.name)?'幹事解除':'幹事に設定';
+    kBtn.onclick=()=>{
+      if(S.kanji.has(p.name))S.kanji.delete(p.name);else S.kanji.add(p.name);
+      renderBillingPage();
+    };
+    // 支払ボタン
+    const payBtn=document.createElement('button');payBtn.className='br-pay-btn'+(isPaid?' paid':'');payBtn.textContent=isPaid?'✓ 支払済':'支払済み';payBtn.onclick=()=>togglePaid(p.name);
+    row.appendChild(nameSpan);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(kBtn);row.appendChild(payBtn);list.appendChild(row);
   });
 }
+
 function togglePaid(name){
   if(S.paid[name]){S.paid[name]=false;const idx=S.doneRecords.findIndex(r=>r.name===name);if(idx>=0)S.doneRecords.splice(idx,1);}
   else{S.paid[name]=true;const time=new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});if(!S.doneRecords.find(r=>r.name===name))S.doneRecords.push({name,amount:S.amounts[name]||0,time});}
@@ -652,26 +692,37 @@ function startEditAmt(name,el){
   function commit(){const v=parseInt(inp.value)||0;S.amounts[name]=v;const r=S.doneRecords.find(r=>r.name===name);if(r)r.amount=v;const span=document.createElement('span');span.className='br-amt';span.textContent=v?fmt(v):'—';span.onclick=function(){startEditAmt(name,this);};inp.replaceWith(span);updateSummary();}
   inp.onblur=commit;inp.onkeydown=e=>{if(e.key==='Enter')inp.blur();};
 }
+
+/* ---- 結果 ---- */
 function goResult(){
-  const people=getPeople(),total=S.total;const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);const paidCount=people.filter(p=>S.paid[p.name]).length,remainder=paidAmt-total;
-  document.getElementById('r-title').textContent=S.title||'飲み会';document.getElementById('r-date').textContent=fmtDate(S.date);
+  const people=getPeople(),total=S.total;
+  const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
+  const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);
+  const paidCount=people.filter(p=>S.paid[p.name]).length,remainder=paidAmt-total;
+  document.getElementById('r-title').textContent=S.title||'飲み会';
+  document.getElementById('r-date').textContent=fmtDate(S.date);
   const stats=document.getElementById('result-stats');stats.innerHTML='';
-  [['参加人数',people.length+'名'],['代金合計',fmt(total)],['集計金額（500円刻み）',fmt(allAmt)],['実際の集金額',fmt(paidAmt)],['余り / 不足',remainder>=0?`+${fmt(remainder)} 余り`:`${fmt(Math.abs(remainder))} 不足`],['支払済み',`${paidCount}/${people.length}名`]].forEach(([label,val])=>{const row=document.createElement('div');row.className='result-row';row.innerHTML=`<span class="result-row-label">${label}</span><span class="result-row-val">${val}</span>`;stats.appendChild(row);});
+  [['参加人数',people.length+'名'],['代金合計',fmt(total)],['集計金額（500円刻み）',fmt(allAmt)],['実際の集金額',fmt(paidAmt)],['余り / 不足',remainder>=0?`+${fmt(remainder)} 余り`:`${fmt(Math.abs(remainder))} 不足`],['支払済み',`${paidCount}/${people.length}名`]].forEach(([l,v])=>{const row=document.createElement('div');row.className='result-row';row.innerHTML=`<span class="result-row-label">${l}</span><span class="result-row-val">${v}</span>`;stats.appendChild(row);});
   const rp=document.getElementById('result-people');rp.innerHTML='';
-  people.forEach(p=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];const row=document.createElement('div');row.className='result-row';const catTag=c?`<span class="pill-tag" style="background:${c.color};color:${c.tc};font-size:10px">${c.name}</span>`:'';row.innerHTML=`<span class="result-row-label" style="display:flex;align-items:center;gap:6px">${S.paid[p.name]?'✅':'⬜'} ${p.name} ${catTag}</span><span class="result-row-val">${fmt(S.amounts[p.name]||0)}</span>`;rp.appendChild(row);});
+  people.forEach(p=>{const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];const row=document.createElement('div');row.className='result-row';const tag=c?`<span class="pill-tag" style="background:${c.color};color:${c.tc};font-size:10px">${c.name}</span>`:'';const kBadge=S.kanji.has(p.name)?'<span class="kanji-badge">👑 幹事</span>':'';row.innerHTML=`<span class="result-row-label" style="display:flex;align-items:center;gap:5px">${S.paid[p.name]?'✅':'⬜'} ${p.name} ${tag}${kBadge}</span><span class="result-row-val">${fmt(S.amounts[p.name]||0)}</span>`;rp.appendChild(row);});
   goPage('result');
 }
+
 function buildShareText(){
-  const people=getPeople(),total=S.total;const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);const remainder=paidAmt-total;
+  const people=getPeople(),total=S.total;
+  const allAmt=people.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
+  const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);const remainder=paidAmt-total;
   let txt=`🍺 ${S.title||'飲み会'} ${fmtDate(S.date)}\n━━━━━━━━━━━━\n代金合計：${fmt(total)}\n集計金額：${fmt(allAmt)}\n実集金額：${fmt(paidAmt)}\n`;
-  txt+=remainder>=0?`余り：+${fmt(remainder)}\n`:`不足：${fmt(Math.abs(remainder))}\n`;txt+='━━━━━━━━━━━━\n';
-  people.forEach(p=>{txt+=`${S.paid[p.name]?'✅':'⬜'} ${p.name}：${fmt(S.amounts[p.name]||0)}\n`;});return txt;
+  txt+=remainder>=0?`余り：+${fmt(remainder)}\n`:`不足：${fmt(Math.abs(remainder))}\n`;
+  txt+='━━━━━━━━━━━━\n';
+  people.forEach(p=>{txt+=`${S.paid[p.name]?'✅':'⬜'} ${p.name}${S.kanji.has(p.name)?'（幹事）':''}：${fmt(S.amounts[p.name]||0)}\n`;});
+  return txt;
 }
 function shareLine(){window.open(`https://line.me/R/share?text=${encodeURIComponent(buildShareText())}`,'_blank');}
 function shareViber(){window.open(`viber://forward?text=${encodeURIComponent(buildShareText())}`,'_blank');}
 function shareSMS(){window.open(`sms:?body=${encodeURIComponent(buildShareText())}`,'_blank');}
 function copyResult(){const txt=buildShareText();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>showToast('コピーしました！'));}else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました！');}}
-function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amounts={};S.paid={};S.doneRecords=[];S.kanji=new Set();document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';document.getElementById('total-input').value='';addTable('rect');renderAllTableConfigs();renderCats();goPage('setup');}
+function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amounts={};S.paid={};S.doneRecords=[];S.kanji=new Set();S.kanjiSnapshot=null;document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';document.getElementById('total-input').value='';addTable('rect');renderAllTableConfigs();renderCats();goPage('setup');}
 
 addTable('rect');renderAllTableConfigs();renderCats();
 const today=new Date().toISOString().slice(0,10);document.getElementById('ev-date').value=today;document.getElementById('date-preview').textContent=fmtDate(today);
