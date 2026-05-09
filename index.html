@@ -32,6 +32,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .app-header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .share-mini-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;font-family:inherit;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 .share-mini-line{background:#06C755;color:#fff}
+.share-mini-viber{background:#7360F2;color:#fff}
 .share-mini-copy{background:#f0f0ea;color:#555;border-color:#ddd}
 
 /* テーブル */
@@ -116,12 +117,20 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .result-row-val{font-size:14px;font-weight:500;color:#1a1a1a}
 .share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;font-size:14px;font-weight:500;border-radius:10px;cursor:pointer;margin-bottom:8px;border:none;font-family:inherit;-webkit-tap-highlight-color:transparent}
 .share-line{background:#06C755;color:#fff}
+.share-viber{background:#7360F2;color:#fff}
 .share-sms{background:#5856D6;color:#fff}
 .pax-badge{display:inline-flex;align-items:center;gap:5px;background:#f5f5f0;border-radius:100px;padding:4px 12px;font-size:13px;font-weight:500;color:#1a1a1a}
 
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 
+/* 幹事バッジ */
+.kanji-badge{display:inline-block;padding:1px 6px;border-radius:100px;font-size:10px;font-weight:500;background:#FFF3CD;color:#856404;border:0.5px solid #FFDA6A;margin-left:4px;flex-shrink:0}
+.kanji-btn{padding:3px 8px;font-size:11px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
+/* 余りを幹事に */
+.btn-kanji-surplus{width:100%;margin-top:8px;padding:8px;font-size:12px;background:#FFF3CD;border:0.5px solid #FFDA6A;color:#856404;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
+.btn-kanji-surplus:active{opacity:0.7}
 /* スマホ用フォームラベル調整 */
 @media(max-width:480px){
   body{padding:10px}
@@ -143,6 +152,10 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   </div>
   <div class="app-header-right">
     <button class="share-mini-btn share-mini-copy" onclick="copyAppLink()">🔗 リンク</button>
+    <button class="share-mini-btn share-mini-viber" onclick="shareAppViber()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11.985 0C5.37 0 .015 5.355.015 11.97c0 2.84.995 5.445 2.64 7.485L.9 23.25l3.975-1.725A11.88 11.88 0 0011.985 24C18.6 24 24 18.645 24 12.03 24 5.37 18.6 0 11.985 0zm6.15 16.665c-.27.765-1.35 1.41-2.205 1.59-.585.12-1.35.21-3.93-.84-3.285-1.335-5.415-4.665-5.58-4.875-.165-.225-1.32-1.755-1.32-3.345s.84-2.37 1.14-2.685c.27-.285.585-.36.78-.36s.39 0 .555.015c.18.015.42-.06.66.495.24.585.81 1.98.885 2.13.075.135.12.3.03.48-.09.195-.135.315-.27.48-.135.165-.285.36-.405.48-.135.135-.27.285-.12.555.15.27.675 1.11 1.455 1.8 1.005.885 1.845 1.17 2.115 1.305.27.12.42.105.585-.06.165-.18.705-.825.885-1.11.18-.27.36-.225.615-.135.255.09 1.62.765 1.89.9.27.135.45.21.525.315.06.12.06.675-.21 1.44z"/></svg>
+      Viber
+    </button>
     <button class="share-mini-btn share-mini-line" onclick="shareAppLine()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       LINE
@@ -243,10 +256,19 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <input type="number" id="total-input" placeholder="例：50000" oninput="onTotalInput(this.value)" inputmode="numeric">
     </div>
     <div class="grid3" style="margin-bottom:8px">
-      <div class="metric"><div class="metric-label">代金合計</div><div class="metric-value" id="b-total">¥0</div><div class="metric-sub" id="b-surplus-total"></div></div>
+      <div class="metric">
+        <div class="metric-label">代金合計</div>
+        <div class="metric-value" id="b-total">¥0</div>
+        <div class="metric-sub surplus" id="b-per-person" style="color:#888"></div>
+      </div>
       <div class="metric"><div class="metric-label">集金金額</div><div class="metric-value hi" id="b-collected">¥0</div><div class="metric-sub" id="b-surplus-collected"></div></div>
-      <div class="metric"><div class="metric-label">余り</div><div class="metric-value" id="b-remainder">¥0</div><div class="metric-sub" id="b-paid-count" style="color:#888">0/0人</div></div>
+      <div class="metric">
+        <div class="metric-label">余り</div>
+        <div class="metric-value" id="b-remainder">¥0</div>
+        <div class="metric-sub" id="b-paid-count" style="color:#888">0/0人</div>
+      </div>
     </div>
+    <button class="btn-kanji-surplus" id="btn-kanji-surplus" onclick="applyRemainderToKanji()" style="display:none">👑 余りを幹事に充当する</button>
     <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
   </div>
   <div class="card">
@@ -270,9 +292,13 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <div class="card"><h3 style="margin-bottom:8px">👥 個人別まとめ</h3><div id="result-people"></div></div>
   <div class="card">
     <h3 style="margin-bottom:10px">📤 シェア</h3>
-    <button class="share-btn share-line" onclick="shareLine()">
+
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       LINEで共有
+    </button>
+    <button class="share-btn share-viber" onclick="shareViber()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.985 0C5.37 0 .015 5.355.015 11.97c0 2.84.995 5.445 2.64 7.485L.9 23.25l3.975-1.725A11.88 11.88 0 0011.985 24C18.6 24 24 18.645 24 12.03 24 5.37 18.6 0 11.985 0zm6.15 16.665c-.27.765-1.35 1.41-2.205 1.59-.585.12-1.35.21-3.93-.84-3.285-1.335-5.415-4.665-5.58-4.875-.165-.225-1.32-1.755-1.32-3.345s.84-2.37 1.14-2.685c.27-.285.585-.36.78-.36s.39 0 .555.015c.18.015.42-.06.66.495.24.585.81 1.98.885 2.13.075.135.12.3.03.48-.09.195-.135.315-.27.48-.135.165-.285.36-.405.48-.135.135-.27.285-.12.555.15.27.675 1.11 1.455 1.8 1.005.885 1.845 1.17 2.115 1.305.27.12.42.105.585-.06.165-.18.705-.825.885-1.11.18-.27.36-.225.615-.135.255.09 1.62.765 1.89.9.27.135.45.21.525.315.06.12.06.675-.21 1.44z"/></svg>
+      Viberで共有
     </button>
     <button class="share-btn share-sms" onclick="shareSMS()">💬 SMSで共有</button>
     <button class="share-btn btn" onclick="copyResult()" style="margin-bottom:0">📋 テキストをコピー</button>
@@ -319,7 +345,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <div id="toast" class="toast">コピーしました！</div>
 
 <script>
-const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[]};
+const S={title:'',date:'',total:0,tables:[],cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],seats:{},amounts:{},paid:{},doneRecords:[],kanji:new Set()};
 let editKey=null,catIdCnt=1,editCatIdx=null;
 const fmt=n=>'¥'+Math.round(n).toLocaleString();
 const round500=n=>Math.ceil(n/500)*500;
@@ -336,6 +362,7 @@ const CAT_COLORS=[
 /* ---- ヘッダーシェア ---- */
 function copyAppLink(){const url=location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast('リンクをコピーしました！'));}else{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('リンクをコピーしました！');}}
 function shareAppLine(){const url=encodeURIComponent(location.href);const txt=encodeURIComponent('🍺 飲み会の集金管理「お勘定奉行 幹事郎」\n');window.open(`https://line.me/R/share?text=${txt}${url}`,'_blank');}
+function shareAppViber(){const url=encodeURIComponent(location.href);const txt=encodeURIComponent('🍺 飲み会の集金管理「お勘定奉行 幹事郎」\n'+location.href);window.open(`viber://forward?text=${txt}`,'_blank');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
 function goPage(p){
@@ -477,9 +504,7 @@ function clearSeat(){if(editKey)delete S.seats[editKey];document.getElementById(
 
 function refreshMembersPanel(){
   const people=getPeople();
-  // デスクトップ用
   const panel=document.getElementById('members-panel');
-  // スマホ用
   const panelMob=document.getElementById('members-panel-mobile');
   [panel,panelMob].forEach(p=>{
     if(!p)return;
@@ -487,7 +512,22 @@ function refreshMembersPanel(){
     p.innerHTML='';
     people.forEach(person=>{
       const row=document.createElement('div');row.className='member-row';
-      const nameEl=document.createElement('div');nameEl.className='member-name';nameEl.textContent=person.name;row.appendChild(nameEl);
+      // 名前行：名前 + 幹事バッジ + 幹事ボタン
+      const nameRow=document.createElement('div');nameRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:4px';
+      const nameLeft=document.createElement('div');nameLeft.style.cssText='display:flex;align-items:center;gap:2px;flex:1;min-width:0';
+      const nameEl=document.createElement('span');nameEl.className='member-name';nameEl.style.margin='0';nameEl.textContent=person.name;
+      nameLeft.appendChild(nameEl);
+      if(S.kanji.has(person.name)){const badge=document.createElement('span');badge.className='kanji-badge';badge.textContent='👑 幹事';nameLeft.appendChild(badge);}
+      const kanjiBtn=document.createElement('button');
+      kanjiBtn.className='kanji-btn'+(S.kanji.has(person.name)?' active':'');
+      kanjiBtn.textContent=S.kanji.has(person.name)?'幹事解除':'幹事';
+      kanjiBtn.onclick=()=>{
+        if(S.kanji.has(person.name))S.kanji.delete(person.name);else S.kanji.add(person.name);
+        refreshMembersPanel();
+        if(document.getElementById('page-billing').classList.contains('active'))renderBillingPage();
+      };
+      nameRow.appendChild(nameLeft);nameRow.appendChild(kanjiBtn);
+      row.appendChild(nameRow);
       const chips=document.createElement('div');
       S.cats.forEach(c=>{
         const chip=document.createElement('span');chip.className='cat-chip';const active=person.catId===c.id;
@@ -516,11 +556,30 @@ function updateSummary(){
   document.getElementById('b-total').textContent=fmt(total);
   document.getElementById('b-collected').textContent=fmt(allAmt);
   const rem=document.getElementById('b-remainder');rem.textContent=remainder>=0?fmt(remainder):('−'+fmt(Math.abs(remainder)));rem.className='metric-value '+(remainder>=0?'':'deficit');
+
+  // 一人当たり
+  const perEl=document.getElementById('b-per-person');
+  if(people.length>0&&total>0){perEl.textContent=`1人均等 ${fmt(Math.round(total/people.length))}`;perEl.style.color='#888';}
+  else perEl.textContent='';
+
   const surplusAll=allAmt-total;
-  const stEl=document.getElementById('b-surplus-total');stEl.textContent=surplusAll>0?`+${fmt(surplusAll)}`:(surplusAll<0?`−${fmt(Math.abs(surplusAll))}`:'');stEl.className='metric-sub '+(surplusAll>=0?'surplus':'deficit');
+  const stEl=document.getElementById('b-surplus-total');if(stEl){stEl.textContent=surplusAll>0?`+${fmt(surplusAll)}`:(surplusAll<0?`−${fmt(Math.abs(surplusAll))}`:'');stEl.className='metric-sub '+(surplusAll>=0?'surplus':'deficit');}
   const scEl=document.getElementById('b-surplus-collected');scEl.textContent=remainder>0?`+${fmt(remainder)}`:remainder<0?`不足 ${fmt(Math.abs(remainder))}`:'';scEl.className='metric-sub '+(remainder>0?'surplus':remainder<0?'deficit':'');
   document.getElementById('b-paid-count').textContent=`${paidCount}/${people.length}人 支払済`;
   document.getElementById('b-prog').style.width=pct+'%';
+
+  // 「余りを幹事に」ボタン：余りがあり幹事がいる場合のみ表示
+  const kanjiBtn=document.getElementById('btn-kanji-surplus');
+  const kanjiNames=[...S.kanji].filter(n=>people.find(p=>p.name===n));
+  if(kanjiBtn){
+    if(remainder>0&&kanjiNames.length>0){
+      const each=Math.floor(remainder/kanjiNames.length);
+      kanjiBtn.textContent=`👑 余り${fmt(remainder)}を幹事${kanjiNames.length>1?kanjiNames.length+'人':''}に充当する（各${fmt(each)}引く）`;
+      kanjiBtn.style.display='block';
+    } else {
+      kanjiBtn.style.display='none';
+    }
+  }
 }
 
 /* カテゴリポップオーバー（お会計ページ） */
@@ -546,6 +605,24 @@ function showCatPopup(name,anchorEl){
 function closeCatPopup(){document.getElementById('cat-popup').style.display='none';document.removeEventListener('click',closeCatPopupOutside);}
 function closeCatPopupOutside(e){if(!document.getElementById('cat-popup').contains(e.target))closeCatPopup();}
 
+function applyRemainderToKanji(){
+  const people=getPeople();
+  const paidPeople=people.filter(p=>S.paid[p.name]);
+  const collectedAmt=paidPeople.reduce((s,p)=>s+(S.amounts[p.name]||0),0);
+  const remainder=collectedAmt-S.total;
+  if(remainder<=0)return;
+  const kanjiNames=[...S.kanji].filter(n=>people.find(p=>p.name===n));
+  if(!kanjiNames.length){showToast('幹事が設定されていません');return;}
+  const each=Math.floor(remainder/kanjiNames.length);
+  if(each<=0){showToast('充当できる金額がありません');return;}
+  kanjiNames.forEach(name=>{
+    S.amounts[name]=Math.max(0,(S.amounts[name]||0)-each);
+    const r=S.doneRecords.find(r=>r.name===name);if(r)r.amount=S.amounts[name];
+  });
+  showToast(`幹事${kanjiNames.length>1?kanjiNames.length+'人':''}に各${fmt(each)}充当しました`);
+  renderBillingPage();
+}
+
 function renderBillingPage(){
   if(S.total&&!document.getElementById('total-input').value)document.getElementById('total-input').value=S.total;
   updateSummary();
@@ -555,7 +632,8 @@ function renderBillingPage(){
   people.forEach(p=>{
     const c=S.cats.find(c=>c.id===p.catId)||S.cats[0];const isPaid=!!S.paid[p.name];
     const row=document.createElement('div');row.className='br'+(isPaid?' is-paid':'');
-    const nameEl=document.createElement('span');nameEl.className='br-name';nameEl.textContent=p.name;
+    const nameEl=document.createElement('span');nameEl.className='br-name';
+    nameEl.innerHTML=p.name+(S.kanji.has(p.name)?'<span class="kanji-badge">👑 幹事</span>':'');
     const catEl=document.createElement('span');catEl.className='br-cat';
     if(c)catEl.innerHTML=`<span class="pill-tag" style="background:${c.color};color:${c.tc};cursor:pointer">${c.name||'?'}</span>`;
     catEl.onclick=function(e){e.stopPropagation();showCatPopup(p.name,this);};
@@ -590,9 +668,10 @@ function buildShareText(){
   people.forEach(p=>{txt+=`${S.paid[p.name]?'✅':'⬜'} ${p.name}：${fmt(S.amounts[p.name]||0)}\n`;});return txt;
 }
 function shareLine(){window.open(`https://line.me/R/share?text=${encodeURIComponent(buildShareText())}`,'_blank');}
+function shareViber(){window.open(`viber://forward?text=${encodeURIComponent(buildShareText())}`,'_blank');}
 function shareSMS(){window.open(`sms:?body=${encodeURIComponent(buildShareText())}`,'_blank');}
 function copyResult(){const txt=buildShareText();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>showToast('コピーしました！'));}else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました！');}}
-function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amounts={};S.paid={};S.doneRecords=[];document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';document.getElementById('total-input').value='';addTable('rect');renderAllTableConfigs();renderCats();goPage('setup');}
+function resetAll(){S.title='';S.date='';S.total=0;S.tables=[];S.seats={};S.amounts={};S.paid={};S.doneRecords=[];S.kanji=new Set();document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';document.getElementById('total-input').value='';addTable('rect');renderAllTableConfigs();renderCats();goPage('setup');}
 
 addTable('rect');renderAllTableConfigs();renderCats();
 const today=new Date().toISOString().slice(0,10);document.getElementById('ev-date').value=today;document.getElementById('date-preview').textContent=fmtDate(today);
