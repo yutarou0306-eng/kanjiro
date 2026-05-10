@@ -11,8 +11,8 @@ input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-siz
 input:focus,select:focus{outline:none;border-color:#378ADD}
 .page-wrap{overflow:hidden;width:100%}
 .pages{display:flex;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);will-change:transform;touch-action:pan-y}
-.page{min-width:100%;padding:0.5rem 0;flex-shrink:0}
-.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:0.875rem 1rem;margin-bottom:10px}
+.page{width:100vw;max-width:780px;min-width:0;flex-shrink:0;padding:0.5rem 0;overflow-x:hidden;box-sizing:border-box}
+.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:0.875rem 1rem;margin-bottom:10px;width:100%;overflow:hidden}
 h3{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px}
 label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .btn{background:#fff;border:0.5px solid #ccc;border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer;color:#1a1a1a;font-family:inherit;-webkit-tap-highlight-color:transparent}
@@ -92,18 +92,18 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .br-kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
 
 /* サマリー */
-.metric{background:#f5f5f0;border-radius:8px;padding:10px}
-.metric-label{font-size:11px;color:#888;margin-bottom:3px}
-.metric-value{font-size:18px;font-weight:500;color:#1a1a1a}
+.metric{background:#f5f5f0;border-radius:8px;padding:8px;min-width:0;overflow:hidden}
+.metric-label{font-size:10px;color:#888;margin-bottom:3px}
+.metric-value{font-size:16px;font-weight:500;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .metric-value.hi{color:#185FA5}
-.metric-sub{font-size:10px;margin-top:2px}
+.metric-sub{font-size:9px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .surplus{color:#1D9E75}.deficit{color:#E24B4A}
 .progress-bar{height:5px;background:#e0e0d8;border-radius:4px;overflow:hidden;margin:8px 0}
 .progress-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.3s}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.billing-input-area{background:#eaf3ff;border:1.5px solid #a0bfef;border-radius:10px;padding:12px 14px;margin-bottom:12px}
-.billing-input-area label{font-size:13px;color:#185FA5;font-weight:500;margin-bottom:6px}
-.billing-input-area input{font-size:20px;font-weight:500;border:none;border-bottom:2px solid #378ADD;border-radius:0;background:transparent;color:#1a1a1a;padding:4px 2px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;width:100%}
+.billing-input-area{background:#eaf3ff;border:1.5px solid #a0bfef;border-radius:10px;padding:12px 14px;margin-bottom:12px;width:100%}
+.billing-input-area label{font-size:13px;color:#185FA5;font-weight:500;margin-bottom:6px;display:block}
+.billing-input-area input{font-size:20px;font-weight:500;border:none;border-bottom:2px solid #378ADD;border-radius:0;background:transparent;color:#1a1a1a;padding:4px 2px;width:100%}
 .billing-input-area input:focus{outline:none;border-bottom-color:#185FA5}
 
 /* 幹事 */
@@ -142,7 +142,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
-@media(max-width:480px){body{padding:10px}.grid3{gap:5px}.metric-value{font-size:16px}.br-name{font-size:13px}.br-amt{font-size:13px;min-width:50px}.br-pay-btn{padding:4px 8px;font-size:11px}}
+@media(max-width:480px){body{padding:10px}.grid3{gap:4px}.metric-value{font-size:15px}.metric-label{font-size:9px}.br-name{font-size:13px}.br-amt{font-size:13px;min-width:50px}.br-pay-btn{padding:4px 8px;font-size:11px}.billing-input-area{padding:10px 12px}}
   </style>
 </head>
 <body>
@@ -355,7 +355,9 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 // ===== NAVIGATION =====
 function goPage(idx){
   currentPage=idx;
-  document.getElementById('pages').style.transform=`translateX(-${idx*100}%)`;
+  // 各ページは100vwなのでvwベースでスライド
+  const pageW=document.querySelector('.page').offsetWidth;
+  document.getElementById('pages').style.transform=`translateX(-${idx*pageW}px)`;
   document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
   document.getElementById('nav').style.display=idx===3?'none':'flex';
   window.scrollTo({top:0,behavior:'instant'});
@@ -893,7 +895,14 @@ renderCatList();renderScene();
 const today=new Date().toISOString().slice(0,10);
 document.getElementById('ev-date').value=today;document.getElementById('date-preview').textContent=fmtDate(today);S.date=today;
 history.pushState({page:0},'',location.href.split('#')[0]+'#p0');
-window.addEventListener('resize',()=>{if(currentPage===1)renderScene();});
+window.addEventListener('resize',()=>{
+  // リサイズ時にページ位置を再計算
+  const pageW=document.querySelector('.page').offsetWidth;
+  document.getElementById('pages').style.transition='none';
+  document.getElementById('pages').style.transform=`translateX(-${currentPage*pageW}px)`;
+  setTimeout(()=>document.getElementById('pages').style.transition='',50);
+  if(currentPage===1)renderScene();
+});
 </script>
 </body>
 </html>
