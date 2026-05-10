@@ -147,10 +147,19 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 </head>
 <body>
 
-<div style="display:flex;align-items:baseline;gap:8px;padding-top:0.25rem;margin-bottom:2px">
-  <span style="font-size:19px;font-weight:500">お勘定奉行</span>
-  <span style="font-size:13px;color:#888">幹事郎</span>
-  <span style="font-size:17px">🍺</span>
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding-top:0.25rem;margin-bottom:2px">
+  <div style="display:flex;align-items:baseline;gap:8px">
+    <span style="font-size:19px;font-weight:500">お勘定奉行</span>
+    <span style="font-size:13px;color:#888">幹事郎</span>
+    <span style="font-size:17px">🍺</span>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button onclick="shareHeaderLine()" style="display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:#06C755;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINE
+    </button>
+    <button onclick="shareHeaderCopy()" style="padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid #ddd;background:#f5f5f0;color:#555;font-family:inherit;-webkit-tap-highlight-color:transparent">🔗 リンク</button>
+  </div>
 </div>
 <p style="font-size:11px;color:#888;margin-bottom:10px">飲み会の集金を、もれなく・かんたんに。</p>
 
@@ -642,10 +651,21 @@ function openSeatPopup(key,anchorEl){
   };
   popup.appendChild(addNew);
 
-  // 割り当て済みの人のカテゴリ変更
+  // 割り当て済みの人の操作セクション
   if(currentPIdx!==undefined&&currentPIdx!==null){
     const p=S.persons[currentPIdx];
     if(p){
+      // 幹事トグル
+      const kanjiSection=document.createElement('div');
+      kanjiSection.style.cssText='border-top:0.5px solid #e0e0d8;margin-top:4px;padding-top:4px';
+      const kanjiItem=document.createElement('div');kanjiItem.className='seat-popup-item';
+      const isKanji=p.isKanji;
+      kanjiItem.innerHTML=`<span style="font-size:15px">${isKanji?'👑':'👤'}</span><span style="flex:1;font-weight:${isKanji?'500':'400'};color:${isKanji?'#856404':'#1a1a1a'}">${isKanji?'幹事（タップで解除）':'幹事に設定する'}</span>`;
+      if(isKanji)kanjiItem.style.background='#FFF3CD';
+      kanjiItem.onclick=()=>{S.persons[currentPIdx].isKanji=!isKanji;renderPersonList();closeSeatPopup();renderScene();};
+      kanjiSection.appendChild(kanjiItem);
+      popup.appendChild(kanjiSection);
+      // カテゴリ変更
       const catSection=document.createElement('div');
       catSection.style.cssText='border-top:0.5px solid #e0e0d8;margin-top:4px;padding-top:4px';
       const catLabel=document.createElement('div');catLabel.style.cssText='font-size:10px;color:#888;padding:4px 10px';catLabel.textContent='カテゴリ変更：';
@@ -859,6 +879,15 @@ function startEditAmt(idx,el){
 }
 
 // ===== 結果 =====
+function shareHeaderLine(){
+  const txt=encodeURIComponent('🍺 飲み会の集金管理アプリ「お勘定奉行 幹事郎」\n'+location.href);
+  window.open(`https://line.me/R/share?text=${txt}`,'_blank');
+}
+function shareHeaderCopy(){
+  const url=location.href;
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>showToast('リンクをコピーしました！'));}
+  else{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('リンクをコピーしました！');}
+}
 function goToBilling(){
   const people=getAssignedPersons();
   if(!people.length){
