@@ -214,15 +214,12 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <div id="cat-list"></div>
   </div>
 
+  <button class="btn btn-primary" onclick="goPage(1)" style="width:100%;margin-top:4px;padding:13px;font-size:15px;font-weight:500">🪑 座席登録へ →</button>
   <!-- 途中保存 -->
-  <div style="display:flex;align-items:center;gap:10px;background:#f0f7ff;border:0.5px solid #a0bfef;border-radius:10px;padding:10px 14px;margin-bottom:8px">
-    <div style="flex:1">
-      <div style="font-size:12px;font-weight:500;color:#185FA5;margin-bottom:1px">💾 入力内容をキープする</div>
-      <div style="font-size:11px;color:#555">後で続きから再開できる専用URLを発行します</div>
-    </div>
-    <button onclick="saveStateUrl()" style="padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
+  <div style="display:flex;align-items:center;gap:8px;border:0.5px solid #e0e0d8;border-radius:8px;padding:8px 12px;margin-top:6px;background:#fafaf8">
+    <span style="font-size:11px;color:#999;flex:1">💾 入力内容をキープしたい場合は→</span>
+    <button onclick="saveStateUrl()" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid #ccc;background:#fff;color:#666;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
   </div>
-  <button class="btn btn-primary" onclick="goPage(1)" style="width:100%;margin-top:4px">🪑 座席登録へ →</button>
 </div>
 
 <!-- PAGE 1: 座席登録 -->
@@ -289,7 +286,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
         <div class="metric-sub" id="b-per-person" style="color:#888"></div>
       </div>
       <div class="metric">
-        <div class="metric-label">集金金額</div>
+        <div class="metric-label">集金済み</div>
         <div class="metric-value hi" id="b-collected">¥0</div>
         <div class="metric-sub" id="b-rnd-info" style="color:#888"></div>
       </div>
@@ -837,12 +834,14 @@ function updateSummary(){
   // 余り＝個人別請求合計 − 代金合計（支払済みに関係なく）
   const remainder=allAmt-total;
   document.getElementById('b-total').textContent=fmt(total);
-  document.getElementById('b-collected').textContent=fmt(allAmt);
+  // 集金金額＝集金ボタンを押した人の合計のみ
+  document.getElementById('b-collected').textContent=fmt(collectedAmt);
   const rem=document.getElementById('b-remainder');rem.textContent=remainder>=0?fmt(remainder):('−'+fmt(Math.abs(remainder)));rem.className='metric-value '+(remainder>=0?'':'deficit');
   const perEl=document.getElementById('b-per-person');if(perEl)perEl.textContent='';
   const diff=allAmt-total;
   const rndEl=document.getElementById('b-rnd-info');
-  if(rndEl){rndEl.textContent=diff>0?`切り上げ（+${fmt(diff)}）`:diff<0?`切り捨て（${fmt(diff)}）`:'ちょうど';rndEl.style.color=diff>0?'#1D9E75':diff<0?'#E24B4A':'#888';}
+  // サブテキストに全員の請求合計を表示
+  if(rndEl){rndEl.textContent=`請求合計 ${fmt(allAmt)}`;rndEl.style.color='#888';}
   document.getElementById('b-paid-count').textContent=`${paidCount}/${people.length}人 支払済`;
   document.getElementById('b-prog').style.width=pct+'%';
   // 幹事充当ボタン：余り(>0)または不足(<0)があり幹事がいる場合に表示
