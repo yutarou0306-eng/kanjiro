@@ -876,6 +876,7 @@ function goToBilling(){
   goPage(2);
 }
 
+function goResult(){
   const people=getAssignedPersons(),total=S.total;
   const allAmt=people.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);
   const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);
