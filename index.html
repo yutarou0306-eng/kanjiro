@@ -157,7 +157,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <div class="nav" id="nav">
   <button class="nav-btn active" onclick="goPage(0)">🗓 基本情報</button>
   <button class="nav-btn" onclick="goPage(1)">🪑 座席登録</button>
-  <button class="nav-btn" onclick="goPage(2)">🧾 お会計</button>
+  <button class="nav-btn" onclick="goToBilling()">🧾 お会計</button>
 </div>
 
 <div class="page-wrap" id="page-wrap">
@@ -236,7 +236,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 
   <div style="display:flex;gap:8px;margin-top:4px">
     <button class="btn" onclick="goPage(0)" style="flex:1;font-size:13px">← 基本情報</button>
-    <button class="btn btn-primary" onclick="goPage(2)" style="flex:2;font-size:13px">🧾 お会計へ</button>
+    <button class="btn btn-primary" onclick="goToBilling()" style="flex:2;font-size:13px">🧾 お会計へ</button>
   </div>
 </div>
 
@@ -859,7 +859,23 @@ function startEditAmt(idx,el){
 }
 
 // ===== 結果 =====
-function goResult(){
+function goToBilling(){
+  const people=getAssignedPersons();
+  if(!people.length){
+    alert('座席に参加者を割り当ててください。');
+    return;
+  }
+  const hasKanji=people.some(p=>p.isKanji);
+  if(!hasKanji){
+    const names=people.map(p=>p.name).join('、');
+    const ok=confirm(`幹事が設定されていません。\n\n座席配置または基本情報タブで、幹事を1名以上設定してください。\n\n（参加者：${names}）`);
+    if(!ok)return;
+    // confirmでOKを押しても進めない（設定を促す）
+    return;
+  }
+  goPage(2);
+}
+
   const people=getAssignedPersons(),total=S.total;
   const allAmt=people.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);
   const paidAmt=S.doneRecords.reduce((s,r)=>s+r.amount,0);
