@@ -158,6 +158,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       LINE
     </button>
+    <button onclick="saveStateUrl()" style="padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#e8f0fb;color:#185FA5;font-family:inherit;-webkit-tap-highlight-color:transparent">💾 保存URL</button>
     <button onclick="shareHeaderCopy()" style="padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid #ddd;background:#f5f5f0;color:#555;font-family:inherit;-webkit-tap-highlight-color:transparent">🔗 リンク</button>
   </div>
 </div>
@@ -237,6 +238,11 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     </div>
   </div>
 
+  <!-- 幹事未設定の警告 -->
+  <div id="kanji-warning" style="display:none;background:#FFF3CD;border:0.5px solid #FFDA6A;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#856404;font-weight:500">
+    👑 幹事が設定されていません。席をタップして幹事を1人以上設定してください。
+  </div>
+
   <!-- 未割当て一覧 -->
   <div class="card" id="unassigned-card">
     <h3 style="margin-bottom:6px">未割当て</h3>
@@ -255,6 +261,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <div class="billing-input-area">
       <label>💴 お会計の合計金額を入力してください</label>
       <input type="number" id="total-input" placeholder="例：50000" oninput="onTotalInput(this.value)" inputmode="numeric">
+      <div id="per-person-hint" style="display:none;margin-top:6px;font-size:12px;color:#185FA5;font-weight:500"></div>
     </div>
     <div class="grid3" style="margin-bottom:6px">
       <div class="metric">
@@ -595,6 +602,7 @@ function mkSeat(tid,idx,SS=38,SH=40,extraClass=''){
   const person=pIdx!==undefined&&pIdx!==null?S.persons[pIdx]:null;
   const s=document.createElement('div');
   s.className='seat'+(person?' assigned':'')+(extraClass?' '+extraClass:'');
+  s.dataset.key=key;
   s.style.width=SS+'px';s.style.height=SH+'px';s.style.fontSize=Math.max(8,Math.floor(SS*0.22))+'px';
   if(person){
     const nm=person.name||'?';s.textContent=nm.length>4?nm.slice(0,3)+'…':nm;s.title=nm;
@@ -627,7 +635,17 @@ function openSeatPopup(key,anchorEl){
     item.innerHTML=`<span style="flex:1">${kbadge}${p.name}</span>${dot}`;
     if(currentPIdx===realIdx)item.style.background='#e8f0fb';
     if(!isAssignedElsewhere){
-      item.onclick=()=>{S.assignments[key]=realIdx;closeSeatPopup();renderScene();calcAmounts();};
+      item.onclick=()=>{
+        S.assignments[key]=realIdx;
+        closeSeatPopup();
+        renderScene();
+        calcAmounts();
+        // 割り当て直後にポップオーバーを再表示して幹事設定できるようにする
+        setTimeout(()=>{
+          const seatEl=document.querySelector(`.seat[data-key="${key}"]`);
+          if(seatEl)openSeatPopup(key,seatEl);
+        },150);
+      };
     }
     popup.appendChild(item);
   });
@@ -722,8 +740,25 @@ function renderUnassigned(){
   const el=document.getElementById('unassigned-list');if(!el)return;
   const assigned=assignedPersons();
   const unassigned=S.persons.filter((p,i)=>p.name&&!assigned.has(i));
-  if(!unassigned.length){el.innerHTML='<p style="font-size:12px;color:#1D9E75;padding:4px 0">全員割り当て済みです ✅</p>';return;}
+
   el.innerHTML='';
+
+  // 幹事未設定の警告バナー
+  const assignedPeople=getAssignedPersons();
+  const hasKanji=assignedPeople.some(p=>p.isKanji);
+  const warnEl=document.getElementById('kanji-warning');
+  if(warnEl){
+    if(assignedPeople.length>0&&!hasKanji){
+      warnEl.style.display='block';
+    } else {
+      warnEl.style.display='none';
+    }
+  }
+
+  if(!unassigned.length){
+    el.innerHTML='<p style="font-size:12px;color:#1D9E75;padding:4px 0">全員割り当て済みです ✅</p>';
+    return;
+  }
   unassigned.forEach(p=>{
     const span=document.createElement('span');
     span.style.cssText='display:inline-block;padding:4px 10px;background:#f5f5f0;border-radius:100px;font-size:13px;font-weight:500;margin:3px 3px;color:#1a1a1a';
@@ -757,18 +792,35 @@ function calcAmounts(){
   if(currentPage===2)renderBillingPage();
 }
 
-function onTotalInput(v){S.total=parseInt(v)||0;S.amounts={};S.kanjiSnapshot=null;calcAmounts();updateSummary();}
+function onTotalInput(v){
+  S.total=parseInt(v)||0;S.amounts={};S.kanjiSnapshot=null;
+  // 均等割りヒントを即時更新
+  const hint=document.getElementById('per-person-hint');
+  if(hint){
+    const people=getAssignedPersons();
+    if(S.total>0&&people.length>0){
+      const each=Math.round(S.total/people.length);
+      hint.textContent=`👤 ${people.length}人均等割り ¥${each.toLocaleString()}／人（参考）`;
+      hint.style.display='block';
+    } else {
+      hint.style.display='none';
+    }
+  }
+  calcAmounts();updateSummary();
+}
 
 function updateSummary(){
   const total=S.total,people=getAssignedPersons();
   const allAmt=people.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);
   const paidPeople=people.filter(p=>S.paid[p.idx]);
   const collectedAmt=paidPeople.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);
-  const paidCount=paidPeople.length,pct=total?Math.min(100,Math.round(collectedAmt/total*100)):0,remainder=collectedAmt-total;
+  const paidCount=paidPeople.length,pct=total?Math.min(100,Math.round(collectedAmt/total*100)):0;
+  // 余り＝個人別請求合計 − 代金合計（支払済みに関係なく）
+  const remainder=allAmt-total;
   document.getElementById('b-total').textContent=fmt(total);
   document.getElementById('b-collected').textContent=fmt(allAmt);
   const rem=document.getElementById('b-remainder');rem.textContent=remainder>=0?fmt(remainder):('−'+fmt(Math.abs(remainder)));rem.className='metric-value '+(remainder>=0?'':'deficit');
-  const perEl=document.getElementById('b-per-person');perEl.textContent=people.length>0&&total>0?`均等 ${fmt(Math.round(total/people.length))}/人`:'';perEl.style.color='#888';
+  const perEl=document.getElementById('b-per-person');if(perEl)perEl.textContent='';
   const diff=allAmt-total;
   const rndEl=document.getElementById('b-rnd-info');
   if(rndEl){rndEl.textContent=diff>0?`切り上げ（+${fmt(diff)}）`:diff<0?`切り捨て（${fmt(diff)}）`:'ちょうど';rndEl.style.color=diff>0?'#1D9E75':diff<0?'#E24B4A':'#888';}
@@ -823,8 +875,10 @@ function closeCatPopupOutside(e){if(!document.getElementById('cat-popup').contai
 
 // ===== 幹事充当 =====
 function applyRemainderToKanji(){
-  const people=getAssignedPersons();const paidPeople=people.filter(p=>S.paid[p.idx]);
-  const collectedAmt=paidPeople.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);const remainder=collectedAmt-S.total;
+  const people=getAssignedPersons();
+  // 個人別請求合計 − 代金合計
+  const allAmt=people.reduce((s,p)=>s+(S.amounts[p.idx]||0),0);
+  const remainder=allAmt-S.total;
   if(remainder===0)return;
   const kanjiList=people.filter(p=>p.isKanji);if(!kanjiList.length){showToast('幹事が設定されていません');return;}
   const each=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
@@ -847,6 +901,16 @@ function revertKanjiSurplus(){
 // ===== 個人別請求 =====
 function renderBillingPage(){
   if(S.total&&!document.getElementById('total-input').value)document.getElementById('total-input').value=S.total;
+  // 均等割りヒント更新
+  const hint=document.getElementById('per-person-hint');
+  if(hint){
+    const people=getAssignedPersons();
+    if(S.total>0&&people.length>0){
+      const each=Math.round(S.total/people.length);
+      hint.textContent=`👤 ${people.length}人均等割り ¥${each.toLocaleString()}／人（参考）`;
+      hint.style.display='block';
+    } else {hint.style.display='none';}
+  }
   updateSummary();
   const list=document.getElementById('billing-list');list.innerHTML='';
   const people=getAssignedPersons();
@@ -879,6 +943,60 @@ function startEditAmt(idx,el){
 }
 
 // ===== 結果 =====
+// ===== URL状態保存・復元 =====
+function encodeState(){
+  const data={
+    t:S.title,d:S.date,c:S.count,
+    p:S.persons.map(p=>({n:p.name,c:p.catId,k:p.isKanji?1:0})),
+    cats:S.cats.map(c=>({id:c.id,n:c.name,r:c.rate,co:c.color,tc:c.tc})),
+    tbl:S.tables.map(t=>({id:t.id,tp:t.type,s:t.seats})),
+    asgn:Object.fromEntries(Object.entries(S.assignments).map(([k,v])=>[k,v])),
+    amt:Object.fromEntries(Object.entries(S.amounts).map(([k,v])=>[k,v])),
+    paid:Object.fromEntries(Object.entries(S.paid).map(([k,v])=>[k,v?1:0])),
+    total:S.total
+  };
+  try{
+    const json=JSON.stringify(data);
+    const b64=btoa(unescape(encodeURIComponent(json)));
+    return b64;
+  }catch(e){return null;}
+}
+
+function decodeState(b64){
+  try{
+    const json=decodeURIComponent(escape(atob(b64)));
+    const data=JSON.parse(json);
+    S.title=data.t||'';S.date=data.d||'';S.count=data.c||0;
+    S.persons=(data.p||[]).map(p=>({name:p.n,catId:p.c,isKanji:!!p.k}));
+    if(data.cats&&data.cats.length)S.cats=data.cats.map(c=>({id:c.id,name:c.n,rate:c.r,color:c.co,tc:c.tc}));
+    S.tables=(data.tbl||[]).map(t=>({id:t.id,type:t.tp,seats:t.s}));
+    S.assignments=data.asgn||{};
+    S.amounts=data.amt||{};
+    S.paid=Object.fromEntries(Object.entries(data.paid||{}).map(([k,v])=>[k,!!v]));
+    S.total=data.total||0;
+    return true;
+  }catch(e){return false;}
+}
+
+function saveStateUrl(){
+  const enc=encodeState();
+  if(!enc){showToast('データの保存に失敗しました');return;}
+  const url=location.origin+location.pathname+'?d='+enc;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>showToast('💾 保存URLをコピーしました！このURLを開くと続きから再開できます'));
+  }else{
+    const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    showToast('💾 保存URLをコピーしました！');
+  }
+}
+
+function loadStateFromUrl(){
+  const params=new URLSearchParams(location.search);
+  const d=params.get('d');
+  if(!d)return false;
+  return decodeState(d);
+}
+
 function shareHeaderLine(){
   const txt=encodeURIComponent('🍺 飲み会の集金管理アプリ「お勘定奉行 幹事郎」\n'+location.href);
   window.open(`https://line.me/R/share?text=${txt}`,'_blank');
@@ -937,10 +1055,27 @@ function resetAll(){
 }
 
 // ===== 初期化 =====
-renderCatList();renderScene();
-const today=new Date().toISOString().slice(0,10);
-document.getElementById('ev-date').value=today;document.getElementById('date-preview').textContent=fmtDate(today);S.date=today;
-history.pushState({page:0},'',location.href.split('#')[0]+'#p0');
+const _restored=loadStateFromUrl();
+if(_restored){
+  // URLから復元
+  const titleEl=document.getElementById('ev-title');if(titleEl)titleEl.value=S.title;
+  const dateEl=document.getElementById('ev-date');if(dateEl)dateEl.value=S.date;
+  document.getElementById('date-preview').textContent=fmtDate(S.date);
+  const selEl=document.getElementById('count-sel');if(selEl&&S.count)selEl.value=S.count;
+  if(S.persons.length)document.getElementById('persons-card').style.display='block';
+  if(S.total){const ti=document.getElementById('total-input');if(ti)ti.value=S.total;}
+  renderPersonList();renderCatList();renderScene();
+  showToast('💾 保存データを復元しました');
+  // catIdCntを更新
+  S.cats.forEach(c=>{const m=c.id.match(/^c(\d+)$/);if(m)catIdCnt=Math.max(catIdCnt,parseInt(m[1])+1);});
+} else {
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('ev-date').value=today;
+  document.getElementById('date-preview').textContent=fmtDate(today);
+  S.date=today;
+  renderCatList();renderScene();
+}
+history.pushState({page:0},'',location.href.split('?')[0]+'#p0');
 window.addEventListener('resize',()=>{
   // リサイズ時にページ位置を再計算
   const pageW=document.querySelector('.page').offsetWidth;
