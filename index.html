@@ -376,7 +376,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 const S={
   title:'',date:'',count:0,
   persons:[],
-  cats:[{id:'c0',name:'主賓',rate:0,color:'#CEB5F6',tc:'#3C3489'},{id:'c1',name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'},{id:'c2',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],
+  cats:[{id:'c2',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'},{id:'c0',name:'主賓',rate:0,color:'#CEB5F6',tc:'#3C3489'},{id:'c1',name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'}],
   tables:[],
   assignments:{},
   amounts:{},
@@ -443,7 +443,7 @@ window.addEventListener('popstate',e=>{
 
 function onCountChange(val){
   var n=parseInt(val)||0;S.count=n;
-  while(S.persons.length<n)S.persons.push({name:'',catId:S.cats[0]?S.cats[0].id:'c0',isKanji:false});
+  while(S.persons.length<n)S.persons.push({name:'',catId:(S.cats.find(function(c){return c.name==='一般';})||S.cats[S.cats.length-1]||S.cats[0]).id,isKanji:false});
   S.persons=S.persons.slice(0,n);
   if(S.tables.length===0&&n>0){S.tables.push({id:'t'+Date.now(),type:'rect',seats:n});}
   else if(S.tables.length>0){S.tables[0].seats=n;}
@@ -688,7 +688,7 @@ function openSeatPopup(key,anchorEl){
   addNew.innerHTML='＋ 新しい参加者を追加';
   addNew.onclick=function(){
     var name=prompt('新しい参加者の名前を入力してください');if(!name||!name.trim())return;
-    var n=name.trim();S.count++;S.persons.push({name:n,catId:S.cats[0]?S.cats[0].id:'c0',isKanji:false});
+    var n=name.trim();S.count++;S.persons.push({name:n,catId:(S.cats.find(function(c){return c.name==='一般';})||S.cats[S.cats.length-1]||S.cats[0]).id,isKanji:false});
     var sel=document.getElementById('count-sel');if(sel)sel.value=S.count;
     document.getElementById('persons-card').style.display='block';
     renderPersonList();var newIdx=S.persons.length-1;S.assignments[key]=newIdx;
