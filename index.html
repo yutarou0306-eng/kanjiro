@@ -376,7 +376,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 const S={
   title:'',date:'',count:0,
   persons:[],
-  cats:[{id:'c0',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],
+  cats:[{id:'c0',name:'主賓',rate:0,color:'#CEB5F6',tc:'#3C3489'},{id:'c1',name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'},{id:'c2',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'}],
   tables:[],
   assignments:{},
   amounts:{},
@@ -384,7 +384,7 @@ const S={
   doneRecords:[],
   kanjiSnapshot:null
 };
-let catIdCnt=1,editCatIdx=null,currentPage=0,activeSeatKey=null;
+let catIdCnt=3,editCatIdx=null,currentPage=0,activeSeatKey=null;
 const fmt=n=>{const v=Math.round(n);return isNaN(v)||!isFinite(v)?'¥0':'¥'+v.toLocaleString();};
 const r500up=n=>Math.ceil(n/500)*500;
 const r500dn=n=>Math.floor(n/500)*500;
@@ -518,7 +518,7 @@ function saveAddCatModal(){
   closeAddCatModal();renderCatList();renderPersonList();calcAmounts();
   if(currentPage===2)renderBillingPage();
 }
-var ghostCats=[{name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'},{name:'遅参',rate:0.5,color:'#F5C4B3',tc:'#993C1D'}];
+var ghostCats=[{name:'遅参',rate:0.5,color:'#F5C4B3',tc:'#993C1D'}];
 function renderCatList(){
   var el=document.getElementById('cat-list');if(!el)return;el.innerHTML='';
   S.cats.forEach(function(c,i){
@@ -913,13 +913,9 @@ function startEditAmt(idx,el){
 }
 
 function goToBilling(){
-  var people=getAssignedPersons();
-  if(!people.length&&S.persons.filter(function(p){return p.name;}).length>0){
-    // persons exist but not assigned - allow going to billing anyway
-    if(!confirm('座席への割り当てが完了していません。\nお会計ページに進みますか？'))return;
-  }
-  var hasKanji=S.persons.some(function(p){return p.isKanji;});
-  if(!hasKanji&&S.persons.filter(function(p){return p.name;}).length>0){
+  var namedPersons=S.persons.filter(function(p){return p.name;});
+  var hasKanji=namedPersons.some(function(p){return p.isKanji;});
+  if(!hasKanji&&namedPersons.length>0){
     alert('幹事が設定されていません。\n基本情報または座席配置で幹事を1名以上設定してください。');return;
   }
   goPage(2);
