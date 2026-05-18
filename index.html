@@ -1,1266 +1,295 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>お勘定奉行 幹事郎</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="幹事郎">
-  <meta name="theme-color" content="#1C3D5E">
-  <link rel="apple-touch-icon" href="icon.jpg">
-  <link rel="icon" type="image/jpeg" href="icon.jpg">
-  <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:12px;max-width:780px;margin:0 auto;-webkit-text-size-adjust:100%;overflow-x:hidden}
-input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-size:16px;width:100%;font-family:inherit;background:#fff;color:#1a1a1a}
-input:focus,select:focus{outline:none;border-color:#378ADD}
-.page-wrap{overflow:hidden;width:100%}
-.pages{display:flex;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);will-change:transform;touch-action:pan-y}
-.page{width:100vw;max-width:780px;min-width:0;flex-shrink:0;padding:0.5rem 0;overflow-x:hidden;box-sizing:border-box}
-.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:0.875rem 1rem;margin-bottom:10px;width:100%;overflow:hidden}
-h3{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px}
-label{font-size:12px;color:#666;display:block;margin-bottom:3px}
-.btn{background:#fff;border:0.5px solid #ccc;border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer;color:#1a1a1a;font-family:inherit;-webkit-tap-highlight-color:transparent}
-.btn:active{opacity:0.7}
-.btn-primary{background:#e8f0fb;border-color:#a0bfef;color:#185FA5;font-weight:500}
-.btn-success{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
-.btn-sm{padding:6px 11px;font-size:12px}
-.btn-icon{padding:5px 8px;font-size:12px;border:0.5px solid #e0e0d8;border-radius:6px;cursor:pointer;background:transparent;color:#888;-webkit-tap-highlight-color:transparent}
-.nav{display:flex;gap:4px;margin-bottom:0.75rem;border-bottom:0.5px solid #e0e0d8;padding-bottom:0.5rem}
-.nav-btn{flex:1;padding:6px 4px;font-size:11px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;background:transparent;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:center}
-.nav-btn.active{background:#e8f0fb;color:#185FA5;font-weight:500}
-.pill-tag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
-
-/* 人数ロール */
-.count-roll-wrap{display:flex;align-items:center;gap:10px}
-.count-roll{width:90px;font-size:18px;font-weight:500;text-align:center;padding:6px 4px}
-
-/* 参加者リスト */
-.person-list{display:flex;flex-direction:column;gap:6px}
-.person-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f5f5f0;border-radius:8px}
-.person-item input{flex:1;border:none;background:transparent;font-size:14px;font-weight:500;color:#1a1a1a;padding:0}
-.person-item input:focus{outline:none}
-.person-item input::placeholder{color:#bbb}
-.person-num{width:24px;text-align:right;font-size:12px;color:#bbb;flex-shrink:0}
-.person-kanji-btn{padding:3px 8px;font-size:11px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0}
-.person-kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
-
-/* カテゴリ */
-.cat-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:0.5px solid #e0e0d8}
-.cat-row:last-child{border-bottom:none}
-.cat-row.ghost{opacity:0.38}
-.cat-chip{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid transparent;white-space:nowrap;margin:2px 2px;-webkit-tap-highlight-color:transparent}
-
-/* 座席図 */
-.table-scene{display:flex;flex-direction:column;gap:20px;align-items:center;padding:8px 0}
-.table-viz{position:relative}
-.rect-body{background:#B5D4F4;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute}
-.round-body{background:#C0DD97;border-radius:50%;display:flex;align-items:center;justify-content:center;position:absolute}
-.counter-body{background:#F5C4B3;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute}
-.t-label{font-size:10px;font-weight:500;color:#0C447C;text-align:center;line-height:1.3}
-.round-body .t-label{color:#27500A}
-.counter-body .t-label{color:#993C1D}
-.seat{position:absolute;width:42px;height:42px;border-radius:50%;background:#f0f0ea;border:0.5px solid #ddd;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;text-align:center;color:#888;line-height:1.2;word-break:break-all;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:border-color 0.1s}
-.seat.assigned{background:#fff;border:1.5px solid #378ADD;color:#1a1a1a;font-weight:500}
-.seat.empty-seat{background:#f0f0ea}
-.seat.counter-seat{border-radius:4px}
-
-/* テーブルコントロール */
-.tbl-ctrl{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;justify-content:center}
-.seat-stepper{display:flex;align-items:center;border:0.5px solid #e0e0d8;border-radius:100px;overflow:hidden;background:#fff}
-.seat-stepper button{width:32px;height:28px;border:none;background:#f5f5f0;color:#1a1a1a;font-size:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center}
-.seat-stepper button:active{background:#e5e5e0}
-.seat-stepper span{min-width:34px;text-align:center;font-size:12px;font-weight:500;background:#fff;line-height:28px}
-.tbl-type-select{font-size:11px;border:0.5px solid #e0e0d8;border-radius:100px;padding:2px 8px;background:#f5f5f0;color:#888;width:auto;height:28px}
-.tbl-del-btn{padding:3px 8px;font-size:11px;border:0.5px solid #f0a0a0;border-radius:100px;cursor:pointer;background:#fdeaea;color:#c0392b;font-family:inherit;-webkit-tap-highlight-color:transparent}
-
-/* 座席選択ポップオーバー */
-.seat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.14);min-width:150px;max-width:220px;max-height:260px;overflow-y:auto}
-.seat-popup-item{padding:8px 12px;font-size:13px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
-.seat-popup-item:active{background:#f5f5f0}
-.seat-popup-item.assigned-elsewhere{opacity:0.35;pointer-events:none}
-.seat-popup-clear{padding:8px 12px;font-size:12px;cursor:pointer;border-radius:8px;color:#c0392b;border-top:0.5px solid #e0e0d8;margin-top:4px}
-.seat-popup-clear:active{background:#fdeaea}
-
-/* 個人別請求 */
-.br{display:flex;align-items:center;padding:13px 2px;border-bottom:0.5px solid #e0e0d8;gap:6px}
-.br:first-child{border-top:0.5px solid #e0e0d8}
-.br.is-paid .br-name,.br.is-paid .br-amt{color:#aaa}
-.br-name{font-size:14px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow:hidden}
-.br-cat{font-size:11px;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.br-amt{font-size:14px;font-weight:500;color:#185FA5;white-space:nowrap;cursor:pointer;padding:4px 8px;border-radius:6px;min-width:58px;text-align:right;flex-shrink:0;border:0.5px solid #a0bfef;background:#f0f7ff;display:flex;align-items:center;gap:3px}
-.br-amt:active{background:#d8eaf8}
-.br-amt-input{width:78px;font-size:16px;font-weight:500;text-align:right;border:none;border-bottom:1.5px solid #378ADD;background:transparent;color:#1a1a1a;outline:none;padding:2px 4px;flex-shrink:0}
-.br-pay-btn{padding:6px 12px;font-size:12px;border:0.5px solid #a0bfef;border-radius:100px;cursor:pointer;background:#185FA5;color:#fff;white-space:nowrap;flex-shrink:0;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
-.br-pay-btn:active{opacity:0.8}
-.br-pay-btn.paid{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
-.br-kanji-btn{padding:3px 7px;font-size:10px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0}
-.br-kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
-
-/* サマリー */
-.metric{background:#f5f5f0;border-radius:8px;padding:8px;min-width:0;overflow:hidden}
-.metric-label{font-size:10px;color:#888;margin-bottom:3px}
-.metric-value{font-size:16px;font-weight:500;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.metric-value.hi{color:#185FA5}
-.metric-sub{font-size:9px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.surplus{color:#1D9E75}.deficit{color:#E24B4A}
-.progress-bar{height:5px;background:#e0e0d8;border-radius:4px;overflow:hidden;margin:8px 0}
-.progress-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.3s}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;width:100%}
-.billing-input-area{background:#eaf3ff;border:1.5px solid #a0bfef;border-radius:10px;padding:12px 14px;margin-bottom:12px;width:100%}
-.billing-input-area label{font-size:13px;color:#185FA5;font-weight:500;margin-bottom:6px;display:block}
-.billing-input-area input{font-size:20px;font-weight:500;border:none;border-bottom:2px solid #378ADD;border-radius:0;background:transparent;color:#1a1a1a;padding:4px 2px;width:100%}
-.billing-input-area input:focus{outline:none;border-bottom-color:#185FA5}
-
-/* 幹事 */
-.kanji-badge{display:inline-block;padding:1px 5px;border-radius:100px;font-size:10px;font-weight:500;background:#FFF3CD;color:#856404;border:0.5px solid #FFDA6A;flex-shrink:0}
-.btn-kanji-surplus{width:100%;margin-top:6px;padding:9px;font-size:12px;background:#FFF3CD;border:0.5px solid #FFDA6A;color:#856404;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
-.btn-kanji-surplus:active{opacity:0.7}
-.btn-kanji-revert{width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
-
-/* 結果 */
-.result-header{text-align:center;padding:16px 0 14px}
-#page-3{overflow-y:auto;overflow-x:hidden}
-.result-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid #e0e0d8}
-.result-row:last-child{border-bottom:none}
-.result-row-label{font-size:13px;color:#888}
-.result-row-val{font-size:14px;font-weight:500;color:#1a1a1a}
-.share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;font-size:14px;font-weight:500;border-radius:10px;cursor:pointer;margin-bottom:8px;border:none;font-family:inherit;-webkit-tap-highlight-color:transparent}
-.share-line{background:#06C755;color:#fff}
-.share-viber{background:#7360F2;color:#fff}
-.share-sms{background:#5856D6;color:#fff}
-.pax-badge{display:inline-flex;align-items:center;gap:5px;background:#f5f5f0;border-radius:100px;padding:4px 12px;font-size:13px;font-weight:500;color:#1a1a1a}
-
-/* カテゴリポップオーバー */
-.cat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.14);min-width:150px;max-width:210px}
-.cat-popup-item{padding:8px 10px;font-size:13px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
-.cat-popup-item:active,.cat-popup-item.selected{background:#f5f5f0}
-.cat-popup-add{padding:8px 10px;font-size:12px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:6px;color:#185FA5;border-top:0.5px solid #e0e0d8;margin-top:4px;font-weight:500}
-
-/* モーダル */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
-.cat-add-modal{background:#fff;border-radius:14px;padding:1.25rem;width:100%;max-width:300px;border:0.5px solid #e0e0d8}
-.cat-add-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.cat-add-row label{min-width:52px;font-size:12px;color:#666;margin:0}
-.cat-add-row input{font-size:15px}
-.color-picker{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
-.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
-.color-dot.selected{border-color:#1a1a1a}
-
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
-.toast.show{opacity:1}
-@media(max-width:480px){body{padding:10px}.grid3{gap:4px}.metric-value{font-size:15px}.metric-label{font-size:9px}.br-name{font-size:13px}.br-amt{font-size:13px;min-width:50px}.br-pay-btn{padding:4px 8px;font-size:11px}.billing-input-area{padding:10px 12px}}
-  </style>
-</head>
-<body>
-
-
-<div style="display:flex;align-items:baseline;justify-content:space-between;padding-top:0.25rem;margin-bottom:2px">
-  <div style="display:flex;align-items:baseline;gap:8px">
-    <span style="font-size:19px;font-weight:500">お勘定奉行</span>
-    <span style="font-size:13px;color:#888">幹事郎</span>
-    <span style="font-size:17px">🍺</span>
-  </div>
-  <div id="header-share-btns" style="display:flex;gap:6px;align-items:center">
-    <button onclick="shareHeaderLine()" style="display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:#06C755;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      LINE
-    </button>
-    <button onclick="shareHeaderCopy()" style="padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid #ddd;background:#f5f5f0;color:#555;font-family:inherit;-webkit-tap-highlight-color:transparent">🔗 リンク</button>
-  </div>
-</div>
-<p style="font-size:11px;color:#888;margin-bottom:10px">飲み会の集金を、もれなく・かんたんに。</p>
-
-<div class="nav" id="nav">
-  <button class="nav-btn active" onclick="goPage(0)">🗓 基本情報</button>
-  <button class="nav-btn" onclick="goToBilling()">🧾 お会計</button>
-  <button class="nav-btn" onclick="goPage(1)">🪑 座席登録<span style="font-size:9px;color:#aaa;display:block;line-height:1">（任意）</span></button>
-</div>
-
-<div class="page-wrap" id="page-wrap">
-<div class="pages" id="pages">
-
-<!-- PAGE 0: 基本情報 -->
-<div class="page" id="page-0">
-
-  <div class="card">
-    <h3>🗓 飲み会情報</h3>
-    <label>タイトル</label>
-    <input type="text" id="ev-title" placeholder="例：4月歓迎会" style="margin-bottom:10px">
-    <label>日付</label>
-    <input type="date" id="ev-date" style="margin-bottom:10px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-      <span style="font-size:12px;color:#888">表示：</span>
-      <span id="date-preview" style="font-size:14px;font-weight:500">—</span>
-    </div>
-    <label>参加人数</label>
-    <div class="count-roll-wrap">
-      <select id="count-sel" class="count-roll" >
-        <option value="">—</option>
-      </select>
-      <span style="font-size:14px;color:#888">名</span>
-    </div>
-  </div>
-
-  <!-- 参加者名前登録 -->
-  <div class="card" id="persons-card" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 style="margin:0">👥 参加者登録</h3>
-      <span style="font-size:11px;color:#888">名前を入力してください</span>
-    </div>
-    <div class="person-list" id="person-list"></div>
-  </div>
-
-  <!-- 傾斜カテゴリ -->
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 style="margin:0">⚖️ 傾斜カテゴリ</h3>
-      <button class="btn btn-sm" onclick="openAddCatModal(null)">＋ 追加</button>
-    </div>
-    <p style="font-size:11px;color:#888;margin-bottom:10px">カテゴリ名と倍率を設定。各参加者に割り当てできます。</p>
-    <div id="cat-list"></div>
-  </div>
-
-  <!-- メインCTA：お会計へ直行 -->
-  <button class="btn btn-primary" onclick="goToBilling()" style="width:100%;margin-top:4px;padding:13px;font-size:15px;font-weight:500">🧾 お会計へ →</button>
-  <!-- サブ：座席登録（任意） -->
-  <div style="display:flex;align-items:center;gap:8px;border:0.5px solid #e0e0d8;border-radius:10px;padding:10px 14px;margin-top:8px;background:#fafaf8">
-    <div style="flex:1">
-      <div style="font-size:12px;font-weight:500;color:#555;margin-bottom:1px">🪑 座席を登録する場合（任意）</div>
-      <div style="font-size:11px;color:#aaa">誰がどの席に座るか記録できます</div>
-    </div>
-    <button onclick="goPage(1)" style="padding:7px 12px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #ddd;background:#fff;color:#666;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">座席登録へ</button>
-  </div>
-  <!-- 途中保存 -->
-  <div style="display:flex;align-items:center;gap:8px;border:0.5px solid #e0e0d8;border-radius:8px;padding:8px 12px;margin-top:6px;background:#fafaf8">
-    <span style="font-size:11px;color:#999;flex:1">💾 入力内容をキープしたい場合は→</span>
-    <button onclick="saveStateUrl()" style="padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid #ccc;background:#fff;color:#666;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
-  </div>
-</div>
-
-<!-- PAGE 1: 座席登録 -->
-<div class="page" id="page-1">
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 style="margin:0">🪑 座席配置</h3>
-      <div id="pax-badge" class="pax-badge">👤 0名</div>
-    </div>
-    <p style="font-size:11px;color:#888;margin-bottom:8px">席の＋をタップ→参加者割り当て・カテゴリ変更・新規追加。テーブルをタップ→種別変更。</p>
-    <!-- 座席図：横スクロール可 -->
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px">
-      <div class="table-scene" id="table-scene"></div>
-    </div>
-    <!-- テーブル追加（配置図の下） -->
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:0.5px solid #e0e0d8;align-items:center">
-      <span style="font-size:11px;color:#888">テーブル追加：</span>
-      <button class="btn btn-sm" onclick="addTable('rect');renderScene()">＋ 四角</button>
-      <button class="btn btn-sm" onclick="addTable('round');renderScene()">＋ 円卓</button>
-      <button class="btn btn-sm" onclick="addTable('counter');renderScene()">＋ カウンター</button>
-    </div>
-  </div>
-
-  <!-- 幹事未設定の警告 -->
-  <div id="kanji-warning" style="display:none;background:#FFF3CD;border:0.5px solid #FFDA6A;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#856404;font-weight:500">
-    👑 幹事が設定されていません。席をタップして幹事を1人以上設定してください。
-  </div>
-
-  <!-- 未割当て一覧 -->
-  <div class="card" id="unassigned-card">
-    <h3 style="margin-bottom:6px">未割当て</h3>
-    <div id="unassigned-list"><p style="font-size:12px;color:#888">全員割り当て済みです ✅</p></div>
-  </div>
-
-  <!-- 途中保存カード -->
-  <div class="card" style="background:#f0f7ff;border-color:#a0bfef;margin-bottom:8px">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:500;color:#185FA5;margin-bottom:2px">💾 座席情報も含めて保存する</div>
-        <div style="font-size:11px;color:#555">基本情報＋座席配置まで含めた最新の状態をURLに保存します</div>
-      </div>
-      <button onclick="saveStateUrl()" style="padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:8px;margin-top:4px">
-    <button class="btn" onclick="goPage(0)" style="flex:1;font-size:13px">← 基本情報</button>
-    <button class="btn btn-primary" onclick="goToBilling()" style="flex:2;font-size:13px">🧾 お会計へ</button>
-  </div>
-</div>
-
-<!-- PAGE 2: お会計 -->
-<div class="page" id="page-2">
-  <div class="card">
-    <div class="billing-input-area">
-      <label>💴 お会計の合計金額を入力してください</label>
-      <input type="number" id="total-input" placeholder="例：50000" inputmode="numeric">
-      <div id="per-person-hint" style="display:none;margin-top:10px;background:#fff;border:0.5px solid #a0bfef;border-radius:8px;padding:8px 12px"></div>
-    </div>
-    <div class="grid3" style="margin-bottom:6px">
-      <div class="metric">
-        <div class="metric-label">代金合計</div>
-        <div class="metric-value" id="b-total">¥0</div>
-        <div class="metric-sub" id="b-per-person" style="color:#888"></div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">集金済み</div>
-        <div class="metric-value hi" id="b-collected">¥0</div>
-        <div class="metric-sub" id="b-rnd-info" style="color:#888"></div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">余り</div>
-        <div class="metric-value" id="b-remainder">¥0</div>
-        <div class="metric-sub" id="b-paid-count" style="color:#888">0/0人</div>
-      </div>
-    </div>
-    <div id="kanji-surplus-wrap" style="display:none">
-      <button class="btn-kanji-surplus" id="btn-kanji-surplus" onclick="applyRemainderToKanji()">👑 余りを幹事に充当する</button>
-      <button class="btn-kanji-revert" id="btn-kanji-revert" onclick="revertKanjiSurplus()" style="display:none">↩️ 幹事充当を元に戻す</button>
-    </div>
-    <!-- 均等割りボタン -->
-    <button id="btn-equal-split" onclick="applyEqualSplit()" style="display:none;width:100%;margin-top:6px;padding:9px;font-size:12px;background:#e8f0fb;border:0.5px solid #a0bfef;color:#185FA5;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">⚖️ 均等割りにする</button>
-    <button id="btn-equal-revert" onclick="revertEqualSplit()" style="display:none;width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent">↩️ 均等割りを元に戻す</button>
-    <button id="btn-r500" onclick="apply500Split()" style="display:none;width:100%;margin-top:6px;padding:9px;font-size:12px;background:#e6f4ef;border:0.5px solid #8ecdb5;color:#1a7a56;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">🪙 500円刻みにする</button>
-    <button id="btn-r500-revert" onclick="revert500Split()" style="display:none;width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent">↩️ 500円刻みを元に戻す</button>
-    <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
-  </div>
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-      <h3 style="margin:0">👥 個人別請求</h3>
-      <button onclick="addPersonFromBilling()" style="padding:4px 10px;font-size:11px;border:0.5px solid #a0bfef;border-radius:100px;background:#e8f0fb;color:#185FA5;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">＋ 参加者追加</button>
-    </div>
-    <p style="font-size:11px;color:#888;margin-bottom:6px">金額・カテゴリ・幹事をタップで変更</p>
-    <div id="billing-list"></div>
-  </div>
-  <button class="btn btn-success" onclick="goResult()" style="width:100%;font-size:14px;padding:13px;margin-top:4px">🎉 集金完了・結果を見る</button>
-</div>
-
-<!-- PAGE 3: 結果 -->
-<div class="page" id="page-3">
-  <!-- ヘッダー：タイトル＋集計結果 -->
-  <div class="result-header">
-    <div style="font-size:34px;margin-bottom:8px">🎊</div>
-    <div style="font-size:22px;font-weight:600;margin-bottom:2px" id="r-title">飲み会</div>
-    <div style="font-size:15px;color:#185FA5;font-weight:500;margin-bottom:4px">集計結果</div>
-    <div style="font-size:13px;color:#888" id="r-date"></div>
-  </div>
-
-  <!-- 上部ナビ：戻る＋保存URL -->
-  <div style="display:flex;gap:8px;margin-bottom:10px;align-items:stretch">
-    <button class="btn" onclick="goPage(2)" style="flex:1;font-size:13px">← お会計に戻る</button>
-    <button onclick="saveStateUrl()" style="flex:1;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent">💾 結果URLを発行</button>
-  </div>
-
-  <div class="card"><div id="result-stats"></div></div>
-  <div class="card"><h3 style="margin-bottom:8px">👥 個人別まとめ</h3><div id="result-people"></div></div>
-  <div class="card">
-    <h3 style="margin-bottom:10px">📤 シェア</h3>
-    <button class="share-btn share-line" onclick="shareLine()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      LINEで共有
-    </button>
-    <button class="share-btn share-viber" onclick="shareViber()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11.985 0C5.37 0 .015 5.355.015 11.97c0 2.84.995 5.445 2.64 7.485L.9 23.25l3.975-1.725A11.88 11.88 0 0011.985 24C18.6 24 24 18.645 24 12.03 24 5.37 18.6 0 11.985 0zm6.15 16.665c-.27.765-1.35 1.41-2.205 1.59-.585.12-1.35.21-3.93-.84-3.285-1.335-5.415-4.665-5.58-4.875-.165-.225-1.32-1.755-1.32-3.345s.84-2.37 1.14-2.685c.27-.285.585-.36.78-.36s.39 0 .555.015c.18.015.42-.06.66.495.24.585.81 1.98.885 2.13.075.135.12.3.03.48-.09.195-.135.315-.27.48-.135.165-.285.36-.405.48-.135.135-.27.285-.12.555.15.27.675 1.11 1.455 1.8 1.005.885 1.845 1.17 2.115 1.305.27.12.42.105.585-.06.165-.18.705-.825.885-1.11.18-.27.36-.225.615-.135.255.09 1.62.765 1.89.9.27.135.45.21.525.315.06.12.06.675-.21 1.44z"/></svg>
-      Viberで共有
-    </button>
-    <button class="share-btn share-sms" onclick="shareSMS()">💬 SMSで共有</button>
-    <button class="share-btn btn" onclick="copyResult()" style="margin-bottom:0">📋 テキストをコピー</button>
-  </div>
-  <div style="margin-top:8px">
-    <button class="btn btn-primary" onclick="resetAll()" style="width:100%;font-size:13px">🏠 トップに戻る</button>
-  </div>
-</div>
-
-</div></div>
-
-<!-- MODAL: カテゴリ -->
-<div class="modal-bg" id="cat-add-modal-bg" style="display:none" onclick="if(event.target===this)closeAddCatModal()">
-  <div class="cat-add-modal">
-    <h3 id="cat-modal-title" style="margin-bottom:12px">カテゴリを追加</h3>
-    <div class="cat-add-row"><label>名前</label><input type="text" id="cat-modal-name" placeholder="例：若手" maxlength="10"></div>
-    <div class="cat-add-row"><label>倍率</label><input type="number" id="cat-modal-rate" value="1.0" min="0.1" max="9.9" step="0.1" inputmode="decimal" style="width:90px"><span style="font-size:13px;color:#888">倍</span></div>
-    <label style="margin-bottom:6px">カラー</label>
-    <div class="color-picker" id="cat-color-picker"></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn" onclick="closeAddCatModal()" style="flex:1">キャンセル</button>
-      <button class="btn btn-primary" onclick="saveAddCatModal()" style="flex:2">保存</button>
-    </div>
-  </div>
-</div>
-
-<div id="seat-popup" class="seat-popup" style="display:none"></div>
-<div id="cat-popup" class="cat-popup" style="display:none"></div>
-<div id="toast" class="toast">コピーしました！</div>
-
-<script>
-// ===== STATE =====
-const S={
-  title:'',date:'',count:0,
-  persons:[],
-  cats:[{id:'c2',name:'一般',rate:1.0,color:'#C0DD97',tc:'#27500A'},{id:'c0',name:'主賓',rate:0,color:'#CEB5F6',tc:'#3C3489'},{id:'c1',name:'若手',rate:0.7,color:'#B5D4F4',tc:'#0C447C'}],
-  tables:[],
-  assignments:{},
-  amounts:{},
-  paid:{},
-  doneRecords:[],
-  kanjiSnapshot:null,
-  equalSplitSnapshot:null,
-  r500Snapshot:null
-};
-let catIdCnt=3,editCatIdx=null,currentPage=0,activeSeatKey=null;
-const fmt=n=>{const v=Math.round(n);return isNaN(v)||!isFinite(v)?'¥0':'¥'+v.toLocaleString();};
-const r500up=n=>Math.ceil(n/500)*500;
-const r500dn=n=>Math.floor(n/500)*500;
-const r100=n=>Math.round(n/100)*100;  // 100円単位（四捨五入）
-const DAYS=['日','月','火','水','木','金','土'];
-const TBL_LABELS={'rect':'四角テーブル','round':'円卓','counter':'カウンター席'};
-const CAT_COLORS=[{color:'#C0DD97',tc:'#27500A'},{color:'#B5D4F4',tc:'#0C447C'},{color:'#F5C4B3',tc:'#993C1D'},{color:'#CEB5F6',tc:'#3C3489'},{color:'#FAC775',tc:'#633806'},{color:'#F4C0D1',tc:'#72243E'},{color:'#D3D1C7',tc:'#444441'},{color:'#A8E6CF',tc:'#1A5E40'}];
-function fmtDate(str){if(!str)return'—';const d=new Date(str+'T00:00:00');return`${d.getMonth()+1}月${d.getDate()}日（${DAYS[d.getDay()]}）`;}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
-
-// ===== NAVIGATION =====
-function goPage(idx){
-  currentPage=idx;
-  const _pageEl=document.querySelector('.page');
-  const pageW=_pageEl?_pageEl.offsetWidth:window.innerWidth;
-  document.getElementById('pages').style.transform=`translateX(-${idx*pageW}px)`;
-  // タブ順: 0=基本情報, 1=お会計, 2=座席登録 → ページ順: 0=基本情報, 1=座席登録, 2=お会計
-  var tabMap={0:0, 1:2, 2:1}; // pageIdx -> tabIdx
-  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===(tabMap[idx]||0)));
-  document.getElementById('nav').style.display=idx===3?'none':'flex';
-  // 結果ページではヘッダーのLINE/リンクボタンを非表示
-  var hdrBtns=document.getElementById('header-share-btns');
-  if(hdrBtns)hdrBtns.style.display=idx===3?'none':'flex';
-  window.scrollTo({top:0,behavior:'instant'});
-  if(idx===1)renderScene();
-  if(idx===2)renderBillingPage();
-  const _base=location.origin+location.pathname;
-  history.pushState({page:idx},'',_base+'#p'+idx);
-}
-window.addEventListener('popstate',e=>{
-  if(e.state&&e.state.page!==undefined){const t=Math.max(0,e.state.page-1);goPage(t);history.pushState({page:t},'',location.origin+location.pathname+'#p'+t);}
-  else if(currentPage>0){goPage(currentPage-1);history.pushState({page:currentPage},'',location.origin+location.pathname+'#p'+currentPage);}
-  else history.pushState({page:0},'',location.origin+location.pathname+'#p0');
-});
-
-// Swipe
-(function(){
-  var wrap=document.getElementById('page-wrap');
-  if(!wrap)return;
-  var sx=0,sy=0,moved=false,tracking=false;
-  wrap.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;moved=false;tracking=true;},{passive:true});
-  wrap.addEventListener('touchmove',function(e){if(!tracking)return;var dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;if(!moved&&Math.abs(dy)>Math.abs(dx)){tracking=false;return;}if(Math.abs(dx)>8)moved=true;},{passive:true});
-  wrap.addEventListener('touchend',function(e){
-    if(!moved){tracking=false;return;}
-    var dx=e.changedTouches[0].clientX-sx;
-    // タブ順: 基本情報(0) → お会計(2) → 座席登録(1)
-    // 右スワイプ（タブ右方向）: 0→2→1
-    // 左スワイプ（タブ左方向）: 1→2→0
-    var rightMap={0:2, 2:1};  // 右スワイプ先（タブを右に進む）
-    var leftMap={1:2, 2:0};   // 左スワイプ先（タブを左に戻る）
-    if(dx>50&&rightMap[currentPage]!==undefined)goPage(rightMap[currentPage]);
-    else if(dx<-50&&leftMap[currentPage]!==undefined)goPage(leftMap[currentPage]);
-    tracking=false;moved=false;
-  },{passive:true});
-})();
-
-// ===== DATE =====
-
-
-// ===== COUNT =====
-(function(){
-  var sel=document.getElementById('count-sel');
-  for(var i=1;i<=50;i++){var o=document.createElement('option');o.value=i;o.textContent=i;sel.appendChild(o);}
-})();
-
-function onCountChange(val){
-  var n=parseInt(val)||0;S.count=n;
-  while(S.persons.length<n)S.persons.push({name:'',catId:(S.cats.find(function(c){return c.name==='一般';})||S.cats[S.cats.length-1]||S.cats[0]).id,isKanji:false});
-  S.persons=S.persons.slice(0,n);
-  if(S.tables.length===0&&n>0){S.tables.push({id:'t'+Date.now(),type:'rect',seats:n});}
-  else if(S.tables.length>0){S.tables[0].seats=n;}
-  renderPersonList();
-  document.getElementById('persons-card').style.display=n>0?'block':'none';
-}
-
-// ===== PERSON LIST =====
-function renderPersonList(){
-  var list=document.getElementById('person-list');list.innerHTML='';
-  S.persons.forEach(function(p,i){
-    var row=document.createElement('div');row.className='person-item';
-    var num=document.createElement('span');num.className='person-num';num.textContent=(i+1)+'.';
-    var inp=document.createElement('input');inp.type='text';inp.placeholder='名前';inp.value=p.name;
-    inp.oninput=function(e){S.persons[i].name=e.target.value;};
-    inp.onblur=function(){renderScene();};
-    var kb=document.createElement('button');
-    kb.className='person-kanji-btn'+(p.isKanji?' active':'');
-    kb.textContent=p.isKanji?'👑 幹事':'幹事';
-    kb.onclick=function(){S.persons[i].isKanji=!S.persons[i].isKanji;renderPersonList();};
-    var delBtn=document.createElement('button');
-    delBtn.style.cssText='padding:3px 7px;font-size:13px;border:none;background:transparent;color:#ccc;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent';
-    delBtn.textContent='✕';
-    delBtn.onclick=function(){
-      Object.keys(S.assignments).forEach(function(k){if(S.assignments[k]===i)delete S.assignments[k];});
-      var newAssign={};
-      Object.entries(S.assignments).forEach(function(e){var k=e[0],v=e[1];if(v>i)newAssign[k]=v-1;else if(v<i)newAssign[k]=v;});
-      S.assignments=newAssign;
-      S.persons.splice(i,1);S.count=S.persons.length;
-      var sel=document.getElementById('count-sel');if(sel)sel.value=S.count;
-      if(!S.persons.length)document.getElementById('persons-card').style.display='none';
-      renderPersonList();renderScene();calcAmounts();
-    };
-    row.appendChild(num);row.appendChild(inp);
-    S.cats.forEach(function(c){
-      var chip=document.createElement('span');chip.className='cat-chip';var active=p.catId===c.id;
-      chip.style.cssText=active?('background:'+c.color+';color:'+c.tc+';border-color:'+c.color):'background:#f5f5f0;color:#888;border-color:#ddd';
-      chip.textContent=c.name||'?';
-      chip.onclick=function(){S.persons[i].catId=c.id;renderPersonList();calcAmounts();};
-      row.appendChild(chip);
-    });
-    row.appendChild(kb);row.appendChild(delBtn);list.appendChild(row);
-  });
-}
-
-// ===== CATEGORIES =====
-function openAddCatModal(editIdx){
-  editCatIdx=editIdx;var isEdit=editIdx!==null;
-  document.getElementById('cat-modal-title').textContent=isEdit?'カテゴリを編集':'カテゴリを追加';
-  var c=isEdit?S.cats[editIdx]:null;
-  document.getElementById('cat-modal-name').value=c?c.name:'';
-  document.getElementById('cat-modal-rate').value=c?c.rate:1.0;
-  var picker=document.getElementById('cat-color-picker');picker.innerHTML='';
-  CAT_COLORS.forEach(function(col,i){
-    var dot=document.createElement('div');dot.className='color-dot'+((!c&&i===0)||(c&&c.color===col.color)?' selected':'');
-    dot.style.background=col.color;dot.dataset.idx=i;
-    dot.onclick=function(){document.querySelectorAll('.color-dot').forEach(function(d){d.classList.remove('selected');});this.classList.add('selected');};
-    picker.appendChild(dot);
-  });
-  document.getElementById('cat-add-modal-bg').style.display='flex';
-  setTimeout(function(){document.getElementById('cat-modal-name').focus();},100);
-}
-function closeAddCatModal(){document.getElementById('cat-add-modal-bg').style.display='none';editCatIdx=null;}
-function saveAddCatModal(){
-  var name=document.getElementById('cat-modal-name').value.trim();
-  var rate=parseFloat(document.getElementById('cat-modal-rate').value)||1.0;
-  var selDot=document.querySelector('.color-dot.selected');
-  var col=CAT_COLORS[selDot?parseInt(selDot.dataset.idx):0];
-  if(!name){alert('カテゴリ名を入力してください');return;}
-  if(editCatIdx!==null){S.cats[editCatIdx]=Object.assign({},S.cats[editCatIdx],{name:name,rate:rate,color:col.color,tc:col.tc});}
-  else S.cats.push({id:'c'+(catIdCnt++),name:name,rate:rate,color:col.color,tc:col.tc});
-  closeAddCatModal();renderCatList();renderPersonList();calcAmounts();
-  if(currentPage===2)renderBillingPage();
-}
-var ghostCats=[{name:'遅参',rate:0.5,color:'#F5C4B3',tc:'#993C1D'}];
-function renderCatList(){
-  var el=document.getElementById('cat-list');if(!el)return;el.innerHTML='';
-  S.cats.forEach(function(c,i){
-    var row=document.createElement('div');row.className='cat-row';
-    var left=document.createElement('div');left.style.cssText='display:flex;align-items:center;gap:6px;flex:1;min-width:0;cursor:pointer';
-    left.innerHTML='<span class="pill-tag" style="background:'+c.color+';color:'+c.tc+';padding:3px 8px">'+(c.name||'?')+'</span><span style="font-size:13px;color:#888">×'+c.rate+'</span>';
-    left.onclick=function(){openAddCatModal(i);};
-    var btns=document.createElement('div');btns.style.cssText='display:flex;gap:4px';
-    var eb=document.createElement('button');eb.className='btn-icon';eb.textContent='✏️';eb.onclick=function(){openAddCatModal(i);};btns.appendChild(eb);
-    if(S.cats.length>1){var db=document.createElement('button');db.className='btn-icon';db.textContent='🗑';db.onclick=function(){removeCat(i);};btns.appendChild(db);}
-    row.appendChild(left);row.appendChild(btns);el.appendChild(row);
-  });
-  ghostCats.forEach(function(g,gi){
-    var row=document.createElement('div');row.className='cat-row ghost';
-    row.innerHTML='<span class="pill-tag" style="background:'+g.color+';color:'+g.tc+';padding:3px 8px">'+g.name+'</span><span style="font-size:13px;color:#aaa;flex:1;margin-left:6px">×'+g.rate+'（タップで追加）</span>';
-    row.style.cursor='pointer';
-    row.onclick=function(){S.cats.push({id:'c'+(catIdCnt++),name:g.name,rate:g.rate,color:g.color,tc:g.tc});ghostCats.splice(gi,1);renderCatList();};
-    el.appendChild(row);
-  });
-}
-function removeCat(i){if(S.cats.length<=1)return;var rid=S.cats[i].id;S.cats.splice(i,1);S.persons.forEach(function(p){if(p.catId===rid)p.catId=S.cats[0]?S.cats[0].id:'';});renderCatList();renderPersonList();calcAmounts();}
-
-// ===== TABLES =====
-function addTable(type){S.tables.push({id:'t'+Date.now(),type:type,seats:0});}
-function removeTable(i){
-  var t=S.tables[i];
-  Object.keys(S.assignments).filter(function(k){return k.indexOf(t.id+'_')===0;}).forEach(function(k){delete S.assignments[k];});
-  S.tables.splice(i,1);renderScene();
-}
-function changeSeats(i,delta){
-  var t=S.tables[i];var nn=Math.max(1,Math.min(40,(t.seats||0)+delta));
-  if(delta<0){for(var k=nn;k<(t.seats||0);k++)delete S.assignments[t.id+'_'+k];}
-  t.seats=nn;renderScene();
-}
-function changeTableType(i,type){S.tables[i].type=type;renderScene();}
-
-// ===== SEAT RENDER =====
-function countAssigned(){return new Set(Object.values(S.assignments).filter(function(v){return v!==null&&v!==undefined;})).size;}
-function assignedPersons(){return new Set(Object.values(S.assignments).filter(function(v){return v!==null&&v!==undefined;}));}
-function updatePaxBadge(){var el=document.getElementById('pax-badge');if(el)el.textContent='👤 '+countAssigned()+'/'+S.persons.filter(function(p){return p.name;}).length+'名';}
-
-function renderScene(){
-  var scene=document.getElementById('table-scene');if(!scene)return;scene.innerHTML='';
-  var spPanel=document.getElementById('members-panel-sp');
-  if(spPanel)spPanel.style.display=window.innerWidth<=540?'block':'none';
-  if(!S.tables.length){scene.innerHTML='<p style="font-size:12px;color:#888;padding:8px 0">下のボタンでテーブルを追加してください</p>';updatePaxBadge();renderUnassigned();return;}
-  var _card=document.querySelector('#page-1 .card');
-  var cardW=(_card?_card.offsetWidth:0)||Math.min(window.innerWidth-24,560);
-  var availW=Math.max(200,cardW-24);
-  var maxSeats=S.tables.reduce(function(m,t){return Math.max(m,t.seats||0);},0);
-  var maxCols=Math.max(1,Math.ceil(maxSeats/2));
-  var calcSize=Math.floor((availW-20)/(maxCols+2));
-  var SS=Math.max(26,Math.min(38,calcSize));
-  var SH=Math.floor(SS*1.05);
-  S.tables.forEach(function(t,ti){
-    var wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:4px';
-    var n=t.seats||0;
-    if(n>0){
-      var viz=document.createElement('div');viz.className='table-viz';
-      if(t.type==='rect'){
-        var cols=Math.ceil(n/2),W=Math.max(100,cols*(SS+4)),H=Math.max(50,Math.floor(SS*0.8));
-        var vW=W+SS*2+4,vH=H+SH*2+8;
-        viz.style.cssText='width:'+vW+'px;height:'+vH+'px;position:relative';
-        var body=document.createElement('div');body.className='rect-body';
-        body.style.cssText='width:'+W+'px;height:'+H+'px;left:'+(SS+2)+'px;top:'+(SH+4)+'px;cursor:pointer';
-        body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';
-        body.onclick=(function(ti2){return function(e){e.stopPropagation();openTableTypePopup(ti2,body);};})(ti);
-        viz.appendChild(body);
-        var top=Math.ceil(n/2),bot=Math.floor(n/2);
-        for(var i=0;i<top;i++){var s=mkSeat(t.id,i,SS,SH);s.style.cssText='left:'+(SS+2+(i/(top-1||1))*(W-SS))+'px;top:0';viz.appendChild(s);}
-        for(var i=0;i<bot;i++){var s=mkSeat(t.id,top+i,SS,SH);s.style.cssText='left:'+(SS+2+(i/(bot-1||1))*(W-SS))+'px;top:'+(H+SH+8)+'px';viz.appendChild(s);}
-      } else if(t.type==='round'){
-        var r=Math.max(40,Math.floor(SS*1.5)),pad=Math.floor(SS*1.1),sz=r*2+pad*2;
-        viz.style.cssText='width:'+sz+'px;height:'+sz+'px;position:relative';
-        var body=document.createElement('div');body.className='round-body';
-        body.style.cssText='width:'+r+'px;height:'+r+'px;left:'+(pad+r/2)+'px;top:'+(pad+r/2)+'px;cursor:pointer';
-        body.innerHTML='<span class="t-label">テーブル'+(ti+1)+'</span>';
-        body.onclick=(function(ti2){return function(e){e.stopPropagation();openTableTypePopup(ti2,body);};})(ti);
-        viz.appendChild(body);
-        var cx=pad+r;
-        for(var i=0;i<n;i++){var a=(2*Math.PI/n)*i-Math.PI/2;var s=mkSeat(t.id,i,SS,SH);s.style.cssText='left:'+(cx+Math.cos(a)*(r+pad/2)-SS/2)+'px;top:'+(cx+Math.sin(a)*(r+pad/2)-SH/2)+'px';viz.appendChild(s);}
-      } else {
-        var sW=SS+4,barH=22,bPad=14,W=Math.max(80,n*sW+bPad*2);
-        viz.style.cssText='width:'+W+'px;height:'+(barH+SH+10)+'px;position:relative';
-        var body=document.createElement('div');body.className='counter-body';
-        body.style.cssText='width:'+W+'px;height:'+barH+'px;left:0;top:'+(SH+10)+'px;cursor:pointer';
-        body.innerHTML='<span class="t-label">カウンター'+(ti+1)+'</span>';
-        body.onclick=(function(ti2){return function(e){e.stopPropagation();openTableTypePopup(ti2,body);};})(ti);
-        viz.appendChild(body);
-        for(var i=0;i<n;i++){var s=mkSeat(t.id,i,SS,SH,'counter-seat');s.style.cssText='left:'+(bPad+i*sW)+'px;top:0';viz.appendChild(s);}
-      }
-      wrap.appendChild(viz);
-    } else {
-      var ph=document.createElement('div');ph.style.cssText='padding:8px 16px;background:#f5f5f0;border-radius:8px;font-size:12px;color:#888;text-align:center;cursor:pointer';
-      ph.textContent=TBL_LABELS[t.type]+(ti+1)+'（＋で席数設定）';
-      ph.onclick=(function(ti2,ph2){return function(e){e.stopPropagation();openTableTypePopup(ti2,ph2);};})(ti,ph);
-      wrap.appendChild(ph);
-    }
-    var ctrl=document.createElement('div');ctrl.className='tbl-ctrl';
-    var stepper=document.createElement('div');stepper.className='seat-stepper';
-    var mb=document.createElement('button');mb.textContent='−';mb.onclick=(function(ti2){return function(){changeSeats(ti2,-1);};})(ti);
-    var cs=document.createElement('span');cs.textContent=n?n+'席':'席数';
-    var pb=document.createElement('button');pb.textContent='＋';pb.onclick=(function(ti2){return function(){changeSeats(ti2,1);};})(ti);
-    stepper.appendChild(mb);stepper.appendChild(cs);stepper.appendChild(pb);
-    var db=document.createElement('button');db.className='tbl-del-btn';db.textContent='削除';db.onclick=(function(ti2){return function(){removeTable(ti2);};})(ti);
-    ctrl.appendChild(stepper);ctrl.appendChild(db);
-    wrap.appendChild(ctrl);scene.appendChild(wrap);
-  });
-  updatePaxBadge();renderUnassigned();
-}
-
-function mkSeat(tid,idx,SS,SH,extraClass){
-  SS=SS||38;SH=SH||40;
-  var key=tid+'_'+idx;
-  var pIdx=S.assignments[key];
-  var person=(pIdx!==undefined&&pIdx!==null)?S.persons[pIdx]:null;
-  var s=document.createElement('div');
-  s.className='seat'+(person?' assigned':'')+(extraClass?' '+extraClass:'');
-  s.style.width=SS+'px';s.style.height=SH+'px';s.style.fontSize=Math.max(8,Math.floor(SS*0.22))+'px';
-  s.dataset.key=key;
-  if(person){var nm=person.name||'?';s.textContent=nm.length>4?nm.slice(0,3)+'…':nm;s.title=nm;
-    if(person.isKanji){var star=document.createElement('span');star.style.cssText='position:absolute;top:1px;right:2px;font-size:8px';star.textContent='👑';s.appendChild(star);}
-  } else {s.innerHTML='<span style="font-size:14px;opacity:0.4">＋</span>';}
-  s.onclick=(function(k){return function(e){e.stopPropagation();openSeatPopup(k,s);};})(key);
-  return s;
-}
-
-function openTableTypePopup(ti,anchorEl){
-  var popup=document.getElementById('seat-popup');popup.innerHTML='';
-  var t=S.tables[ti];
-  var hdr=document.createElement('div');hdr.style.cssText='font-size:11px;color:#888;padding:4px 10px 6px';hdr.textContent='テーブル種別を変更';popup.appendChild(hdr);
-  [{v:'rect',label:'四角テーブル',emoji:'⬛'},{v:'round',label:'円卓',emoji:'⭕'},{v:'counter',label:'カウンター席',emoji:'🟧'}].forEach(function(opt){
-    var item=document.createElement('div');item.className='seat-popup-item';
-    item.innerHTML='<span style="font-size:14px">'+opt.emoji+'</span><span style="flex:1">'+opt.label+'</span>';
-    if(t.type===opt.v)item.style.background='#e8f0fb';
-    item.onclick=(function(v){return function(){S.tables[ti].type=v;closeSeatPopup();renderScene();};})(opt.v);
-    popup.appendChild(item);
-  });
-  showPopupAt(popup,anchorEl);
-}
-
-function openSeatPopup(key,anchorEl){
-  activeSeatKey=key;
-  var popup=document.getElementById('seat-popup');popup.innerHTML='';
-  var assigned=assignedPersons();
-  var currentPIdx=S.assignments[key];
-  var namedPersons=S.persons.filter(function(p){return p.name;});
-  var hdr=document.createElement('div');hdr.style.cssText='font-size:11px;color:#888;padding:4px 10px 6px';hdr.textContent='参加者を選択';popup.appendChild(hdr);
-  namedPersons.forEach(function(p){
-    var realIdx=S.persons.indexOf(p);
-    var isAssignedElsewhere=assigned.has(realIdx)&&currentPIdx!==realIdx;
-    var item=document.createElement('div');item.className='seat-popup-item'+(isAssignedElsewhere?' assigned-elsewhere':'');
-    var c=S.cats.find(function(c){return c.id===p.catId;})||S.cats[0];
-    var dot=c?'<span class="pill-tag" style="background:'+c.color+';color:'+c.tc+';font-size:10px;padding:1px 6px">'+c.name+'</span>':'';
-    var kbadge=p.isKanji?'👑 ':'';
-    var isCurrent=currentPIdx===realIdx;
-    item.innerHTML='<span style="flex:1">'+kbadge+p.name+'</span>'+(isCurrent?'<span style="font-size:10px;color:#185FA5">✓ 選択中</span>':dot);
-    if(isCurrent)item.style.background='#e8f0fb';
-    if(!isAssignedElsewhere){
-      item.onclick=(function(ri,isCur){return function(){
-        if(isCur){
-          // 現在選択中の人をタップ→割り当て解除
-          delete S.assignments[key];
-        } else {
-          // 別の人をタップ→切り替え
-          S.assignments[key]=ri;
-        }
-        closeSeatPopup();renderScene();calcAmounts();
-      };})(realIdx,isCurrent);
-    }
-    popup.appendChild(item);
-  });
-  var addNew=document.createElement('div');addNew.className='seat-popup-item';addNew.style.cssText='color:#185FA5;font-weight:500';
-  addNew.innerHTML='＋ 新しい参加者を追加';
-  addNew.onclick=function(){
-    var name=prompt('新しい参加者の名前を入力してください');if(!name||!name.trim())return;
-    var n=name.trim();S.count++;S.persons.push({name:n,catId:(S.cats.find(function(c){return c.name==='一般';})||S.cats[S.cats.length-1]||S.cats[0]).id,isKanji:false});
-    var sel=document.getElementById('count-sel');if(sel)sel.value=S.count;
-    document.getElementById('persons-card').style.display='block';
-    renderPersonList();var newIdx=S.persons.length-1;S.assignments[key]=newIdx;
-    closeSeatPopup();renderScene();calcAmounts();showToast(n+'さんを追加しました');
-  };
-  popup.appendChild(addNew);
-  if(currentPIdx!==undefined&&currentPIdx!==null){
-    var p=S.persons[currentPIdx];
-    if(p){
-      var kanjiSection=document.createElement('div');kanjiSection.style.cssText='border-top:0.5px solid #e0e0d8;margin-top:4px;padding-top:4px';
-      var kanjiItem=document.createElement('div');kanjiItem.className='seat-popup-item';
-      var isKanji=p.isKanji;
-      kanjiItem.innerHTML='<span style="font-size:15px">'+(isKanji?'👑':'👤')+'</span><span style="flex:1;font-weight:'+(isKanji?'500':'400')+';color:'+(isKanji?'#856404':'#1a1a1a')+'">'+(isKanji?'幹事（タップで解除）':'幹事に設定する')+'</span>';
-      if(isKanji)kanjiItem.style.background='#FFF3CD';
-      kanjiItem.onclick=(function(idx){return function(){S.persons[idx].isKanji=!S.persons[idx].isKanji;renderPersonList();closeSeatPopup();renderScene();};})(currentPIdx);
-      kanjiSection.appendChild(kanjiItem);
-      popup.appendChild(kanjiSection);
-      var catSection=document.createElement('div');catSection.style.cssText='border-top:0.5px solid #e0e0d8;margin-top:4px;padding-top:4px';
-      var catLabel=document.createElement('div');catLabel.style.cssText='font-size:10px;color:#888;padding:4px 10px';catLabel.textContent='カテゴリ変更：';catSection.appendChild(catLabel);
-      S.cats.forEach(function(c){
-        var ci=document.createElement('div');ci.className='seat-popup-item';
-        var dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText='background:'+c.color+';color:'+c.tc+';padding:2px 7px;font-size:11px';dot.textContent=c.name;
-        var rate=document.createElement('span');rate.style.cssText='font-size:11px;color:#888';rate.textContent='×'+c.rate;
-        ci.appendChild(dot);ci.appendChild(rate);
-        if(p.catId===c.id)ci.style.background='#e8f0fb';
-        ci.onclick=(function(cidx,cid){return function(){S.persons[cidx].catId=cid;renderPersonList();calcAmounts();closeSeatPopup();renderScene();};})(currentPIdx,c.id);
-        catSection.appendChild(ci);
-      });
-      popup.appendChild(catSection);
-      var clearItem=document.createElement('div');clearItem.className='seat-popup-clear';clearItem.textContent='✕ 割り当てを外す';
-      clearItem.onclick=function(){delete S.assignments[key];closeSeatPopup();renderScene();calcAmounts();};
-      popup.appendChild(clearItem);
-    }
-  }
-  showPopupAt(popup,anchorEl);
-}
-
-function showPopupAt(popup,anchorEl){
-  popup.style.display='block';
-  var rect=anchorEl.getBoundingClientRect();
-  var left=rect.left,top=rect.bottom+6;
-  if(left+230>window.innerWidth)left=Math.max(4,window.innerWidth-234);
-  if(top+300>window.innerHeight)top=Math.max(4,rect.top-304);
-  popup.style.left=left+'px';popup.style.top=top+'px';
-  setTimeout(function(){document.addEventListener('click',closeSeatPopupOutside);},10);
-}
-function closeSeatPopup(){var p=document.getElementById('seat-popup');if(p)p.style.display='none';document.removeEventListener('click',closeSeatPopupOutside);activeSeatKey=null;}
-function closeSeatPopupOutside(e){var p=document.getElementById('seat-popup');if(p&&!p.contains(e.target))closeSeatPopup();}
-
-function renderUnassigned(){
-  var el=document.getElementById('unassigned-list');if(!el)return;
-  var assigned=assignedPersons();
-  var unassigned=S.persons.filter(function(p,i){return p.name&&!assigned.has(i);});
-  var assignedPeople=getAssignedPersons();
-  var hasKanji=assignedPeople.some(function(p){return S.persons[p.idx]?S.persons[p.idx].isKanji:false;});
-  var warnEl=document.getElementById('kanji-warning');
-  if(warnEl)warnEl.style.display=(assignedPeople.length>0&&!hasKanji)?'block':'none';
-  if(!unassigned.length){el.innerHTML='<p style="font-size:12px;color:#1D9E75;padding:4px 0">全員割り当て済みです ✅</p>';return;}
-  el.innerHTML='';
-  unassigned.forEach(function(p){
-    var span=document.createElement('span');span.style.cssText='display:inline-block;padding:4px 10px;background:#f5f5f0;border-radius:100px;font-size:13px;font-weight:500;margin:3px 3px;color:#1a1a1a';
-    span.textContent=p.name;el.appendChild(span);
-  });
-}
-
-// ===== CALC =====
-function getAssignedPersons(){
-  var idxSet=new Set(Object.values(S.assignments).filter(function(v){return v!==null&&v!==undefined;}));
-  var assigned=Array.from(idxSet).map(function(i){return Object.assign({idx:i},S.persons[i]);}).filter(function(p){return p.name;});
-  // 座席割り当てがない場合はS.personsから全員取得
-  if(assigned.length===0){
-    return S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
-  }
-  return assigned;
-}
-
-function calcAmounts(){
-  var total=S.total;var people=getAssignedPersons();if(!total||!people.length)return;
-  var getCat=function(p){return S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');})|| S.cats[0];};
-  var ws=people.reduce(function(s,p){var c=getCat(p);return s+(c?c.rate:1);},0);if(!ws)return;
-  var raws=people.map(function(p){var c=getCat(p);return((c?c.rate:1)/ws)*total;});
-  // デフォルト：100円切り上げ（100円単位）
-  people.forEach(function(p,i){S.amounts[p.idx]=r100(raws[i]);});
-  // スナップショット系はリセットしない（ボタン状態を保持）
-  if(currentPage===2)renderBillingPage();
-}
-
-function onTotalInput(v){
-  S.total=parseInt(v)||0;S.amounts={};S.kanjiSnapshot=null;
-  var hint=document.getElementById('per-person-hint');
-  if(hint){
-    var people=getAssignedPersons();
-    if(S.total>0&&people.length>0){
-      var each=Math.round(S.total/people.length);
-      hint.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:#888">👤 '+people.length+'人均等割り（参考）</span><span style="font-size:18px;font-weight:500;color:#185FA5">¥'+each.toLocaleString()+'<span style="font-size:11px;font-weight:400;color:#888">／人</span></span></div>';
-      hint.style.display='block';
-    } else hint.style.display='none';
-  }
-  calcAmounts();updateSummary();
-}
-
-function updateSummary(){
-  var total=S.total,people=getAssignedPersons();
-  var allAmt=people.reduce(function(s,p){return s+(S.amounts[p.idx]||0);},0);
-  var paidPeople=people.filter(function(p){return S.paid[p.idx];});
-  var collectedAmt=paidPeople.reduce(function(s,p){return s+(S.amounts[p.idx]||0);},0);
-  var paidCount=paidPeople.length,pct=total?Math.min(100,Math.round(collectedAmt/total*100)):0;
-  var remainder=allAmt-total;
-  document.getElementById('b-total').textContent=fmt(total);
-  document.getElementById('b-collected').textContent=fmt(collectedAmt);
-  var rem=document.getElementById('b-remainder');rem.textContent=remainder>=0?fmt(remainder):('−'+fmt(Math.abs(remainder)));rem.className='metric-value '+(remainder>=0?'':'deficit');
-  var perEl=document.getElementById('b-per-person');if(perEl)perEl.textContent='';
-  var diff=allAmt-total;
-  var rndEl=document.getElementById('b-rnd-info');if(rndEl){rndEl.textContent='請求合計 '+fmt(allAmt);rndEl.style.color='#888';}
-  document.getElementById('b-paid-count').textContent=paidCount+'/'+people.length+'人 支払済';
-  document.getElementById('b-prog').style.width=pct+'%';
-  var wrap=document.getElementById('kanji-surplus-wrap');
-  var kanjiList=people.filter(function(p){return S.persons[p.idx]?S.persons[p.idx].isKanji:false;});
-  var revertBtn=document.getElementById('btn-kanji-revert');
-  var surplusBtn=document.getElementById('btn-kanji-surplus');
-  var eqBtn=document.getElementById('btn-equal-split');
-  var eqRevBtn=document.getElementById('btn-equal-revert');
-  var r5Btn=document.getElementById('btn-r500');
-  var r5RevBtn=document.getElementById('btn-r500-revert');
-
-  var kanjiApplied=S.kanjiSnapshot!==null;
-  var equalApplied=S.equalSplitSnapshot!==null;
-  var r500Applied=S.r500Snapshot!==null;
-  var hasData=S.total>0&&people.length>0;
-
-  // グレーアウトヘルパー
-  function grayout(el,disabled){
-    if(!el)return;
-    el.style.opacity=disabled?'0.35':'1';
-    el.style.cursor=disabled?'default':'pointer';
-    el.style.pointerEvents=disabled?'none':'auto';
-  }
-
-  // 幹事充当ボタン
-  if(wrap){
-    wrap.style.display=(hasData&&kanjiList.length>0)||kanjiApplied?'block':'none';
-    if(surplusBtn){
-      if(kanjiApplied){
-        surplusBtn.style.display='none';
-      } else if(remainder!==0&&kanjiList.length>0){
-        var each2=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
-        surplusBtn.textContent='👑 '+(remainder>0?'余り'+fmt(remainder)+'を幹事':'不足'+fmt(Math.abs(remainder))+'を幹事が負担')+(kanjiList.length>1?kanjiList.length+'人':'')+'に充当（各'+fmt(Math.abs(each2))+'引く）';
-        surplusBtn.style.display='block';
-        grayout(surplusBtn,false);
-      } else {
-        surplusBtn.style.display='none';
-      }
-      if(revertBtn)revertBtn.style.display=kanjiApplied?'block':'none';
-    }
-  }
-
-  // 均等割りボタン（幹事充当中はグレーアウト）
-  if(eqBtn){
-    eqBtn.style.display=hasData&&!equalApplied?'block':'none';
-    grayout(eqBtn,kanjiApplied||r500Applied);
-  }
-  if(eqRevBtn)eqRevBtn.style.display=equalApplied?'block':'none';
-
-  // 500円刻みボタン
-  // 均等割り中：端数があれば表示（四捨五入→デフォルトに戻る）、なければ非表示
-  // 通常時：常に表示（幹事充当中はグレーアウト）
-  if(r5Btn){
-    if(equalApplied){
-      // 均等割り中は端数がある時だけ「四捨五入する（デフォルトに戻す）」として表示
-      var eqRemainder=people.reduce(function(s,p){return s+(S.amounts[p.idx]||0);},0)-S.total;
-      if(eqRemainder!==0){
-        r5Btn.textContent='🪙 端数を四捨五入してデフォルトに戻す';
-        r5Btn.style.display='block';
-        grayout(r5Btn,false);
-      } else {
-        r5Btn.style.display='none';
-      }
-    } else {
-      r5Btn.textContent='🪙 500円刻みにする';
-      r5Btn.style.display=hasData&&!r500Applied?'block':'none';
-      grayout(r5Btn,kanjiApplied);
-    }
-    r5Btn.style.cursor=kanjiApplied?'default':'pointer';
-    r5Btn.style.pointerEvents=kanjiApplied?'none':'auto';
-  }
-  if(r5RevBtn)r5RevBtn.style.display=r500Applied?'block':'none';
-}
-
-function showCatPopup(pIdx,anchorEl){
-  var popup=document.getElementById('cat-popup');popup.innerHTML='';
-  var p=S.persons[pIdx];if(!p)return;
-  S.cats.forEach(function(c){
-    var item=document.createElement('div');item.className='cat-popup-item'+(p.catId===c.id?' selected':'');
-    var dot=document.createElement('span');dot.className='pill-tag';dot.style.cssText='background:'+c.color+';color:'+c.tc+';padding:3px 8px';dot.textContent=c.name||'?';
-    var rate=document.createElement('span');rate.style.cssText='font-size:11px;color:#888';rate.textContent='×'+c.rate;
-    item.appendChild(dot);item.appendChild(rate);
-    item.onclick=(function(cid){return function(){S.persons[pIdx].catId=cid;calcAmounts();renderBillingPage();closeCatPopup();};})(c.id);
-    popup.appendChild(item);
-  });
-  var addItem=document.createElement('div');addItem.className='cat-popup-add';addItem.innerHTML='＋ 新しいカテゴリを追加';
-  addItem.onclick=function(){closeCatPopup();openAddCatModal(null);};popup.appendChild(addItem);
-  popup.style.display='block';
-  var rect=anchorEl.getBoundingClientRect();var left=rect.left,top=rect.bottom+4;
-  if(left+165>window.innerWidth)left=window.innerWidth-170;
-  if(top+S.cats.length*44+50>window.innerHeight)top=rect.top-(S.cats.length*44+54);
-  popup.style.left=left+'px';popup.style.top=top+'px';
-  setTimeout(function(){document.addEventListener('click',closeCatPopupOutside);},10);
-}
-function closeCatPopup(){var p=document.getElementById('cat-popup');if(p)p.style.display='none';document.removeEventListener('click',closeCatPopupOutside);}
-function closeCatPopupOutside(e){var p=document.getElementById('cat-popup');if(p&&!p.contains(e.target))closeCatPopup();}
-
-function applyRemainderToKanji(){
-  var people=getAssignedPersons();
-  var allAmt=people.reduce(function(s,p){return s+(S.amounts[p.idx]||0);},0);
-  var remainder=allAmt-S.total;if(remainder===0)return;
-  var kanjiList=people.filter(function(p){return S.persons[p.idx]?S.persons[p.idx].isKanji:false;});
-  if(!kanjiList.length){showToast('幹事が設定されていません');return;}
-  var each=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
-  if(each===0){showToast('充当できる金額がありません');return;}
-  S.kanjiSnapshot={};kanjiList.forEach(function(p){S.kanjiSnapshot[p.idx]=S.amounts[p.idx]||0;});
-  kanjiList.forEach(function(p){S.amounts[p.idx]=Math.max(0,(S.amounts[p.idx]||0)-each);var r=S.doneRecords.find(function(r){return r.idx===p.idx;});if(r)r.amount=S.amounts[p.idx];});
-  showToast(remainder>0?'幹事に各'+fmt(each)+'充当しました':'幹事が各'+fmt(Math.abs(each))+'負担します');renderBillingPage();
-}
-function revertKanjiSurplus(){
-  if(!S.kanjiSnapshot)return;
-  Object.entries(S.kanjiSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;var r=S.doneRecords.find(function(r){return r.idx==idx;});if(r)r.amount=amt;});
-  S.kanjiSnapshot=null;showToast('元の金額に戻しました');renderBillingPage();
-}
-
-function applyEqualSplit(){
-  var people=getAssignedPersons();
-  if(!people.length||!S.total)return;
-  // 幹事充当中なら先にリセット
-  if(S.kanjiSnapshot){
-    Object.entries(S.kanjiSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;});
-    S.kanjiSnapshot=null;
-  }
-  // 均等割りスナップショット保存
-  S.equalSplitSnapshot={};
-  people.forEach(function(p){S.equalSplitSnapshot[p.idx]=S.amounts[p.idx]||0;});
-  var each=Math.round(S.total/people.length);
-  people.forEach(function(p){S.amounts[p.idx]=each;});
-  showToast('均等割り ¥'+each.toLocaleString()+'／人 に変更しました');
-  renderBillingPage();
-}
-
-function apply500Split(){
-  var people=getAssignedPersons();
-  if(!people.length||!S.total)return;
-
-  // 均等割り中に押された場合→均等割りをリセットしてデフォルト（100円切り上げ）に戻す
-  if(S.equalSplitSnapshot){
-    Object.entries(S.equalSplitSnapshot).forEach(function(e){S.amounts[e[0]]=e[1];});
-    S.equalSplitSnapshot=null;
-    S.r500Snapshot=null;
-    showToast('デフォルト（100円切り上げ）に戻しました');
-    renderBillingPage();
-    return;
-  }
-
-  // 通常時：500円刻みに変換
-  S.r500Snapshot={};
-  people.forEach(function(p){S.r500Snapshot[p.idx]=S.amounts[p.idx]||0;});
-  var raws=people.map(function(p){return S.amounts[p.idx]||0;});
-  var sumUp=raws.reduce(function(s,r){return s+r500up(r);},0);
-  var sumDn=raws.reduce(function(s,r){return s+r500dn(r);},0);
-  var useUp=Math.abs(sumUp-S.total)<=Math.abs(sumDn-S.total);
-  var roundFn=useUp?r500up:r500dn;
-  people.forEach(function(p){S.amounts[p.idx]=roundFn(S.r500Snapshot[p.idx]);});
-  showToast('500円刻みに変更しました');
-  renderBillingPage();
-}
-function revert500Split(){
-  if(!S.r500Snapshot)return;
-  Object.entries(S.r500Snapshot).forEach(function(e){S.amounts[e[0]]=e[1];});
-  S.r500Snapshot=null;
-  showToast('元の金額に戻しました');
-  renderBillingPage();
-}
-function revertEqualSplit(){
-  if(!S.equalSplitSnapshot)return;
-  Object.entries(S.equalSplitSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;});
-  S.equalSplitSnapshot=null;
-  showToast('元の金額に戻しました');
-  renderBillingPage();
-}
-
-function renderBillingPage(){
-  var tiEl=document.getElementById('total-input');
-  if(S.total&&tiEl&&!tiEl.value)tiEl.value=S.total;
-  var hint=document.getElementById('per-person-hint');
-  if(hint){
-    var people=getAssignedPersons();
-    if(S.total>0&&people.length>0){
-      var each=Math.round(S.total/people.length);
-      hint.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:#888">👤 '+people.length+'人均等割り（参考）</span><span style="font-size:18px;font-weight:500;color:#185FA5">¥'+each.toLocaleString()+'<span style="font-size:11px;font-weight:400;color:#888">／人</span></span></div>';
-      hint.style.display='block';
-    } else hint.style.display='none';
-  }
-  updateSummary();
-  var list=document.getElementById('billing-list');list.innerHTML='';
-  var people=getAssignedPersons();
-  if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">座席に参加者を割り当ててください</p>';return;}
-  people.forEach(function(p){
-    var c=(S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');}))||S.cats[0];
-    var isPaid=!!S.paid[p.idx];
-    var row=document.createElement('div');row.className='br'+(isPaid?' is-paid':'');
-    var nameSpan=document.createElement('span');nameSpan.className='br-name';
-    var nameText=document.createElement('span');nameText.textContent=p.name;nameText.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0';nameSpan.appendChild(nameText);
-    var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;
-    if(isKanji){var badge=document.createElement('span');badge.className='kanji-badge';badge.textContent='👑';nameSpan.appendChild(badge);}
-    var catEl=document.createElement('span');catEl.className='br-cat';
-    if(c)catEl.innerHTML='<span class="pill-tag" style="background:'+c.color+';color:'+c.tc+';cursor:pointer">'+(c.name||'?')+'</span>';
-    catEl.onclick=(function(pidx){return function(e){e.stopPropagation();showCatPopup(pidx,catEl);};})(p.idx);
-    var amtWrap=document.createElement('span');amtWrap.className='br-amt';
-    var amtText=document.createElement('span');amtText.textContent=S.amounts[p.idx]!==undefined?fmt(S.amounts[p.idx]):'—';
-    var editIcon=document.createElement('span');editIcon.style.cssText='font-size:10px;opacity:0.55';editIcon.textContent='✎';
-    amtWrap.appendChild(amtText);if(!isPaid)amtWrap.appendChild(editIcon);
-    amtWrap.onclick=(function(pidx){return function(){if(!isPaid)startEditAmt(pidx,amtWrap);};})(p.idx);
-    var kBtn=document.createElement('button');kBtn.className='br-kanji-btn'+(isKanji?' active':'');kBtn.textContent=isKanji?'👑':'幹事';
-    kBtn.onclick=(function(pidx){return function(){if(S.persons[pidx])S.persons[pidx].isKanji=!S.persons[pidx].isKanji;renderBillingPage();updateSummary();};})(p.idx);
-    var payBtn=document.createElement('button');payBtn.className='br-pay-btn'+(isPaid?' paid':'');
-    payBtn.textContent=isPaid?'✓ 集金済み':'💰 集金する';payBtn.onclick=(function(pidx){return function(){togglePaid(pidx);};})(p.idx);
-    row.appendChild(nameSpan);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(kBtn);row.appendChild(payBtn);list.appendChild(row);
-  });
-}
-
-function togglePaid(idx){
-  if(S.paid[idx]){S.paid[idx]=false;var i=S.doneRecords.findIndex(function(r){return r.idx===idx;});if(i>=0)S.doneRecords.splice(i,1);}
-  else{S.paid[idx]=true;var time=new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});if(!S.doneRecords.find(function(r){return r.idx===idx;}))S.doneRecords.push({idx:idx,name:S.persons[idx]?S.persons[idx].name:'',amount:S.amounts[idx]||0,time:time});}
-  renderBillingPage();updateSummary();
-}
-
-function startEditAmt(idx,el){
-  var cur=S.amounts[idx]||'';var inp=document.createElement('input');inp.type='number';inp.className='br-amt-input';inp.value=cur;inp.step=500;inp.inputMode='numeric';el.replaceWith(inp);inp.focus();inp.select();
-  function commit(){var v=parseInt(inp.value)||0;S.amounts[idx]=v;var r=S.doneRecords.find(function(r){return r.idx===idx;});if(r)r.amount=v;var span=document.createElement('span');span.className='br-amt';span.textContent=v?fmt(v):'—';span.onclick=function(){startEditAmt(idx,span);};inp.replaceWith(span);updateSummary();}
-  inp.onblur=commit;inp.onkeydown=function(e){if(e.key==='Enter')inp.blur();};
-}
-
-function addPersonFromBilling(){
-  var name=prompt('追加する参加者の名前を入力してください');
-  if(!name||!name.trim())return;
-  var n=name.trim();
-  // デフォルトカテゴリ（一般）を探す
-  var defCat=S.cats.find(function(c){return c.name==='一般';})||S.cats[S.cats.length-1]||S.cats[0];
-  S.persons.push({name:n,catId:defCat?defCat.id:'c2',isKanji:false});
-  S.count=S.persons.length;
-  // 基本情報の人数セレクトも更新
-  var sel=document.getElementById('count-sel');if(sel)sel.value=S.count;
-  document.getElementById('persons-card').style.display='block';
-  renderPersonList();
-  // 金額再計算
-  S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;
-  calcAmounts();
-  showToast(n+'さんを追加しました');
-  renderBillingPage();
-}
-
-function goToBilling(){
-  var namedPersons=S.persons.filter(function(p){return p.name;});
-  var hasKanji=namedPersons.some(function(p){return p.isKanji;});
-  if(!hasKanji&&namedPersons.length>0){
-    alert('幹事が設定されていません。\n基本情報または座席配置で幹事を1名以上設定してください。');return;
-  }
-  goPage(2);
-}
-
-function goResult(){
-  var people=getAssignedPersons(),total=S.total;
-  var allAmt=people.reduce(function(s,p){return s+(S.amounts[p.idx]||0);},0);
-  var paidAmt=S.doneRecords.reduce(function(s,r){return s+r.amount;},0);
-  var paidCount=people.filter(function(p){return S.paid[p.idx];}).length,remainder=paidAmt-total;
-  document.getElementById('r-title').textContent=S.title||'飲み会';
-  document.getElementById('r-date').textContent=fmtDate(S.date);
-  var stats=document.getElementById('result-stats');stats.innerHTML='';
-  [['参加人数',people.length+'名'],['代金合計',fmt(total)],['集計金額（500円刻み）',fmt(allAmt)],['実際の集金額',fmt(paidAmt)],['余り / 不足',remainder>=0?'+'+fmt(remainder)+' 余り':fmt(Math.abs(remainder))+' 不足'],['支払済み',paidCount+'/'+people.length+'名']].forEach(function(lv){var row=document.createElement('div');row.className='result-row';row.innerHTML='<span class="result-row-label">'+lv[0]+'</span><span class="result-row-val">'+lv[1]+'</span>';stats.appendChild(row);});
-  var rp=document.getElementById('result-people');rp.innerHTML='';
-  people.forEach(function(p){
-    var c=(S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');}))|| S.cats[0];
-    var row=document.createElement('div');row.className='result-row';
-    var tag=c?'<span class="pill-tag" style="background:'+c.color+';color:'+c.tc+';font-size:10px">'+c.name+'</span>':'';
-    var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;
-    var kb=isKanji?'<span class="kanji-badge">👑 幹事</span>':'';
-    row.innerHTML='<span class="result-row-label" style="display:flex;align-items:center;gap:5px">'+(S.paid[p.idx]?'✅':'⬜')+' '+p.name+' '+tag+kb+'</span><span class="result-row-val">'+fmt(S.amounts[p.idx]||0)+'</span>';
-    rp.appendChild(row);
-  });
-  goPage(3);
-}
-
-function buildShareText(){
-  var people=getAssignedPersons(),total=S.total;
-  var allAmt=people.reduce(function(s,p){return s+(S.amounts[p.idx]||0);},0);
-  var paidAmt=S.doneRecords.reduce(function(s,r){return s+r.amount;},0);var remainder=paidAmt-total;
-  var txt='🍺 '+(S.title||'飲み会')+' '+fmtDate(S.date)+'\n━━━━━━━━━━━━\n代金合計：'+fmt(total)+'\n集計金額：'+fmt(allAmt)+'\n実集金額：'+fmt(paidAmt)+'\n';
-  txt+=remainder>=0?('余り：+'+fmt(remainder)+'\n'):('不足：'+fmt(Math.abs(remainder))+'\n');
-  txt+='━━━━━━━━━━━━\n';
-  people.forEach(function(p){var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;txt+=(S.paid[p.idx]?'✅':'⬜')+' '+p.name+(isKanji?'（幹事）':'')+' : '+fmt(S.amounts[p.idx]||0)+'\n';});
-  // 座席情報（登録されている場合）
-  var hasAssignments=Object.keys(S.assignments).length>0;
-  if(hasAssignments&&S.tables.length>0){
-    txt+='\n🪑 座席配置\n';
-    S.tables.forEach(function(t,ti){
-      var tLabel=['四角テーブル','円卓','カウンター席'][['rect','round','counter'].indexOf(t.type)]||'テーブル';
-      txt+='['+(tLabel)+(ti+1)+']\n';
-      var seats=[];
-      for(var i=0;i<(t.seats||0);i++){
-        var key=t.id+'_'+i;
-        var pIdx=S.assignments[key];
-        var p=pIdx!==undefined&&pIdx!==null?S.persons[pIdx]:null;
-        seats.push((i+1)+'.'+(p&&p.name?p.name:'空席'));
-      }
-      txt+=seats.join(' / ')+'\n';
-    });
-  }
-  // 軽量版URLを末尾に追加（結果のみ、シェア用）
-  try{
-    var lite={
-      t:S.title,d:S.date,total:S.total,
-      p:people.map(function(p){
-        return {n:p.name,a:S.amounts[p.idx]||0,paid:S.paid[p.idx]?1:0,k:S.persons[p.idx]&&S.persons[p.idx].isKanji?1:0};
-      })
-    };
-    var liteEnc=btoa(unescape(encodeURIComponent(JSON.stringify(lite))));
-    txt+='\n📎 '+location.origin+location.pathname+'?r='+liteEnc;
-  }catch(e){}
-  return txt;
-}
-function shareLine(){window.open('https://line.me/R/share?text='+encodeURIComponent(buildShareText()),'_blank');}
-function shareViber(){window.open('viber://forward?text='+encodeURIComponent(buildShareText()),'_blank');}
-function shareSMS(){window.open('sms:?body='+encodeURIComponent(buildShareText()),'_blank');}
-function copyResult(){var txt=buildShareText();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){showToast('コピーしました！');});}else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました！');}}
-
-function shareHeaderLine(){var txt=encodeURIComponent('🍺 飲み会の集金管理アプリ「お勘定奉行 幹事郎」\n'+location.href);window.open('https://line.me/R/share?text='+txt,'_blank');}
-function shareHeaderCopy(){var url=location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){showToast('リンクをコピーしました！');});}else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('リンクをコピーしました！');}}
-
-function encodeState(){
-  try{
-    var data={t:S.title,d:S.date,c:S.count,p:S.persons.map(function(p){return{n:p.name,c:p.catId,k:p.isKanji?1:0};}),cats:S.cats.map(function(c){return{id:c.id,n:c.name,r:c.rate,co:c.color,tc:c.tc};}),tbl:S.tables.map(function(t){return{id:t.id,tp:t.type,s:t.seats};}),asgn:S.assignments,amt:S.amounts,paid:Object.fromEntries(Object.entries(S.paid).map(function(e){return[e[0],e[1]?1:0];})),total:S.total};
-    return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-  }catch(e){return null;}
-}
-function decodeState(b64){
-  try{
-    if(!b64||typeof b64!=='string')return false;
-    var data=JSON.parse(decodeURIComponent(escape(atob(b64))));
-    S.title=data.t||'';S.date=data.d||'';S.count=data.c||0;
-    S.persons=(data.p||[]).map(function(p){return{name:p.n,catId:p.c,isKanji:!!p.k};});
-    if(data.cats&&data.cats.length)S.cats=data.cats.map(function(c){return{id:c.id,name:c.n,rate:c.r,color:c.co,tc:c.tc};});
-    S.tables=(data.tbl||[]).map(function(t){return{id:t.id,type:t.tp,seats:t.s};});
-    S.assignments=data.asgn||{};
-    S.amounts=data.amt||{};
-    S.paid=Object.fromEntries(Object.entries(data.paid||{}).map(function(e){return[e[0],!!e[1]];}));
-    S.total=data.total||0;
-    return true;
-  }catch(e){return false;}
-}
-function saveStateUrl(){
-  var enc=encodeState();if(!enc){showToast('データの保存に失敗しました');return;}
-  var url=location.origin+location.pathname+'?d='+enc;
-  if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){showToast('💾 保存URLをコピーしました！');});}
-  else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('💾 保存URLをコピーしました！');}
-}
-function loadStateFromUrl(){
-  var params=new URLSearchParams(location.search);var d=params.get('d');if(!d)return false;return decodeState(d);
-}
-
-function resetAll(){
-  S.title='';S.date='';S.count=0;S.persons=[];S.tables=[];S.assignments={};S.amounts={};S.paid={};S.doneRecords=[];S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;
-  document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';
-  var sel=document.getElementById('count-sel');if(sel)sel.value='';
-  var ti=document.getElementById('total-input');if(ti)ti.value='';
-  document.getElementById('persons-card').style.display='none';
-  renderCatList();renderScene();goPage(0);
-}
-
-
-// Attach inline handlers via JS to avoid iOS Script error
-document.getElementById('ev-title').addEventListener('input', function(){S.title=this.value;});
-document.getElementById('ev-date').addEventListener('input', function(){S.date=this.value;document.getElementById('date-preview').textContent=fmtDate(this.value);});
-document.getElementById('count-sel').addEventListener('change', function(){onCountChange(this.value);});
-document.getElementById('total-input').addEventListener('input', function(){onTotalInput(this.value);});
-
-// ===== INIT =====
-// ?r= パラメータ：結果のみの軽量URL
-var _rParam=new URLSearchParams(location.search).get('r');
-if(_rParam){
-  try{
-    var _rData=JSON.parse(decodeURIComponent(escape(atob(_rParam))));
-    S.title=_rData.t||'';S.date=_rData.d||'';S.total=_rData.total||0;
-    (_rData.p||[]).forEach(function(p,i){
-      S.persons.push({name:p.n,catId:'c2',isKanji:!!p.k});
-      S.amounts[i]=p.a||0;
-      if(p.paid)S.paid[i]=true;
-    });
-    // 結果ページを直接表示
-    document.getElementById('r-title').textContent=S.title||'飲み会';
-    document.getElementById('r-date').textContent=fmtDate(S.date);
-    var stats=document.getElementById('result-stats');stats.innerHTML='';
-    var allAmt=S.persons.reduce(function(s,p,i){return s+(S.amounts[i]||0);},0);
-    [['参加人数',S.persons.length+'名'],['代金合計',fmt(S.total)],['集計金額',fmt(allAmt)]].forEach(function(lv){var row=document.createElement('div');row.className='result-row';row.innerHTML='<span class="result-row-label">'+lv[0]+'</span><span class="result-row-val">'+lv[1]+'</span>';stats.appendChild(row);});
-    var rp=document.getElementById('result-people');rp.innerHTML='';
-    S.persons.forEach(function(p,i){var row=document.createElement('div');row.className='result-row';var kb=p.isKanji?'<span class="kanji-badge">👑 幹事</span>':'';row.innerHTML='<span class="result-row-label" style="display:flex;align-items:center;gap:5px">'+(S.paid[i]?'✅':'⬜')+' '+p.name+' '+kb+'</span><span class="result-row-val">'+fmt(S.amounts[i]||0)+'</span>';rp.appendChild(row);});
-    goPage(3);
-  }catch(e){}
-}
-var _restored=loadStateFromUrl();
-if(_restored){
-  var titleEl=document.getElementById('ev-title');if(titleEl)titleEl.value=S.title;
-  var dateEl=document.getElementById('ev-date');if(dateEl)dateEl.value=S.date;
-  document.getElementById('date-preview').textContent=fmtDate(S.date);
-  var selEl=document.getElementById('count-sel');if(selEl&&S.count)selEl.value=S.count;
-  if(S.persons.length)document.getElementById('persons-card').style.display='block';
-  if(S.total){var ti2=document.getElementById('total-input');if(ti2)ti2.value=S.total;}
-  renderPersonList();renderCatList();renderScene();
-  showToast('💾 保存データを復元しました');
-  S.cats.forEach(function(c){var m=c.id.match(/^c(\d+)$/);if(m)catIdCnt=Math.max(catIdCnt,parseInt(m[1])+1);});
-} else {
-  var today=new Date().toISOString().slice(0,10);
-  document.getElementById('ev-date').value=today;
-  document.getElementById('date-preview').textContent=fmtDate(today);
-  S.date=today;
-  renderCatList();renderScene();
-}
-history.pushState({page:0},'',location.origin+location.pathname+'#p0');
-window.addEventListener('resize',function(){
-  var _pe=document.querySelector('.page');
-  var pageW=_pe?_pe.offsetWidth:window.innerWidth;
-  document.getElementById('pages').style.transition='none';
-  document.getElementById('pages').style.transform='translateX(-'+(currentPage*pageW)+'px)';
-  setTimeout(function(){document.getElementById('pages').style.transition='';},50);
-  if(currentPage===1)renderScene();
-});
-
-</script>
-</body>
-</html>
+[Speaker 1]: Okay, okay.
+[Speaker 3]: Yeah, I already offered Collins to why not they inspect in Canon's building, but they said they have no limited time, so they just see from outside. But I tried to get the time for the meeting with GVP or Jovan, Collins, about Canon. To meet, yeah, sure. Yeah, okay.
+[Speaker 2]: Although I suspect if it's January 10, they have to make a decision. It maybe increases their chances because their time to market might be faster. I don't know how ready we are. The other one that you need to talk to is TE. Is TE interested? Who is that? Joseph?
+[Speaker 4]: From
+[Speaker 1]: The Philippines? No, the
+[Speaker 2]: Indian. Why don't you reach out to him? Okay. Since they're already completing that one. And they even
+[Speaker 1]: Say now before that's uh more probably after that they need some more
+[Speaker 2]: Why two yeah so tell them that two one we're about to close on you and are they interested in that the second is that canon is opening up are they interested in in the in the facility or part of the city so it's just creating lots of pressure in the market around you And at least PE is time-tested. They're willing to take over an existing facility and convert. Two hard conversions. They already
+[Speaker 1]: Have a template. They found this one. Their molding area is already reinforced. The foundation, you know. If this is 200 big presses,
+[Speaker 3]: Yes, Canon will conduct the job fair for the FPIP's camp locators. So we help to announce the locator about this job fair. From import have we
+[Speaker 2]: Uh made an estimate on how many of our rbf indicators will are completely or largely dependent on time
+[Speaker 3]: Uh dodge has initial
+[Speaker 2]: Can you just share do you want to show it already Most of them probably have multiple ties. The others are not exclusive, which is good news. Some of them cater to brother. As we're waiting for the show, any news on Epson?
+[Speaker 3]: Not yet, but they still stopped the production. Maybe until the end of May.
+[Speaker 2]: Sorry?
+[Speaker 3]: Very nice very nice yeah because the can the one of the factor uh cannot close is the demand for the laser printer then browser is mainly for the inkjet printer so the market is different
+[Speaker 2]: Yeah
+[Speaker 3]: Then then the brothers factory manufacturing factory is mainly philippine in the vietnam So if they close the Philippines factory, it means brother dead. So they won't exit from the Philippines unless they will have alternative factories in other countries. So this
+[Speaker 2]: Is
+[Speaker 5]: The list.
+[Speaker 2]: This is actually the... This is based
+[Speaker 5]: On the annual revenues last year for 2025 with the company count including the anchor locator. So basically our top one is Dyson with 11 locators. And we tally the company count, the annual Let's go to Brother. I thought it's your catalog. For Canon sir, they have some common suppliers with the other locator network. So like for example those blue items, these are also vendors of Dyson.
+[Speaker 2]: So who are Canon owned or Canon Darjeeling? Here, the black ones
+[Speaker 5]: Only. So that's a total of 37 million in revenues, down from 74 because if you add this one with the common suppliers, this would be about 74 million in annual
+[Speaker 2]: Revenues. So it came packaged in the Bay of Philippines, Moatec, New World, Kowada. These are all kind of only?
+[Speaker 3]: Yes. I don't think so. Kanepakeji Sankogose is canon only. Which one? Kanepakeji and Sankogose. But I think the New World and Noda Kigata has the other suppliers. This is just with respect to the top 13 locators. So can we...
+[Speaker 2]: Either through, maybe we can, with Utah, with this list, either Utah and Cass directly or even Deji, actually talk to the ones that we think may be at
+[Speaker 3]: Risk. Okay. Just to see what they're,
+[Speaker 2]: You know. Some have already approached us.
+[Speaker 3]: Yes, yes, already.
+[Speaker 2]: Are there others, other than them, that these guys are just putting up a brave face and they'll find something else? Because it's quite extensive.
+[Speaker 4]: Yes okay i think reggie arranged a meeting with kanya package to to meet with pmftc to check if they can actually serve pmftc it happened last week and i think there's a positive feedback from that meeting
+[Speaker 2]: Actually so the blue ones have we know are actually serving others yes Those in black seem to be canon only. But potentially, we just don't have full visibility. Except for the ones that are obvious, which are the two that we know are canon only. Canny package. Canny package.
+[Speaker 3]: Because, yeah, Kanepakeji have the warehouse in other industrial park, RIPA and Laguna Technopark. So for the FPIP's factory, it's only for Canon. So they want to evacuate from this situation. But as Jason said, we introduced Philip Morris, and if they get a business, they would be staying.
+[Speaker 2]: Thank you. So let's just get the check. Okay. Who's at risk among those.
+[Speaker 3]: Okay. Thank
+[Speaker 2]: You. I guess if they're where we can help, let's help. Mm-hmm. Okay.
+[Speaker 1]: They are supplying all over the zone
+[Speaker 2]: Area. Because here, but it's relative to . They
+[Speaker 3]: Have customers
+[Speaker 1]: Outside. They cut there. It comes in oil. They cut based on the requirement of . All industrial
+[Speaker 2]: Parts, they .
+[Speaker 3]: So i guess that's how to leave it's just within yeah i i need to check
+[Speaker 2]: It yeah customers okay
+[Speaker 3]: Good morning, everyone. You again? Okay, so this is the... 
+
+I will update the sales activity of IBG. So now we have 10... Prospect, which are reaching to us, Nikkoshi, Lindagas, with Susumi, and Astemo, Veneto, Fit Philippines, next one Iwatani, Murata, T-Octo, Kyushin. And those are, there are not big changes from last report. So now we have two new prospects, Asti and Kyushin Philippines. Both of them are the wire harness company, and they are interested in the Sonyon building. But as the timing's not that clear, we just introduced Sonyon building only. So Asti's currently stay in the W1G to W1, they occupy 4400 square meters but they want to expand their business and that they want to purchase the building because the our rent is going to escalate going to higher then they think our purchase is better option than this thing so that they requested the building which they can purchase. Then we just introduce Sonyon, just a brief proposal. So they will consider. The Kyushin is now located...
+[Speaker 2]: Not the whole facility. Are you cutting out
+[Speaker 3]: The... Ah, no. Whole facility of building. But not the
+[Speaker 2]: Land. Yes. Because the rear portion we can keep. And so the deal we're trying to shape is that they can buy the building, but they'll lease the lot from
+[Speaker 3]: Us. Yes, yes, yes. It's like what we proposed to Mitsui before. So we gave the two options. Just lease the building only. Or purchase building plus land lease.
+[Speaker 2]: But we can buy the building and resell to them. Yes. So they don't buy it directly. So we can make a margin on the building.
+[Speaker 3]: But my concern is that those two are the wire harness company. They don't have money. It's too much. So my concern is there. But the two companies. But they have dreams. Yes. Have they seen a good payer? Yes. As of now. Okay.
+[Speaker 2]: But how much how much rdf
+[Speaker 3]: Sorry how much
+[Speaker 2]: How much rdf do they occupy today four
+[Speaker 3]: Thousand uh four okay thank you yes Yes, they supply Honda,
+[Speaker 1]: Yamaha
+[Speaker 3]: Then Kyushin is the Peko's locator They also have a big factory in Tekko that they want to expand to the south area. Maybe Honda is one of the biggest customers that they want to expand inside FPIP. They were able to survive
+[Speaker 1]: There in Tekko
+[Speaker 3]: Because it's very remote. Yes. And next one is a Singapore data center company. We had a meeting with them, then we got the explanation from their business model. So basically they will own the building, then they will lease that building to the operator of data center. It's kind of like a subleasing so we told them that we do not allow the subleasing then they will consider the other business model which we can accept it so once they prepare that proposal we will have a faster negotiation with them so this
+[Speaker 2]: Next one is going to build a data center so Or they're going to buy the lot and then find someone who's going to build the data
+[Speaker 3]: Center? They build the data center.
+[Speaker 2]: Well, because that's fine, right? Because basically their business is leasing out halls, data halls, right? But it's another thing if they're just buying it and they're going to find a data center developer to actually build it. In which case, they just became a landlord. Well, they're still a landlord, but they at least put up a facility.
+[Speaker 3]: But what's the issue is they still not yet get the funding. So they are now discussed with the shareholders, investors, who will invest this company. What's behind the next one? It's an XYCO guy. That's why I was getting confused. I thought it was actually
+[Speaker 2]: YCO. It's an XYCO guy. So this would be similar to the YCO setup? I guess he's picking up from that. Canon dog.
+[Speaker 3]: So he wants to
+[Speaker 4]: Split the
+[Speaker 3]: Canon lot. The issue is the creditability, how we assess their payment capability. And number four is the Iwatani Nano RBF project. So we have discussed with the CMG team to share the finalized DOR. Because the current proposal, the construction cost, considering construction cost, it's a little bit difficult to accept by Iwatani. Because Iwatani already get an internal approval from the rent between 450 to 500 pesos per square meter. But the current construction cost, gives the higher end, rather than 500 pesos per centimeter. So that we discuss with the CMG team how we can save and make it efficient, reduce the cost.
+[Speaker 2]: How much is the cost right now
+[Speaker 3]: Per square meter? Per square meter. How much is the cost per square meter, Jeff? 25,000.
+[Speaker 2]: Now. Plus length, yeah?
+[Speaker 1]: So, the issue is the land development. Because of the PCCP. Bakit? Ang pahal yung land development? The land development is the parking
+[Speaker 2]: Area, the additional area. So, kaano talaga ba ito? How big is the entire? 740 square meters. No, how big is the entire? It's 1,000. That's all of it. The building
+[Speaker 3]: Is 1,000 square
+[Speaker 2]: Meters. Building is 750. 740. So,
+[Speaker 3]: They're willing to pay 450. 450. Ah, yeah. They're willing to pay 500. 500. Yes. Then, also, they also accept 6 plus 6. 6 month advance rent. 6 month security deposit.
+[Speaker 2]: How long are they willing
+[Speaker 3]: To pay? 5 years. Because their main supplier is Murata. As long as Murata is there, they would be staying there. And what's the
+[Speaker 2]: Total development cost? Now, 43 million. So you have to find
+[Speaker 3]: A way to bring it to about 35 million.
+[Speaker 2]: If you can bring it down to about 35 million, you have a... We already discussed with
+[Speaker 3]: CMG team this. And also, as Iwatani accept to pay 6 plus 6 advance and our security deposit, the construction cost can be accept by till 45 million. So, we try to find a way with the CMG and the, finally, financial team.
+[Speaker 2]: Yeah. We have bid leaders already for that. Refine na lang ba? Refine ba? To close warehouse, yes, we should. O building do. BTS yan. No, it's... Actually, it's
+[Speaker 1]: A warehouse with a special... Request of 2.1 tons, right? Ah, yes. On the floor. 2.9 tons. 2.9 tons to the
+[Speaker 3]: Floor. And all the surrounding area is paved. So, that's why,
+[Speaker 1]: In development, most of them went down. But, you know, in terms of height, yeah, I think, I think that's true. I think that's true. I think that's true. But those special requests raised the
+[Speaker 2]: Consequence. This is in front of
+[Speaker 3]: Murata. Murata, yes.
+[Speaker 2]: Or the site of Murata.
+[Speaker 1]: Site of Bayonet Barrier Normalizer and Organizer. Kasi kung ang Murata, di mo alam kung aras kaya kung...
+[Speaker 2]: Anyway, it's not too far. Yeah. I mean, in terms of cost, I think we're at about 40 plus. Our threshold is about 35. Find a way to cut, diba? Even the bids that was submitted is almost the same. Almost the same. Let's just finalize the... Project plan? So we can show it for approval. We have finalized the POR except that you requested for a minimum lay-out. I think it's 4 million a year. 4.5 million. What's the escalation rate?
+[Speaker 1]: 5%. And you don't have occupancy rates?
+[Speaker 3]: And negotiation with Murata. Murata is currently occupied This area, 70.5k square meters. Then we agree they will renew this area for two years. And during two years, we will negotiate the expansion area. Then internally, Murata already agreed to expand their business. But detail has not yet been discussed.
+[Speaker 2]: We will commence discussion or commence
+[Speaker 3]: Expansion. We already submit the proposal, basic condition, the 50 years and the 78.735 and the price also, the reservation fees also. So 78,000 excludes
+[Speaker 2]: The 17,500? Include, include. But they're paying double?
+[Speaker 3]: No, because they will start using the two years after, from now on. So we will have the reservation agreement, we will have this area lease first. So there's
+[Speaker 2]: A two-leave, first, there's two hectares that they're occupying today. Submit contract of lease for renewal of FPIB, 17,500, right? So... That will continue for two years. That will extend for another two years. This one. Right? Yes. And then, on top of that, they are going to be looking
+[Speaker 3]: At leasing the board. Yes. So that's
+[Speaker 2]: Why 70,000 leasing. So while they will give 150 million to reserve the whole thing, they will be paying this at the same time?
+[Speaker 3]: Yes. Then once we sign on the reservation agreement, we will change the business
+[Speaker 2]: Contract.
+[Speaker 3]: But they're still, on top of the 150, they're still paying the 24 million a year
+[Speaker 2]: For the next two years? Yes. So they will have use of the whole area? No. Just till the 17,000? Yes.
+[Speaker 3]: Because if we have the reservation agreement, we cannot use that area anymore. So pass it on.
+[Speaker 2]: But why change the lease? Or just because they... Do you still need to change the original COM? No, we don't need to. Why do you need to expand
+[Speaker 3]: It for the moon?
+[Speaker 2]: It will
+[Speaker 3]: Form part already. Yes, the reservation agreement for this.
+[Speaker 2]: I understand. But why do you need to change the contract of lease for the 17,500 during the two-year reservation agreement? Because the reservation agreement for
+[Speaker 3]: 2020
+[Speaker 2]: So there will be two contracts that are parallel, right? But the other one is saying, I'm going to lease it after 2028. The other one is leasing a portion of it from 2026 to 2028. But why do you need to expand it to the whole? Yes, we will expand this for two years. We will expand this to this. So I don't know why you need to do
+[Speaker 3]: That. Because if they have the reservation agreement, We won't use this area anymore. But we need to manage the grass cutting or something like
+[Speaker 2]: That. So are they paying additional? No,
+[Speaker 3]: Same amount.
+[Speaker 2]: I don't see why. We still need to do it. Is there something... Are we using 1G right now? Are we using 1G? No, we don't use. Because they're not paying anything additional for an expanded area. Right? So, technically, they can make use of the whole area. Yes, yes. So, we pay for today, one week. Just to make this transaction attractive for Murata. Yeah. But we don't lose anything, even though we pass this entire area to Murata. I know
+[Speaker 3]: Your point, but we just give the advantage to the brand that we allow them to use
+[Speaker 2]: It. As part of the reservation agreement.
+[Speaker 1]: So, maybe okay
+[Speaker 2]: Din yan for accounting so we can start to recognize. I mean, it's just they end up leasing it for 25 pesos. We can average. But are they restricted to using
+[Speaker 1]: Just the 17,500 or are they going to use
+[Speaker 2]: The whole 78,000? That's my question. Maybe they intend to use the whole 78,000. Right?
+[Speaker 4]: Ano sir? Nandyan sir yung construction tempest seal nila. Yes
+[Speaker 1]: Sir. Yes sir. So are they still there? Are they still there? Yeah, they're still there.
+[Speaker 3]: So this area now that Kajima is using for Murata's construction.
+[Speaker 1]: The structure is almost done. I think they are already done. Are they still there? Are they not occupying the backside?
+[Speaker 3]: Yeah, because in any case, in the future, Kazuma will build this expansion area again. We were
+[Speaker 1]: Asking about now. Are they okay? AMR, they are not using the
+[Speaker 2]: Back sides. They are not? They are not using the back sides. With Benzilla? Yes, sir. That's
+[Speaker 1]: Correct. Okay. That answers the question. Are they using the back
+[Speaker 2]: Sides? Mm-hmm. So, they're limited up to the fence. So, and if they don't pursue the actual lease, the 150 is for fitness. So, effectively, what they've done is lease to you the whole property for 200 million for two years. For two years. Right. Excuse me. I mean, that's basically what they've done. So, meanwhile, if they do pursue it, they pay you another 800. Right. They did, you know. Okay lang. Just to be clear, they take over the 78,000, but they take care of it already. So that's what you save, right? They will ensure that that 78,000 square meters is protected. The grass is kept and everything. So, yun yung ano doon. Matalino din sila, no? 
+
+Matalino naman. I mean, okay ka rin, di ba? 
+
+Effectively, they paid you, they're getting cheap rent for two years. Yeah. But then you're not going to give it to anyone anyway because you want to keep them. Tayo, di ba? And they give you 150 million upfront, in which case, you place it, you get 10% over that period. 15 million pesos just because it's there. Or you save 150 million in debt. So parang 10 million a year times 20. So parang... Okay pa rin yan. Okay pa rin.
+[Speaker 3]: Actually, 112.46 pesos per square meter is very expensive. But the moment they expand it to the whole, then it becomes 25 pesos.
+[Speaker 2]: But then they're giving you 150 million on top of that as reservation. Okay lang yan. Excited na ako for the 13,000 per square meter. No limit? Up to what's the maximum? Because
+[Speaker 3]: What's the meaning that there's anybody there?
+[Speaker 2]: So basically, you have to move the head. This one, this one. This is courageous. The 19.5. At that point, you'll have to move the head. Anyway... Grabe naman. Batina nga eh. Grabe naman. O... David. Saan mo pwede ilagay yan? Legacy. Or are we able to... It has to cover the whole thing or this one isn't an issue, right? Then maybe it covers this area. The small portion that they can go beyond 19 meters. I mean, if we... That's something they're just... 19. 19. 1.6.
+[Speaker 3]: Okay. So, now we discussed with the two years reservation period, but if Muratari requests to extend from two to three, we will add more reservation fee and the price increase. This is agreement. 75 million. Okay.
+[Speaker 2]: Masarap. Okay lang. Up here. Not quite, but it's different. Ay! Kaya na lang. Kaya na ba? Hindi kaya na. Ngayon pa ako na dito. Hindi na ba? Hindi na ba?
+[Speaker 3]: So, as I mentioned while ago, as part of Murata's internal process, they need 2 months for internal approval to agree the contract which we drafted up.
+[Speaker 2]: Do you have a draft already of the contract?
+[Speaker 3]: Not yet because they give some conditions to be described in the contract.
+[Speaker 2]: I want to see the contract also. Maybe you can just recognize the
+[Speaker 3]: Reservation fees as land fees. Okay. And we expect this discussion will start from July to August. 10 to 3 months discussion. We expect to agree by November or end of December. Anyway, I'll try to close the deal within the year. And there is some concern.
+[Speaker 2]: Sana binigay ko makuha mo na yung 1 billion. Hindi nanay. Pagpayo mo sa kanon. Pagpayo mo sa kanon. Pagpayo mo sa kanon. Pagpayo mo sa kanon. So
+[Speaker 3]: As this negotiation will start from June and July and August my concern is the water service quality so because In the record, we have some trouble between Murata about the water supply, sometimes the water quality. Then, the bullet point 2, the main water supply in 2, Murata is experiencing low pressure conditions since the first quarter of 2026. Sun power is consuming water upstream.
+[Speaker 1]: I think the purpose... Yes sir, yes. See, I appreciate this paper. It feels good.
+[Speaker 3]: As the Murata has some, Murata faced some issue about the water quality before. So if we have additional issue until we close the deal, it gives a bad impression to Murata. Especially the Murata's head, department head or something like that. So... What I ask Jamie is that please keep the good service to them even though there are some issues. Then if there is a solution we can provide, we are willing to support the WRN. So there are some raising issues which we faced before. So, please take note and please be known about these matters. I'm excited. Good luck. 
+
+Okay. And canon issue is already shared. Building Exus V. So, red one is the original timeline. Then, blue one is the current timeline. So, the notice to proceed supposed to issue Jan 17, but it's not yet issued. Notice
+[Speaker 2]: To proceed.
+[Speaker 3]: It's delayed.
+[Speaker 2]: I think we've intentionally agreed during the meeting to delay it. Since we don't have serious prospects at this
+[Speaker 3]: Point. No, because it's difficult to find the locators because the timeline is not yet sure. So we have... Some prospect but since the timeline is not yet clear, the prospect also cannot make a decision or cannot foresee.
+[Speaker 2]: But is it possible to have like similar terms like what you
+[Speaker 3]: Got for Y2? Sabi, in this case, it's very special. It's not happen as usual. So, the Sonyon is the same case. Sonyon and Building X is the same case. Even though we go into the market, if timeline is not cleared, the tenant also left from the IP. Maybe we
+[Speaker 2]: Can revisit the decision on this by next month?
+[Speaker 3]: By next month. Maybe
+[Speaker 2]: At that point, we also have clarity already about the sign... In the meantime, we visit the post office.
+[Speaker 3]: So, that's all from IBG today. Sorry, so, for cost-free visitings, we're going right now. But your May 27th date, there is... It's as of our
+[Speaker 2]: Expectation. Okay. Can you check on each of the media? Ichinomiya? Yes, because our friends at NPI feel like are itchy to get Ichinomiya.
+[Speaker 3]: Ah, yeah, yeah. Fast to feel it. So,
+[Speaker 2]: Because there's labor, right? Yes. And they're saying that they don't notice any activity there except for a motorcycle who comes in. And just, I think, basically they're saying there's nothing happening in the Ichinomiya plant. So, they're interested in buying it.
+[Speaker 3]: Ah, Ichinomiya buying Canon?
+[Speaker 2]: No, no, no. FILEC buying Ichinomiya.
+[Speaker 3]: Ah.
+[Speaker 2]: So instead of expanding basically to their neighbor. So if Ichinomiya is interested, they're willing to
+[Speaker 3]: Buy. So buy means the available land only or... No, including the building. Building,
+[Speaker 2]: Yeah. I think they're going to try to initiate discussions directly. I said that's fine but maybe good to find out if they're really... What does Ichinomiya do actually?
+[Speaker 3]: I'm not familiar with their business. But yeah, I will check it.
+[Speaker 2]: Because they're just saying there seems to be no activity there for some time already. I know they just renovated that building. Yeah. Ichinomiya. Jamie Baizier? Jeremy Valdez Esguerra. Ano yung water consumption na Ichinomiya? Hasn't changed? Is it near zero? Is it domestic consumption? Okay. Okay.
+[Speaker 3]: That's all. Thank you. Okay? No, not clear. Yeah, no timeline. Because we cannot discuss that point yet. We just introduced it. Okay.
+[Speaker 2]: Should we
+[Speaker 4]: Wait for Sojova?
+[Speaker 3]: Well,
+[Speaker 4]: Just would like to update the group on the go-live starting May 11 and stretches down to May 14. The May 15 numbers weren't included here. So, during this time, we had people on the ground on ships to actually monitor how the VAM project is actually progressing. It's composed of...
+[Speaker 3]: A
+[Speaker 4]: Group of people from operations, from security, from MGM, of course our guards, and then also from our
+[Speaker 3]: Park access. With the
+[Speaker 4]: Existing
+[Speaker 3]: Guards on
+[Speaker 4]: Site, they were there provided to deal with registration issues, coupon deliveries, locator guests, and bicycle riders. From the operational highlights, there is a dedicated motorcycle lanes established per gate. Some visitor management system was actually provided and will be provided by May 25. And also the purchase of additional cameras so that the hybrid lanes can be activated. This will happen in the next upcoming months. 
+
+Some key challenges that we encountered were of course our traffic buildup wherein we noticed that unregistered vehicles, motorcycles and four vehicles alike have tried to enter and caused a little buildup but these were immediately relieved with the manual tapping of the guards on the site. We also provided Pahalin
+[Speaker 5]: Na yung ano.
+[Speaker 4]: Yung ano? Yes, Gene. Ang
+[Speaker 2]: Kalamay. Sorry, sorry, sorry.
+[Speaker 4]: Okay. We also experienced some items that we need to improve together with our motorists inside the FPIP. The driving habits, some malfunctions in the system, and also boom barrier hits. We actually got at least five incidents where five separate incidents actually happened where the trucks or buses actually hit the boom gates. This happened more likely in gate 1. But there was one incident registered in gate 2. We've analyzed the incidents of boom gate boom gate occurrences wherein they popped into the where we saw the advantage of having the humps further before the boom gates so that it would signal them to slow down and to actually watch for the boom gates to open before they can actually proceed. 
+
+Among the challenges, albeit the challenges, we also saw some positive outcome wherein we actually saw an increase in sales performance on that week or daily monitoring that we've had. The second week of May sales actually went up maybe about 160% to 200% from the previous numbers that we're getting. This indicates that the locators are actually applying and actually wants to have a smooth access inside the park. This is a busy slide but we'll not go through
+[Speaker 1]: It. Yes, sir. Yes, sir.
+[Speaker 4]: Exactly sir yes sir um we've we've received complaints from mary herself also uh through reno uh some other locators have also voiced out but we communicate with them separately Sir, yung unregistered cars and the motorcycles that try to enter the park. So we asked them to... We actually bypassed the gates, no? But we asked them to register already so that it won't happen again.
+[Speaker 2]: So how do we... Because when they come in, the... The boom doesn't
+[Speaker 4]: Go up. Yes, sir.
+[Speaker 2]: So do we have, how quickly does the guard respond to make sure that
+[Speaker 4]: They... The guard is actually stationed at the lane, sir. Anyway, they actually just talk for a few seconds with the motorist to tell them to...
+[Speaker 3]: That's my experience last Friday. It didn't go up. It was red.
+[Speaker 4]: I showed my ID. Yeah. Does
+[Speaker 2]: He have a remote? May remote siya.
+[Speaker 4]: Yeah. So... We actually asked Roxanne to provide vehicle details for all members attending the town hall last Friday. This
+[Speaker 2]: Will continue to be a problem because
+[Speaker 4]: Hopefully it
+[Speaker 2]: Diminishes over time as people actually register. But then, people will forget. What? New employees, for example, coming in, presumably unaware or did not have time. Guests did not have time. So that will continue to be there. And I guess it's unwieldy for them to... There, you open it, and then you can't really put them to the side because that's going to take time. Yes, sir. And on another hand if you actually put an area wherein if you are not registered you should go from here do we have a lane available to do
+[Speaker 4]: That in gate one sir and gate two we had a mobile application area wherein you can actually apply for the sticker given you have the right documents you can actually get your stickers at the gates
+[Speaker 2]: Ilegal na kayo tumuha ng lisensya. Jason, what if it's different than you? Those guys, ano palang, as they enter the security post, may information na ito? Those guys na wala pang
+[Speaker 1]: Hindi pa registered, they go to one area. At then they block.
+[Speaker 4]: Yes, sir. Ganun, sir. Ganun, sir, sa motorcycles. Mas marami, sir, yung motorcycles na unregistered. But we still see also unregistered cars. But it's not as many as the motorcycles.
+[Speaker 2]: Parang sa Ayala-Alabang, yung visitor entrance. Ang lalayo. Pwede pa yan na, no? 
+
+Para nung... 
+
+Kasi problema kung... 
+
+One solution is lagyan mo ng sticker, pwede mo lang. Sticker na? Halimbawa, bright orange or something. So alam mo na kumasok siya na hindi siya registered. So paglabas niya, pwede mo siya harapin. 
+
+Doon mo na... 
+
+Doon mo na ngayon siya harapin. Parang may clean booth ka naman bago lumabas. At least bago naman. Pero, of course, may time din yun kasi mukhang kailangan mo yung lagay doon. Tapos nasa mall. Pero yung nga, what is, parang sa ETC, kung wala kang RFID, go to this lane. Dito pa niya. But in order to do that, malami pala alam mo na kailangan kong kumanto o kong julilin. 
+
+Sa gate 2,
+[Speaker 1]: Kung pwede kasi
+[Speaker 4]: Yun. Meron siyang isa pa. Yes, sir. Kasi
+[Speaker 1]: Meron kang lay-by doon sa right eh. So you can defend them there.
+[Speaker 2]: Mga ilang vehicles yun daily, Jason? Alin, sir? Yung walang sticker. Yung
+[Speaker 4]: Walang... Siguro, from motorcycles, parang 2 every 5. 2 every 5? 40%? Madami, sir. Madami.
+[Speaker 1]: Madami, sir. Kaya na. Kaya na, medyo magagulo pa yun. I don't know kung... Sine-serious ka ba ng mga lugar ito? Nag-inform ka? Ngayon na silang 8 kilos. So yung
+[Speaker 2]: Registration, mukhang hindi maganda yung take-up
+[Speaker 4]: Pala? Yes, sir. Minsan matagal sila talaga mag-register.
+[Speaker 2]: Kasi yun kasing challenge na eh. Kasi because of the pressure, you're just letting them through. So paulit-ulit lang sila, no? Because pinalulusot naman sila eh, di
+[Speaker 4]: Ba? Nung una, sir, ganun. But nung a few days after, naglagay kami ng mobile application area so that they can actually apply even before they
+[Speaker 2]: Leave. So paano sila na-identify?
+[Speaker 4]: Dito sir, makikita mo yung rate out unregistered? So
+[Speaker 2]: Pagdating na nila yung pag-approach na gano'n, doon mo manalaman? Yes sir. Pero pag busy ka na naman magpalabas, iipitin na naman nila yung patabas. Kasi kung shifting to mga ito, not an issue pag nanti. Kung nanti, wala naman masyadong rate out. So baka nga, at least for motorcycle, sticker na yun will work. Hindi ko lang alam pa paano magagawin yun. Para kasi makikita ng malayo pa lang. Tumabi ka na rito, wala akong
+[Speaker 4]: Registration. Do you explore that,
+[Speaker 2]: Sir? Or some signal na alam mo. Kaya yung U-win signal madali. Pero kung prosiklo, wala naman siya. Dito. Saan mo siya pwede lagyan ng marker na ano, dito?
+[Speaker 1]: Mag-set ka ng date zone amongst poong kayo. Pag ito, pag umating sa'yo dito after some weeks, at wala kayong mga speaker o what have you, di tayo pupapasok eh. Sige, sir. Kasi, no, pwede ganun. Parang no... Pag hindi kayo pa rin sumunod, ano na? Sorry. Sorry. Baka ganun na. Mas dracon niya. Di ba? Hindi ka rin lang sila eh. Lalo ganito na naman. Ganito na rin sila sa strategy. Okay, or else they won't take you seriously. Totoo. You end up giving up on the money. Thank you.
+[Speaker 4]: Papuntahin mo sa gate
+[Speaker 2]: 2. Okay.
+[Speaker 4]: The next item is the travel time index. This is recently new system of how we actually monitor traffic inside the park. You'll note here that upon implementation of the FAM, it actually multiplied the numbers to 17. The 1.0 actually represents about 21 seconds from going into gate 1 until you clear the boom gates. You actually spend about 6 minutes during peak with or without stickers just trying to traverse this stretch from gate 1 and gate 2. 
+
+So, Some temporary corrective measures that we went to is the manual barrier operations like I mentioned yung kanina. Utilization of motorcycle lane for cars. We'll improve this when we have the purchase for the additional cameras so that the other lanes can be hybrid and also serve motorcycles. And then the transfer of the non-pesa trucks to gate 2. Lastly, the reinforcement of gate registration requirements for the locators. 
+
+Noted, Sir Alex, on the two-week deadline. 
+
+Sir,
+[Speaker 2]: I don't understand the two slides. One says sticker lane, the other says without sticker. Ano yung sticker lane, ano yung without sticker? Tapos meron pa, free pa.
+[Speaker 4]: Ano, Sir? Yung stickers, yung may stickers, kung may sticker ka, Sir, bago ka makakross from the time that you went In RSD as going to clear the boom gate, that takes you up to 6 minutes.
+[Speaker 2]: So before it took
+[Speaker 4]: 1 minute? 21 seconds lang, sir.
+[Speaker 2]: Ganon ka laking difference ng sticker?
+[Speaker 4]: Yes, sir. Bumagal kasi sir eh. Kasi yung na-filter siya dun sa boom gates. Okay.
+[Speaker 2]: Okay. But when we were running the, because we've been studying this map for such a long time, this was one area of anticipation of ano'ng effects sa kanya dun sa travel. And supposed to be, yung bibis niya would come close to a free flow.
+[Speaker 4]: Yes, sir. 3.5 seconds, sir, yung measurement ng throughput niya from the time that it detects you until it raises the WPA.
+[Speaker 2]: So, nagkakascape. Yes, sir. 3.5 seconds. Dati kasi hindi naman pinabi yung sticker visual. Yes,
+[Speaker 4]: Sir. Tsaka, admittedly, may mga nakakalusot talaga. Kaya,
+[Speaker 2]: Pinalusot lang. Diba? Pero bakit tumagal ng ganong kalaki? Dahil nga naiipon. Yes, sir. So before, where is this measured? From where?
+[Speaker 4]: From the old gate until you clear the boom gate. And it
+[Speaker 2]: Takes you 6 minutes to do that?
+[Speaker 4]: Yes, sir. On the peak.
+[Speaker 2]: How can that be 6 minutes? How many cars are there?
+[Speaker 4]: Ang ginagawa sir, we use the CCTVs, you identify one specific car on that certain slot, a certain time. What's that
+[Speaker 2]: Old gate? That's the one...
+[Speaker 4]: The old gate, that's the one when you come off on Maharlika and you turn right, that's the
+[Speaker 2]: Starting line. So yun yun? Yes sir. It used to take 21 seconds to get to where?
+[Speaker 4]: From the old gate going to the new gate.
+[Speaker 2]: Okay. Now it takes 6 minutes? Yes, sir. Hindi nag-file up sa buong gate?
+[Speaker 4]: Hindi naman, sir. Kasi when we experience a build-up, we also release yung gate ng motorcycle lane to actually accept also cars. Kasi, sir, ngayon yung motorcycle lane may with stickers tapos yung visitors. So, essentially, you only have one lane functioning for four-wheel vehicles. And during peak hours, the motorcycles can actually pile up. And
+[Speaker 2]: The reason why, kasi parang ang laki ng 3.5 seconds. And depends on how fast they're arriving, di ba? Yes, sir. Kung they're arriving faster than 3.5 seconds, then obviously that will pile up. Pero parang ang laki ng ano, hindi yung gate simple. Ang problema nga talaga dyan, yung wall sticker.
+[Speaker 4]: Diba? Saka sir, siguro sir, i-add ko rin yung truck staging o truck processing area. Kasi kung hindi ka regular na truck, you'll end up from the, you'll start from the rightmost lane and then you have to traverse to the Left mostly. Left mostly. So may konting crossing. May conflict. So kasi
+[Speaker 2]: Kung nag-u-turn sila o umano sila, how does it work? Nag-u-turn. Dapat may ano dyan, di ba? Hindi ka lang basta pwede mag-u-turn dyan, di ba? Pwede, nagsisiksikan na iyo dyan. Rather than, of course, maghintay ka, papapasutin ka. So, kung ganyan... So, ang mangyari dyan, makikita mo from your CCTV na yung intersection dun sa, yung unang-unang light signal intersection, walang laman. Yes, sir. Kasi nakabuild up dun sa likod ng ano?
+[Speaker 4]: Sige, nagbubuild up din siya dun, sir. In sequences, sir.
+[Speaker 2]: Maybe what you actually need to measure isn't so much the boom, but all the way to the when they get to cross the lighted signal. Sige, sir. Saan ba yung, kasi yung pangalabang, tumama ako doon sa pump, hindi ako makalampas dahil kasi nakapila na ako doon sa signal light. Kung hindi, nung ubus yun eh, di ba? Ganoon ba yung situation na ito? Kasi konti-konti lang yung... 
+
+Kasi yung cycle time nung traffic light mo is what? 1 minute? Sabihin mo 2 minutes or 3 minutes. But basically, good 6 minutes yung processing time nun. Although flow siya, wala nang laman yung intersection mo. Kasi the point is how fast you can get through the park, not so much the room game. 
+
+Sino ba ang mga room mag-OR dito? OR? Operations Research? Oficial Research. Okay. Labas ko sana yung booklet e. Hindi, parang lang ma-help ka doon. Diba? Kasi it's a queuing problem as well. Diba? Then, may conflict ka. Then, sinibumaga doon. Diba? 
+
+So ito nga to, kasi nangyari, hindi natin padalingin yung traffic na halaman. Parang gumawa ka ng traffic. Yun ang sabihin ng malaki personal. Sabi niya, Jason ang punak lang. In the picture na yan, si Kavit, serious na, di ba? But I don't see any guard
+[Speaker 1]: Doing something or naka-post siya. So basically, yung nag-direct niya, mayroon daw. Kasi dapat mag-augment yung security pag may issue. May correct? Hindi? Sige, Sir. Yung mga guards na nandito, nandito siya, Sir, malapit sa gate. It's okay. In fact, it's different. When I talk about this area, before
+[Speaker 4]: That gate, sinasabi ko, kung may chaos dito sa area, di ba dapat mag-augment yung gate? That's my point.
+[Speaker 1]: Ito lang yung paghihintok ngayon, linak nyo lang. Especially as they cross from right to left.
+[Speaker 2]: Kasi doon siya rin ba? Swerving, swerving. Ito lang lang.
+[Speaker 4]: So our next steps sir is the transfer of the PESA truck BOC processing areas, portal, visitor portal go live, installation of machine, additional VPR machines for shared motorcycle and hybrid car lane. And then lastly, yung sinking of traffic lights in cooperation with LISP, StarTol, and Santo Tomas City. We're trying to arrange this together with MERC.
+[Speaker 2]: I
+[Speaker 4]: Think sir yung registry or full registration of vehicles will actually help a lot in moving vehicles from one area to another sir
+[Speaker 1]: So, you think yung red na yan will
+[Speaker 4]: Go down? Yes, sir.
+[Speaker 2]: Yes, sir. Magagalit din sir yung locator dun how do you deal with that? So even though there's a series of things that we need to figure out aside from yung long-term, yung pabigyan natin, yung Minima-Harlequin Highway itself, drawback nun, pinabilis yung Minima-Harlequin Highway, if you don't solve it, hindi ko yung problema. Kasi it's a system. It's a series. It's a process. So the bottleneck just shifts where the bottleneck is by nature. The bottleneck is just simply moving. Diba? So medyo talagang patiisipan din din ito. Of course, the way it's been couched here is basically, you're saying na, huwag natin natin doon. Eh eh, kung ganyan, diba? Respect ba? 200 million and this or that. Wala naman. Mga 45 na. Fortified na. Fortified, diba? Wala na nga yung mga nagumpisa nito. I mean, so paano kaya? Parang kasi ano nangyayari dyan yung issue ng skyway po minsan minsan? Diba? Pag masyadong puno na yung skyway, kinalulusok na lang nila. Diba? Kasi nga na, i-build up na sa loob ng skyway, nagiging medikado yan. In this case, wala naman talaga yung danger naman. But there are some things, Jason, that are just practical. For example, managing that intersection, fully manning the entrances while we're trying to get everyone to register. Figuring out actually what to do with the non-registered, particularly ang mas concerned school in non-registered motorcycles. Kasi may mas maging problema.
+[Speaker 1]: Siguradation, it will help also, put a sign either sa overpass or before this again, same thing, before the Levi's. Redirecting those guys without sticker and everything. Again, ito may Levi's din ito eh. Itong gate 1 na ito eh. I-divert sila doon. Itong palaking, palaking. Oo. And within the, ano diba, the overpass, the pedestrian overpass. Dagdaga na lang namin sa'yo ng signage.
+[Speaker 4]: Thank you, sir. Just a quick update on the CSM improvement or contractor pre-qualification. For P1 contractors, those are contractors who have ongoing projects. We have 5 out of 8 assessed already. For P2, we have 7 out of 12. These are contractors that have upcoming projects. And lastly, P3, all other medium-risk contractors. Siguro I'd run through those who are for assessment, yung Pi Energy, EDC, EPC sorry, and CCT. They're for assessment already. These are yung remaining sa P1. The other contractors for P2 are PPG, First Ball for BBI, Bauer, and Green Solutions. For the insurance update, what's the challenge on
+[Speaker 2]: Completing P1?
+[Speaker 4]: Availability ng contractors.
