@@ -483,6 +483,8 @@ function onCountChange(val){
   var n=parseInt(val)||0;S.count=n;
   while(S.persons.length<n)S.persons.push({name:'',catId:(S.cats.find(function(c){return c.name==='一般';})||S.cats[S.cats.length-1]||S.cats[0]).id,isKanji:false});
   S.persons=S.persons.slice(0,n);
+  // 人数変更時はアサインメントをリセット（古い割り当てによる不整合を防ぐ）
+  S.assignments={};
   if(S.tables.length===0&&n>0){S.tables.push({id:'t'+Date.now(),type:'rect',seats:n});}
   else if(S.tables.length>0){S.tables[0].seats=n;}
   renderPersonList();
@@ -803,13 +805,17 @@ function renderUnassigned(){
 function getAssignedPersons(){
   var namedPersons=S.persons.filter(function(p){return p.name;});
   if(!namedPersons.length)return[];
-  var idxSet=new Set(Object.values(S.assignments).filter(function(v){return v!==null&&v!==undefined;}));
-  var assigned=Array.from(idxSet).map(function(i){return Object.assign({idx:i},S.persons[i]);}).filter(function(p){return p&&p.name;});
-  // 座席割り当てが0人、または全員が割り当てられていない場合はS.personsから全員返す
-  if(assigned.length===0){
+  // 有効なアサイン（存在する参加者インデックスのみ）を取得
+  var validIdxSet=new Set(
+    Object.values(S.assignments).filter(function(v){
+      return v!==null&&v!==undefined&&S.persons[v]&&S.persons[v].name;
+    })
+  );
+  // 有効なアサインがなければ全員返す
+  if(validIdxSet.size===0){
     return namedPersons.map(function(p){return Object.assign({idx:S.persons.indexOf(p)},p);});
   }
-  return assigned;
+  return Array.from(validIdxSet).map(function(i){return Object.assign({idx:i},S.persons[i]);});
 }
 
 function calcAmounts(){
