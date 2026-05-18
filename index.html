@@ -316,6 +316,9 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <button class="btn-kanji-surplus" id="btn-kanji-surplus" onclick="applyRemainderToKanji()">👑 余りを幹事に充当する</button>
       <button class="btn-kanji-revert" id="btn-kanji-revert" onclick="revertKanjiSurplus()" style="display:none">↩️ 幹事充当を元に戻す</button>
     </div>
+    <!-- 均等割りボタン -->
+    <button id="btn-equal-split" onclick="applyEqualSplit()" style="display:none;width:100%;margin-top:6px;padding:9px;font-size:12px;background:#e8f0fb;border:0.5px solid #a0bfef;color:#185FA5;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">⚖️ 均等割りにする</button>
+    <button id="btn-equal-revert" onclick="revertEqualSplit()" style="display:none;width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent">↩️ 均等割りを元に戻す</button>
     <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
   </div>
   <div class="card">
@@ -388,7 +391,8 @@ const S={
   amounts:{},
   paid:{},
   doneRecords:[],
-  kanjiSnapshot:null
+  kanjiSnapshot:null,
+  equalSplitSnapshot:null
 };
 let catIdCnt=3,editCatIdx=null,currentPage=0,activeSeatKey=null;
 const fmt=n=>{const v=Math.round(n);return isNaN(v)||!isFinite(v)?'¥0':'¥'+v.toLocaleString();};
@@ -828,6 +832,17 @@ function updateSummary(){
       wrap.style.display='block';surplusBtn.style.display='none';if(revertBtn)revertBtn.style.display='block';
     } else wrap.style.display='none';
   }
+  // 均等割りボタン
+  var eqBtn=document.getElementById('btn-equal-split');
+  var eqRevBtn=document.getElementById('btn-equal-revert');
+  if(eqBtn&&eqRevBtn){
+    if(S.total>0&&people.length>0){
+      eqBtn.style.display=S.equalSplitSnapshot?'none':'block';
+      eqRevBtn.style.display=S.equalSplitSnapshot?'block':'none';
+    } else {
+      eqBtn.style.display='none';eqRevBtn.style.display='none';
+    }
+  }
 }
 
 function showCatPopup(pIdx,anchorEl){
@@ -869,6 +884,26 @@ function revertKanjiSurplus(){
   if(!S.kanjiSnapshot)return;
   Object.entries(S.kanjiSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;var r=S.doneRecords.find(function(r){return r.idx==idx;});if(r)r.amount=amt;});
   S.kanjiSnapshot=null;showToast('元の金額に戻しました');renderBillingPage();
+}
+
+function applyEqualSplit(){
+  var people=getAssignedPersons();
+  if(!people.length||!S.total)return;
+  // スナップショット保存
+  S.equalSplitSnapshot={};
+  people.forEach(function(p){S.equalSplitSnapshot[p.idx]=S.amounts[p.idx]||0;});
+  var each=Math.round(S.total/people.length);
+  people.forEach(function(p){S.amounts[p.idx]=each;});
+  showToast('均等割り ¥'+each.toLocaleString()+'／人 に変更しました');
+  renderBillingPage();
+}
+
+function revertEqualSplit(){
+  if(!S.equalSplitSnapshot)return;
+  Object.entries(S.equalSplitSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;});
+  S.equalSplitSnapshot=null;
+  showToast('元の金額に戻しました');
+  renderBillingPage();
 }
 
 function renderBillingPage(){
@@ -1004,7 +1039,7 @@ function loadStateFromUrl(){
 }
 
 function resetAll(){
-  S.title='';S.date='';S.count=0;S.persons=[];S.tables=[];S.assignments={};S.amounts={};S.paid={};S.doneRecords=[];S.kanjiSnapshot=null;
+  S.title='';S.date='';S.count=0;S.persons=[];S.tables=[];S.assignments={};S.amounts={};S.paid={};S.doneRecords=[];S.kanjiSnapshot=null;S.equalSplitSnapshot=null;
   document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';
   var sel=document.getElementById('count-sel');if(sel)sel.value='';
   var ti=document.getElementById('total-input');if(ti)ti.value='';
