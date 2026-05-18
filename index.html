@@ -822,22 +822,35 @@ function updateSummary(){
   var kanjiList=people.filter(function(p){return S.persons[p.idx]?S.persons[p.idx].isKanji:false;});
   var revertBtn=document.getElementById('btn-kanji-revert');
   var surplusBtn=document.getElementById('btn-kanji-surplus');
+  var eqBtn=document.getElementById('btn-equal-split');
+  var eqRevBtn=document.getElementById('btn-equal-revert');
+
+  // 幹事充当ボタンの制御
+  // 均等割り適用中は幹事充当ボタンを非表示（ただし均等割り後に端数がある場合は表示）
+  var kanjiBlocked = S.kanjiSnapshot !== null; // 幹事充当済み
   if(wrap){
-    if(remainder!==0&&kanjiList.length>0){
+    if(remainder!==0&&kanjiList.length>0&&!kanjiBlocked){
       var each=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
       surplusBtn.textContent='👑 '+(remainder>0?'余り'+fmt(remainder)+'を幹事':'不足'+fmt(Math.abs(remainder))+'を幹事が負担')+(kanjiList.length>1?kanjiList.length+'人':'')+'に充当（各'+fmt(Math.abs(each))+'引く）';
       surplusBtn.style.display='block';wrap.style.display='block';
-      if(revertBtn)revertBtn.style.display=S.kanjiSnapshot?'block':'none';
-    } else if(S.kanjiSnapshot){
-      wrap.style.display='block';surplusBtn.style.display='none';if(revertBtn)revertBtn.style.display='block';
-    } else wrap.style.display='none';
+      if(revertBtn)revertBtn.style.display='none';
+    } else if(kanjiBlocked){
+      wrap.style.display='block';surplusBtn.style.display='none';
+      if(revertBtn)revertBtn.style.display='block';
+    } else {
+      wrap.style.display='none';
+    }
   }
-  // 均等割りボタン
-  var eqBtn=document.getElementById('btn-equal-split');
-  var eqRevBtn=document.getElementById('btn-equal-revert');
+
+  // 均等割りボタンの制御
+  // 幹事充当済みの場合は均等割りボタンを非表示
   if(eqBtn&&eqRevBtn){
-    if(S.total>0&&people.length>0){
+    if(S.total>0&&people.length>0&&!kanjiBlocked){
       eqBtn.style.display=S.equalSplitSnapshot?'none':'block';
+      eqRevBtn.style.display=S.equalSplitSnapshot?'block':'none';
+    } else if(kanjiBlocked){
+      // 幹事充当中は均等割りボタン非表示
+      eqBtn.style.display='none';
       eqRevBtn.style.display=S.equalSplitSnapshot?'block':'none';
     } else {
       eqBtn.style.display='none';eqRevBtn.style.display='none';
@@ -889,7 +902,12 @@ function revertKanjiSurplus(){
 function applyEqualSplit(){
   var people=getAssignedPersons();
   if(!people.length||!S.total)return;
-  // スナップショット保存
+  // 幹事充当中なら先にリセット
+  if(S.kanjiSnapshot){
+    Object.entries(S.kanjiSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;});
+    S.kanjiSnapshot=null;
+  }
+  // 均等割りスナップショット保存
   S.equalSplitSnapshot={};
   people.forEach(function(p){S.equalSplitSnapshot[p.idx]=S.amounts[p.idx]||0;});
   var each=Math.round(S.total/people.length);
