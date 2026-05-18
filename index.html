@@ -1118,6 +1118,9 @@ function buildShareText(){
   txt+=remainder>=0?('余り：+'+fmt(remainder)+'\n'):('不足：'+fmt(Math.abs(remainder))+'\n');
   txt+='━━━━━━━━━━━━\n';
   people.forEach(function(p){var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;txt+=(S.paid[p.idx]?'✅':'⬜')+' '+p.name+(isKanji?'（幹事）':'')+':'+fmt(S.amounts[p.idx]||0)+'\n';});
+  // 保存URLを末尾に追加
+  var enc=encodeState();
+  if(enc){txt+='\n📎 詳細はこちら\n'+location.origin+location.pathname+'?d='+enc;}
   return txt;
 }
 function shareLine(){window.open('https://line.me/R/share?text='+encodeURIComponent(buildShareText()),'_blank');}
