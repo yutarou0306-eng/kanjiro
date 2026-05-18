@@ -326,8 +326,9 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <h3 style="margin:0">👥 個人別請求</h3>
-      <span style="font-size:11px;color:#888">金額・カテゴリ・幹事をタップで変更</span>
+      <button onclick="addPersonFromBilling()" style="padding:4px 10px;font-size:11px;border:0.5px solid #a0bfef;border-radius:100px;background:#e8f0fb;color:#185FA5;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">＋ 参加者追加</button>
     </div>
+    <p style="font-size:11px;color:#888;margin-bottom:6px">金額・カテゴリ・幹事をタップで変更</p>
     <div id="billing-list"></div>
   </div>
   <button class="btn btn-success" onclick="goResult()" style="width:100%;font-size:14px;padding:13px;margin-top:4px">🎉 集金完了・結果を見る</button>
@@ -440,10 +441,13 @@ window.addEventListener('popstate',e=>{
   wrap.addEventListener('touchend',function(e){
     if(!moved){tracking=false;return;}
     var dx=e.changedTouches[0].clientX-sx;
-    // タブ順: 0=基本情報, 2=お会計 のみスワイプ対象（座席1はスワイプ対象外）
-    var swipeMap={0:2, 2:0}; // 左スワイプ先, 右スワイプ先
-    if(dx<-50&&currentPage===0)goPage(2);       // 基本情報→お会計（左スワイプ）
-    else if(dx>50&&currentPage===2)goPage(0);   // お会計→基本情報（右スワイプ）
+    // タブ順: 基本情報(0) → お会計(2) → 座席登録(1)
+    // 左スワイプ（次へ）: 0→2→1
+    // 右スワイプ（前へ）: 1→2→0
+    var leftMap={0:2, 2:1};   // 左スワイプ先
+    var rightMap={1:2, 2:0};  // 右スワイプ先
+    if(dx<-50&&leftMap[currentPage]!==undefined)goPage(leftMap[currentPage]);
+    else if(dx>50&&rightMap[currentPage]!==undefined)goPage(rightMap[currentPage]);
     tracking=false;moved=false;
   },{passive:true});
 })();
@@ -1031,6 +1035,25 @@ function startEditAmt(idx,el){
   var cur=S.amounts[idx]||'';var inp=document.createElement('input');inp.type='number';inp.className='br-amt-input';inp.value=cur;inp.step=500;inp.inputMode='numeric';el.replaceWith(inp);inp.focus();inp.select();
   function commit(){var v=parseInt(inp.value)||0;S.amounts[idx]=v;var r=S.doneRecords.find(function(r){return r.idx===idx;});if(r)r.amount=v;var span=document.createElement('span');span.className='br-amt';span.textContent=v?fmt(v):'—';span.onclick=function(){startEditAmt(idx,span);};inp.replaceWith(span);updateSummary();}
   inp.onblur=commit;inp.onkeydown=function(e){if(e.key==='Enter')inp.blur();};
+}
+
+function addPersonFromBilling(){
+  var name=prompt('追加する参加者の名前を入力してください');
+  if(!name||!name.trim())return;
+  var n=name.trim();
+  // デフォルトカテゴリ（一般）を探す
+  var defCat=S.cats.find(function(c){return c.name==='一般';})||S.cats[S.cats.length-1]||S.cats[0];
+  S.persons.push({name:n,catId:defCat?defCat.id:'c2',isKanji:false});
+  S.count=S.persons.length;
+  // 基本情報の人数セレクトも更新
+  var sel=document.getElementById('count-sel');if(sel)sel.value=S.count;
+  document.getElementById('persons-card').style.display='block';
+  renderPersonList();
+  // 金額再計算
+  S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;
+  calcAmounts();
+  showToast(n+'さんを追加しました');
+  renderBillingPage();
 }
 
 function goToBilling(){
