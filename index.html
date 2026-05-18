@@ -292,7 +292,6 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <!-- PAGE 2: お会計 -->
 <div class="page" id="page-2">
   <div class="card">
-    <div id="debug-info" style="background:#ffff00;padding:8px;font-size:11px;border-radius:6px;margin-bottom:8px;word-break:break-all"></div>
     <div class="billing-input-area">
       <label>💴 お会計の合計金額を入力してください</label>
       <input type="number" id="total-input" placeholder="例：50000" inputmode="numeric">
@@ -805,11 +804,7 @@ function renderUnassigned(){
 // ===== CALC =====
 function getAssignedPersons(){
   // 座席登録は任意。常にS.personsの名前ありの人を返す
-  var result=S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
-  // デバッグ：画面に表示
-  var dbg=document.getElementById('debug-info');
-  if(dbg){dbg.textContent='persons:'+S.persons.length+'名 named:'+result.length+'名 ['+result.map(function(p){return p.name;}).join(',')+']';}
-  return result;
+  return S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
 }
 
 function calcAmounts(){
@@ -1030,7 +1025,7 @@ function renderBillingPage(){
       hint.style.display='block';
     } else hint.style.display='none';
   }
-  try{updateSummary();}catch(e){var dbg=document.getElementById('debug-info');if(dbg)dbg.textContent+=' updateSummary ERROR:'+e.message;}
+  updateSummary();
   var list=document.getElementById('billing-list');list.innerHTML='';
   var people=getAssignedPersons();
   if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">基本情報タブで参加者を登録してください</p>';return;}
@@ -1056,7 +1051,6 @@ function renderBillingPage(){
     payBtn.textContent=isPaid?'✓ 集金済み':'💰 集金する';payBtn.onclick=(function(pidx){return function(){togglePaid(pidx);};})(p.idx);
     row.appendChild(nameSpan);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(kBtn);row.appendChild(payBtn);list.appendChild(row);
   });
-  var dbg2=document.getElementById('debug-info');if(dbg2)dbg2.textContent+=' rows:'+list.children.length;
 }
 
 function togglePaid(idx){
