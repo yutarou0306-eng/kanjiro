@@ -319,6 +319,8 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <!-- 均等割りボタン -->
     <button id="btn-equal-split" onclick="applyEqualSplit()" style="display:none;width:100%;margin-top:6px;padding:9px;font-size:12px;background:#e8f0fb;border:0.5px solid #a0bfef;color:#185FA5;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">⚖️ 均等割りにする</button>
     <button id="btn-equal-revert" onclick="revertEqualSplit()" style="display:none;width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent">↩️ 均等割りを元に戻す</button>
+    <button id="btn-r500" onclick="apply500Split()" style="display:none;width:100%;margin-top:6px;padding:9px;font-size:12px;background:#e6f4ef;border:0.5px solid #8ecdb5;color:#1a7a56;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">🪙 500円刻みにする</button>
+    <button id="btn-r500-revert" onclick="revert500Split()" style="display:none;width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent">↩️ 500円刻みを元に戻す</button>
     <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
   </div>
   <div class="card">
@@ -392,12 +394,14 @@ const S={
   paid:{},
   doneRecords:[],
   kanjiSnapshot:null,
-  equalSplitSnapshot:null
+  equalSplitSnapshot:null,
+  r500Snapshot:null
 };
 let catIdCnt=3,editCatIdx=null,currentPage=0,activeSeatKey=null;
 const fmt=n=>{const v=Math.round(n);return isNaN(v)||!isFinite(v)?'¥0':'¥'+v.toLocaleString();};
 const r500up=n=>Math.ceil(n/500)*500;
 const r500dn=n=>Math.floor(n/500)*500;
+const r100=n=>Math.round(n/100)*100;  // 100円単位（十の位四捨五入）
 const DAYS=['日','月','火','水','木','金','土'];
 const TBL_LABELS={'rect':'四角テーブル','round':'円卓','counter':'カウンター席'};
 const CAT_COLORS=[{color:'#C0DD97',tc:'#27500A'},{color:'#B5D4F4',tc:'#0C447C'},{color:'#F5C4B3',tc:'#993C1D'},{color:'#CEB5F6',tc:'#3C3489'},{color:'#FAC775',tc:'#633806'},{color:'#F4C0D1',tc:'#72243E'},{color:'#D3D1C7',tc:'#444441'},{color:'#A8E6CF',tc:'#1A5E40'}];
@@ -435,9 +439,11 @@ window.addEventListener('popstate',e=>{
   wrap.addEventListener('touchmove',function(e){if(!tracking)return;var dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;if(!moved&&Math.abs(dy)>Math.abs(dx)){tracking=false;return;}if(Math.abs(dx)>8)moved=true;},{passive:true});
   wrap.addEventListener('touchend',function(e){
     if(!moved){tracking=false;return;}
-    var dx=e.changedTouches[0].clientX-sx,maxP=2;
-    if(dx<-50&&currentPage<maxP)goPage(currentPage+1);
-    else if(dx>50&&currentPage>0)goPage(currentPage-1);
+    var dx=e.changedTouches[0].clientX-sx;
+    // タブ順: 0=基本情報, 2=お会計 のみスワイプ対象（座席1はスワイプ対象外）
+    var swipeMap={0:2, 2:0}; // 左スワイプ先, 右スワイプ先
+    if(dx<-50&&currentPage===0)goPage(2);       // 基本情報→お会計（左スワイプ）
+    else if(dx>50&&currentPage===2)goPage(0);   // お会計→基本情報（右スワイプ）
     tracking=false;moved=false;
   },{passive:true});
 })();
@@ -780,11 +786,8 @@ function calcAmounts(){
   var getCat=function(p){return S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');})|| S.cats[0];};
   var ws=people.reduce(function(s,p){var c=getCat(p);return s+(c?c.rate:1);},0);if(!ws)return;
   var raws=people.map(function(p){var c=getCat(p);return((c?c.rate:1)/ws)*total;});
-  var sumUp=raws.reduce(function(s,r){return s+r500up(r);},0);
-  var sumDn=raws.reduce(function(s,r){return s+r500dn(r);},0);
-  var useUp=Math.abs(sumUp-total)<=Math.abs(sumDn-total);
-  var roundFn=useUp?r500up:r500dn;
-  people.forEach(function(p,i){S.amounts[p.idx]=roundFn(raws[i]);});
+  // デフォルト：100円単位（十の位四捨五入）
+  people.forEach(function(p,i){S.amounts[p.idx]=r100(raws[i]);});
   S.kanjiSnapshot=null;
   if(currentPage===2)renderBillingPage();
 }
@@ -824,38 +827,65 @@ function updateSummary(){
   var surplusBtn=document.getElementById('btn-kanji-surplus');
   var eqBtn=document.getElementById('btn-equal-split');
   var eqRevBtn=document.getElementById('btn-equal-revert');
+  var r5Btn=document.getElementById('btn-r500');
+  var r5RevBtn=document.getElementById('btn-r500-revert');
 
-  // 幹事充当ボタンの制御
-  // 均等割り適用中は幹事充当ボタンを非表示（ただし均等割り後に端数がある場合は表示）
-  var kanjiBlocked = S.kanjiSnapshot !== null; // 幹事充当済み
+  var kanjiApplied=S.kanjiSnapshot!==null;
+  var equalApplied=S.equalSplitSnapshot!==null;
+  var r500Applied=S.r500Snapshot!==null;
+  var hasData=S.total>0&&people.length>0;
+
+  // グレーアウトヘルパー
+  function setBtn(el,active,enabled,text){
+    if(!el)return;
+    el.style.display=hasData?'block':'none';
+    el.textContent=text;
+    if(!enabled){
+      el.style.opacity='0.35';el.style.cursor='default';el.style.pointerEvents='none';
+    } else {
+      el.style.opacity='1';el.style.cursor='pointer';el.style.pointerEvents='auto';
+    }
+  }
+
+  // 幹事充当ボタン
   if(wrap){
-    if(remainder!==0&&kanjiList.length>0&&!kanjiBlocked){
-      var each=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
-      surplusBtn.textContent='👑 '+(remainder>0?'余り'+fmt(remainder)+'を幹事':'不足'+fmt(Math.abs(remainder))+'を幹事が負担')+(kanjiList.length>1?kanjiList.length+'人':'')+'に充当（各'+fmt(Math.abs(each))+'引く）';
-      surplusBtn.style.display='block';wrap.style.display='block';
-      if(revertBtn)revertBtn.style.display='none';
-    } else if(kanjiBlocked){
-      wrap.style.display='block';surplusBtn.style.display='none';
-      if(revertBtn)revertBtn.style.display='block';
-    } else {
-      wrap.style.display='none';
+    wrap.style.display=(hasData&&kanjiList.length>0)||kanjiApplied?'block':'none';
+    if(surplusBtn){
+      if(kanjiApplied){
+        surplusBtn.style.display='none';
+      } else if(remainder!==0&&kanjiList.length>0){
+        var each2=remainder>0?Math.floor(remainder/kanjiList.length):Math.ceil(remainder/kanjiList.length);
+        surplusBtn.textContent='👑 '+(remainder>0?'余り'+fmt(remainder)+'を幹事':'不足'+fmt(Math.abs(remainder))+'を幹事が負担')+(kanjiList.length>1?kanjiList.length+'人':'')+'に充当（各'+fmt(Math.abs(each2))+'引く）';
+        // 均等・500円刻み適用中はグレーアウト
+        var kanjiEnabled=!equalApplied||remainder!==0;
+        surplusBtn.style.display='block';
+        surplusBtn.style.opacity=kanjiEnabled?'1':'0.35';
+        surplusBtn.style.cursor=kanjiEnabled?'pointer':'default';
+        surplusBtn.style.pointerEvents=kanjiEnabled?'auto':'none';
+      } else {
+        surplusBtn.style.display='none';
+      }
+      if(revertBtn)revertBtn.style.display=kanjiApplied?'block':'none';
     }
   }
 
-  // 均等割りボタンの制御
-  // 幹事充当済みの場合は均等割りボタンを非表示
-  if(eqBtn&&eqRevBtn){
-    if(S.total>0&&people.length>0&&!kanjiBlocked){
-      eqBtn.style.display=S.equalSplitSnapshot?'none':'block';
-      eqRevBtn.style.display=S.equalSplitSnapshot?'block':'none';
-    } else if(kanjiBlocked){
-      // 幹事充当中は均等割りボタン非表示
-      eqBtn.style.display='none';
-      eqRevBtn.style.display=S.equalSplitSnapshot?'block':'none';
-    } else {
-      eqBtn.style.display='none';eqRevBtn.style.display='none';
-    }
+  // 均等割りボタン（幹事充当中はグレーアウト）
+  if(eqBtn){
+    eqBtn.style.display=hasData&&!equalApplied?'block':'none';
+    eqBtn.style.opacity=kanjiApplied?'0.35':'1';
+    eqBtn.style.cursor=kanjiApplied?'default':'pointer';
+    eqBtn.style.pointerEvents=kanjiApplied?'none':'auto';
   }
+  if(eqRevBtn)eqRevBtn.style.display=equalApplied?'block':'none';
+
+  // 500円刻みボタン（幹事充当中はグレーアウト）
+  if(r5Btn){
+    r5Btn.style.display=hasData&&!r500Applied?'block':'none';
+    r5Btn.style.opacity=kanjiApplied?'0.35':'1';
+    r5Btn.style.cursor=kanjiApplied?'default':'pointer';
+    r5Btn.style.pointerEvents=kanjiApplied?'none':'auto';
+  }
+  if(r5RevBtn)r5RevBtn.style.display=r500Applied?'block':'none';
 }
 
 function showCatPopup(pIdx,anchorEl){
@@ -916,6 +946,33 @@ function applyEqualSplit(){
   renderBillingPage();
 }
 
+function apply500Split(){
+  var people=getAssignedPersons();
+  if(!people.length||!S.total)return;
+  // 均等割り中ならリセット
+  if(S.equalSplitSnapshot){
+    Object.entries(S.equalSplitSnapshot).forEach(function(e){S.amounts[e[0]]=e[1];});
+    S.equalSplitSnapshot=null;
+  }
+  S.r500Snapshot={};
+  people.forEach(function(p){S.r500Snapshot[p.idx]=S.amounts[p.idx]||0;});
+  // 500円刻み：誤差が小さい方を自動選択
+  var raws=people.map(function(p){return S.amounts[p.idx]||0;});
+  var sumUp=raws.reduce(function(s,r){return s+r500up(r);},0);
+  var sumDn=raws.reduce(function(s,r){return s+r500dn(r);},0);
+  var useUp=Math.abs(sumUp-S.total)<=Math.abs(sumDn-S.total);
+  var roundFn=useUp?r500up:r500dn;
+  people.forEach(function(p){S.amounts[p.idx]=roundFn(S.r500Snapshot[p.idx]);});
+  showToast('500円刻みに変更しました');
+  renderBillingPage();
+}
+function revert500Split(){
+  if(!S.r500Snapshot)return;
+  Object.entries(S.r500Snapshot).forEach(function(e){S.amounts[e[0]]=e[1];});
+  S.r500Snapshot=null;
+  showToast('元の金額に戻しました');
+  renderBillingPage();
+}
 function revertEqualSplit(){
   if(!S.equalSplitSnapshot)return;
   Object.entries(S.equalSplitSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;});
@@ -1057,7 +1114,7 @@ function loadStateFromUrl(){
 }
 
 function resetAll(){
-  S.title='';S.date='';S.count=0;S.persons=[];S.tables=[];S.assignments={};S.amounts={};S.paid={};S.doneRecords=[];S.kanjiSnapshot=null;S.equalSplitSnapshot=null;
+  S.title='';S.date='';S.count=0;S.persons=[];S.tables=[];S.assignments={};S.amounts={};S.paid={};S.doneRecords=[];S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;
   document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';
   var sel=document.getElementById('count-sel');if(sel)sel.value='';
   var ti=document.getElementById('total-input');if(ti)ti.value='';
