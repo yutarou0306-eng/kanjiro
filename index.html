@@ -121,6 +121,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 
 /* 結果 */
 .result-header{text-align:center;padding:16px 0 14px}
+#page-3{overflow-y:auto;overflow-x:hidden}
 .result-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid #e0e0d8}
 .result-row:last-child{border-bottom:none}
 .result-row-label{font-size:13px;color:#888}
@@ -161,7 +162,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <span style="font-size:13px;color:#888">幹事郎</span>
     <span style="font-size:17px">🍺</span>
   </div>
-  <div style="display:flex;gap:6px;align-items:center">
+  <div id="header-share-btns" style="display:flex;gap:6px;align-items:center">
     <button onclick="shareHeaderLine()" style="display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:100px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:#06C755;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       LINE
@@ -356,7 +357,15 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <button class="share-btn share-sms" onclick="shareSMS()">💬 SMSで共有</button>
     <button class="share-btn btn" onclick="copyResult()" style="margin-bottom:0">📋 テキストをコピー</button>
   </div>
-  <div style="display:flex;gap:8px;margin-top:4px">
+  <!-- 結果保存URL -->
+  <div style="display:flex;align-items:center;gap:10px;background:#f0f7ff;border:0.5px solid #a0bfef;border-radius:10px;padding:10px 14px;margin-top:8px">
+    <div style="flex:1">
+      <div style="font-size:12px;font-weight:500;color:#185FA5;margin-bottom:1px">💾 この結果を保存・共有する</div>
+      <div style="font-size:11px;color:#555">URLを発行してLINEで送れます</div>
+    </div>
+    <button onclick="saveStateUrl()" style="padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px">
     <button class="btn" onclick="goPage(2)" style="flex:1;font-size:13px">← お会計に戻る</button>
     <button class="btn btn-primary" onclick="resetAll()" style="flex:1;font-size:13px">🏠 トップに戻る</button>
   </div>
@@ -419,6 +428,9 @@ function goPage(idx){
   var tabMap={0:0, 1:2, 2:1}; // pageIdx -> tabIdx
   document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===(tabMap[idx]||0)));
   document.getElementById('nav').style.display=idx===3?'none':'flex';
+  // 結果ページではヘッダーのLINE/リンクボタンを非表示
+  var hdrBtns=document.getElementById('header-share-btns');
+  if(hdrBtns)hdrBtns.style.display=idx===3?'none':'flex';
   window.scrollTo({top:0,behavior:'instant'});
   if(idx===1)renderScene();
   if(idx===2)renderBillingPage();
