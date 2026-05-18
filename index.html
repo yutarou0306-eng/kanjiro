@@ -337,11 +337,20 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 
 <!-- PAGE 3: 結果 -->
 <div class="page" id="page-3">
+  <!-- ヘッダー：タイトル＋集計結果 -->
   <div class="result-header">
     <div style="font-size:34px;margin-bottom:8px">🎊</div>
-    <div style="font-size:21px;font-weight:500;margin-bottom:4px" id="r-title">飲み会</div>
+    <div style="font-size:22px;font-weight:600;margin-bottom:2px" id="r-title">飲み会</div>
+    <div style="font-size:15px;color:#185FA5;font-weight:500;margin-bottom:4px">集計結果</div>
     <div style="font-size:13px;color:#888" id="r-date"></div>
   </div>
+
+  <!-- 上部ナビ：戻る＋保存URL -->
+  <div style="display:flex;gap:8px;margin-bottom:10px;align-items:stretch">
+    <button class="btn" onclick="goPage(2)" style="flex:1;font-size:13px">← お会計に戻る</button>
+    <button onclick="saveStateUrl()" style="flex:1;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent">💾 結果URLを発行</button>
+  </div>
+
   <div class="card"><div id="result-stats"></div></div>
   <div class="card"><h3 style="margin-bottom:8px">👥 個人別まとめ</h3><div id="result-people"></div></div>
   <div class="card">
@@ -357,17 +366,8 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <button class="share-btn share-sms" onclick="shareSMS()">💬 SMSで共有</button>
     <button class="share-btn btn" onclick="copyResult()" style="margin-bottom:0">📋 テキストをコピー</button>
   </div>
-  <!-- 結果保存URL -->
-  <div style="display:flex;align-items:center;gap:10px;background:#f0f7ff;border:0.5px solid #a0bfef;border-radius:10px;padding:10px 14px;margin-top:8px">
-    <div style="flex:1">
-      <div style="font-size:12px;font-weight:500;color:#185FA5;margin-bottom:1px">💾 この結果を保存・共有する</div>
-      <div style="font-size:11px;color:#555">URLを発行してLINEで送れます</div>
-    </div>
-    <button onclick="saveStateUrl()" style="padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
-  </div>
-  <div style="display:flex;gap:8px;margin-top:8px">
-    <button class="btn" onclick="goPage(2)" style="flex:1;font-size:13px">← お会計に戻る</button>
-    <button class="btn btn-primary" onclick="resetAll()" style="flex:1;font-size:13px">🏠 トップに戻る</button>
+  <div style="margin-top:8px">
+    <button class="btn btn-primary" onclick="resetAll()" style="width:100%;font-size:13px">🏠 トップに戻る</button>
   </div>
 </div>
 
