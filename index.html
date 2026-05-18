@@ -454,12 +454,12 @@ window.addEventListener('popstate',e=>{
     if(!moved){tracking=false;return;}
     var dx=e.changedTouches[0].clientX-sx;
     // タブ順: 基本情報(0) → お会計(2) → 座席登録(1)
-    // 左スワイプ（次へ）: 0→2→1
-    // 右スワイプ（前へ）: 1→2→0
-    var leftMap={0:2, 2:1};   // 左スワイプ先
-    var rightMap={1:2, 2:0};  // 右スワイプ先
-    if(dx<-50&&leftMap[currentPage]!==undefined)goPage(leftMap[currentPage]);
-    else if(dx>50&&rightMap[currentPage]!==undefined)goPage(rightMap[currentPage]);
+    // 右スワイプ（タブ右方向）: 0→2→1
+    // 左スワイプ（タブ左方向）: 1→2→0
+    var rightMap={0:2, 2:1};  // 右スワイプ先（タブを右に進む）
+    var leftMap={1:2, 2:0};   // 左スワイプ先（タブを左に戻る）
+    if(dx>50&&rightMap[currentPage]!==undefined)goPage(rightMap[currentPage]);
+    else if(dx<-50&&leftMap[currentPage]!==undefined)goPage(leftMap[currentPage]);
     tracking=false;moved=false;
   },{passive:true});
 })();
@@ -706,13 +706,20 @@ function openSeatPopup(key,anchorEl){
     var c=S.cats.find(function(c){return c.id===p.catId;})||S.cats[0];
     var dot=c?'<span class="pill-tag" style="background:'+c.color+';color:'+c.tc+';font-size:10px;padding:1px 6px">'+c.name+'</span>':'';
     var kbadge=p.isKanji?'👑 ':'';
-    item.innerHTML='<span style="flex:1">'+kbadge+p.name+'</span>'+dot;
-    if(currentPIdx===realIdx)item.style.background='#e8f0fb';
+    var isCurrent=currentPIdx===realIdx;
+    item.innerHTML='<span style="flex:1">'+kbadge+p.name+'</span>'+(isCurrent?'<span style="font-size:10px;color:#185FA5">✓ 選択中</span>':dot);
+    if(isCurrent)item.style.background='#e8f0fb';
     if(!isAssignedElsewhere){
-      item.onclick=(function(ri){return function(){
-        S.assignments[key]=ri;closeSeatPopup();renderScene();calcAmounts();
-        setTimeout(function(){var se=document.querySelector('.seat[data-key="'+key+'"]');if(se)openSeatPopup(key,se);},150);
-      };})(realIdx);
+      item.onclick=(function(ri,isCur){return function(){
+        if(isCur){
+          // 現在選択中の人をタップ→割り当て解除
+          delete S.assignments[key];
+        } else {
+          // 別の人をタップ→切り替え
+          S.assignments[key]=ri;
+        }
+        closeSeatPopup();renderScene();calcAmounts();
+      };})(realIdx,isCurrent);
     }
     popup.appendChild(item);
   });
@@ -1117,7 +1124,24 @@ function buildShareText(){
   var txt='🍺 '+(S.title||'飲み会')+' '+fmtDate(S.date)+'\n━━━━━━━━━━━━\n代金合計：'+fmt(total)+'\n集計金額：'+fmt(allAmt)+'\n実集金額：'+fmt(paidAmt)+'\n';
   txt+=remainder>=0?('余り：+'+fmt(remainder)+'\n'):('不足：'+fmt(Math.abs(remainder))+'\n');
   txt+='━━━━━━━━━━━━\n';
-  people.forEach(function(p){var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;txt+=(S.paid[p.idx]?'✅':'⬜')+' '+p.name+(isKanji?'（幹事）':'')+':'+fmt(S.amounts[p.idx]||0)+'\n';});
+  people.forEach(function(p){var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;txt+=(S.paid[p.idx]?'✅':'⬜')+' '+p.name+(isKanji?'（幹事）':'')+' : '+fmt(S.amounts[p.idx]||0)+'\n';});
+  // 座席情報（登録されている場合）
+  var hasAssignments=Object.keys(S.assignments).length>0;
+  if(hasAssignments&&S.tables.length>0){
+    txt+='\n🪑 座席配置\n';
+    S.tables.forEach(function(t,ti){
+      var tLabel=['四角テーブル','円卓','カウンター席'][['rect','round','counter'].indexOf(t.type)]||'テーブル';
+      txt+='['+(tLabel)+(ti+1)+']\n';
+      var seats=[];
+      for(var i=0;i<(t.seats||0);i++){
+        var key=t.id+'_'+i;
+        var pIdx=S.assignments[key];
+        var p=pIdx!==undefined&&pIdx!==null?S.persons[pIdx]:null;
+        seats.push((i+1)+'.'+(p&&p.name?p.name:'空席'));
+      }
+      txt+=seats.join(' / ')+'\n';
+    });
+  }
   // 保存URLを末尾に追加
   var enc=encodeState();
   if(enc){txt+='\n📎 詳細はこちら\n'+location.origin+location.pathname+'?d='+enc;}
