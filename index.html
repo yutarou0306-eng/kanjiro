@@ -763,7 +763,12 @@ function renderUnassigned(){
 // ===== CALC =====
 function getAssignedPersons(){
   var idxSet=new Set(Object.values(S.assignments).filter(function(v){return v!==null&&v!==undefined;}));
-  return Array.from(idxSet).map(function(i){return Object.assign({idx:i},S.persons[i]);}).filter(function(p){return p.name;});
+  var assigned=Array.from(idxSet).map(function(i){return Object.assign({idx:i},S.persons[i]);}).filter(function(p){return p.name;});
+  // 座席割り当てがない場合はS.personsから全員取得
+  if(assigned.length===0){
+    return S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
+  }
+  return assigned;
 }
 
 function calcAmounts(){
