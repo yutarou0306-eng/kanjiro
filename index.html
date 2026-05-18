@@ -292,6 +292,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <!-- PAGE 2: お会計 -->
 <div class="page" id="page-2">
   <div class="card">
+    <div id="debug-info" style="background:#ffff00;padding:8px;font-size:11px;border-radius:6px;margin-bottom:8px;word-break:break-all"></div>
     <div class="billing-input-area">
       <label>💴 お会計の合計金額を入力してください</label>
       <input type="number" id="total-input" placeholder="例：50000" inputmode="numeric">
@@ -805,7 +806,9 @@ function renderUnassigned(){
 function getAssignedPersons(){
   // 座席登録は任意。常にS.personsの名前ありの人を返す
   var result=S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
-  console.log('getAssignedPersons: S.persons=',JSON.stringify(S.persons),'result=',JSON.stringify(result));
+  // デバッグ：画面に表示
+  var dbg=document.getElementById('debug-info');
+  if(dbg){dbg.textContent='persons:'+S.persons.length+'名 named:'+result.length+'名 ['+result.map(function(p){return p.name;}).join(',')+']';}
   return result;
 }
 
