@@ -411,7 +411,7 @@ let catIdCnt=3,editCatIdx=null,currentPage=0,activeSeatKey=null;
 const fmt=n=>{const v=Math.round(n);return isNaN(v)||!isFinite(v)?'¥0':'¥'+v.toLocaleString();};
 const r500up=n=>Math.ceil(n/500)*500;
 const r500dn=n=>Math.floor(n/500)*500;
-const r100=n=>Math.ceil(n/100)*100;   // 100円単位（切り上げ）
+const r100=n=>Math.round(n/100)*100;  // 100円単位（四捨五入）
 const DAYS=['日','月','火','水','木','金','土'];
 const TBL_LABELS={'rect':'四角テーブル','round':'円卓','counter':'カウンター席'};
 const CAT_COLORS=[{color:'#C0DD97',tc:'#27500A'},{color:'#B5D4F4',tc:'#0C447C'},{color:'#F5C4B3',tc:'#993C1D'},{color:'#CEB5F6',tc:'#3C3489'},{color:'#FAC775',tc:'#633806'},{color:'#F4C0D1',tc:'#72243E'},{color:'#D3D1C7',tc:'#444441'},{color:'#A8E6CF',tc:'#1A5E40'}];
