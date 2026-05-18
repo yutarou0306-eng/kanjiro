@@ -804,7 +804,9 @@ function renderUnassigned(){
 // ===== CALC =====
 function getAssignedPersons(){
   // 座席登録は任意。常にS.personsの名前ありの人を返す
-  return S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
+  var result=S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
+  console.log('getAssignedPersons: S.persons=',JSON.stringify(S.persons),'result=',JSON.stringify(result));
+  return result;
 }
 
 function calcAmounts(){
@@ -1028,7 +1030,7 @@ function renderBillingPage(){
   updateSummary();
   var list=document.getElementById('billing-list');list.innerHTML='';
   var people=getAssignedPersons();
-  if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">座席に参加者を割り当ててください</p>';return;}
+  if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">基本情報タブで参加者を登録してください</p>';return;}
   people.forEach(function(p){
     var c=(S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');}))||S.cats[0];
     var isPaid=!!S.paid[p.idx];
