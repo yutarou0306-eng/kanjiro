@@ -803,19 +803,8 @@ function renderUnassigned(){
 
 // ===== CALC =====
 function getAssignedPersons(){
-  var namedPersons=S.persons.filter(function(p){return p.name;});
-  if(!namedPersons.length)return[];
-  // 有効なアサイン（存在する参加者インデックスのみ）を取得
-  var validIdxSet=new Set(
-    Object.values(S.assignments).filter(function(v){
-      return v!==null&&v!==undefined&&S.persons[v]&&S.persons[v].name;
-    })
-  );
-  // 有効なアサインがなければ全員返す
-  if(validIdxSet.size===0){
-    return namedPersons.map(function(p){return Object.assign({idx:S.persons.indexOf(p)},p);});
-  }
-  return Array.from(validIdxSet).map(function(i){return Object.assign({idx:i},S.persons[i]);});
+  // 座席登録は任意。常にS.personsの名前ありの人を返す
+  return S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
 }
 
 function calcAmounts(){
