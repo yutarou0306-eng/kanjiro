@@ -1142,9 +1142,17 @@ function buildShareText(){
       txt+=seats.join(' / ')+'\n';
     });
   }
-  // 保存URLを末尾に追加
-  var enc=encodeState();
-  if(enc){txt+='\n📎 詳細はこちら\n'+location.origin+location.pathname+'?d='+enc;}
+  // 軽量版URLを末尾に追加（結果のみ、シェア用）
+  try{
+    var lite={
+      t:S.title,d:S.date,total:S.total,
+      p:people.map(function(p){
+        return {n:p.name,a:S.amounts[p.idx]||0,paid:S.paid[p.idx]?1:0,k:S.persons[p.idx]&&S.persons[p.idx].isKanji?1:0};
+      })
+    };
+    var liteEnc=btoa(unescape(encodeURIComponent(JSON.stringify(lite))));
+    txt+='\n📎 '+location.origin+location.pathname+'?r='+liteEnc;
+  }catch(e){}
   return txt;
 }
 function shareLine(){window.open('https://line.me/R/share?text='+encodeURIComponent(buildShareText()),'_blank');}
@@ -1203,6 +1211,28 @@ document.getElementById('count-sel').addEventListener('change', function(){onCou
 document.getElementById('total-input').addEventListener('input', function(){onTotalInput(this.value);});
 
 // ===== INIT =====
+// ?r= パラメータ：結果のみの軽量URL
+var _rParam=new URLSearchParams(location.search).get('r');
+if(_rParam){
+  try{
+    var _rData=JSON.parse(decodeURIComponent(escape(atob(_rParam))));
+    S.title=_rData.t||'';S.date=_rData.d||'';S.total=_rData.total||0;
+    (_rData.p||[]).forEach(function(p,i){
+      S.persons.push({name:p.n,catId:'c2',isKanji:!!p.k});
+      S.amounts[i]=p.a||0;
+      if(p.paid)S.paid[i]=true;
+    });
+    // 結果ページを直接表示
+    document.getElementById('r-title').textContent=S.title||'飲み会';
+    document.getElementById('r-date').textContent=fmtDate(S.date);
+    var stats=document.getElementById('result-stats');stats.innerHTML='';
+    var allAmt=S.persons.reduce(function(s,p,i){return s+(S.amounts[i]||0);},0);
+    [['参加人数',S.persons.length+'名'],['代金合計',fmt(S.total)],['集計金額',fmt(allAmt)]].forEach(function(lv){var row=document.createElement('div');row.className='result-row';row.innerHTML='<span class="result-row-label">'+lv[0]+'</span><span class="result-row-val">'+lv[1]+'</span>';stats.appendChild(row);});
+    var rp=document.getElementById('result-people');rp.innerHTML='';
+    S.persons.forEach(function(p,i){var row=document.createElement('div');row.className='result-row';var kb=p.isKanji?'<span class="kanji-badge">👑 幹事</span>':'';row.innerHTML='<span class="result-row-label" style="display:flex;align-items:center;gap:5px">'+(S.paid[i]?'✅':'⬜')+' '+p.name+' '+kb+'</span><span class="result-row-val">'+fmt(S.amounts[i]||0)+'</span>';rp.appendChild(row);});
+    goPage(3);
+  }catch(e){}
+}
 var _restored=loadStateFromUrl();
 if(_restored){
   var titleEl=document.getElementById('ev-title');if(titleEl)titleEl.value=S.title;
