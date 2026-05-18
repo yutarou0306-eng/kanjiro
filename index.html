@@ -1030,7 +1030,7 @@ function renderBillingPage(){
       hint.style.display='block';
     } else hint.style.display='none';
   }
-  updateSummary();
+  try{updateSummary();}catch(e){var dbg=document.getElementById('debug-info');if(dbg)dbg.textContent+=' updateSummary ERROR:'+e.message;}
   var list=document.getElementById('billing-list');list.innerHTML='';
   var people=getAssignedPersons();
   if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">基本情報タブで参加者を登録してください</p>';return;}
@@ -1056,6 +1056,7 @@ function renderBillingPage(){
     payBtn.textContent=isPaid?'✓ 集金済み':'💰 集金する';payBtn.onclick=(function(pidx){return function(){togglePaid(pidx);};})(p.idx);
     row.appendChild(nameSpan);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(kBtn);row.appendChild(payBtn);list.appendChild(row);
   });
+  var dbg2=document.getElementById('debug-info');if(dbg2)dbg2.textContent+=' rows:'+list.children.length;
 }
 
 function togglePaid(idx){
