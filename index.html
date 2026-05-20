@@ -444,7 +444,12 @@ function goPage(idx){
   if(hdrBtns)hdrBtns.style.display=idx===3?'none':'flex';
   window.scrollTo({top:0,behavior:'instant'});
   if(idx===1)renderScene();
-  if(idx===2)renderBillingPage();
+  if(idx===2){
+    // デバッグ：S.personsの状態を確認
+    var _names=S.persons.map(function(p){return p.name||'(空)';}).join(',');
+    alert('goPage(2): persons='+S.persons.length+'名 ['+_names+']');
+    renderBillingPage();
+  }
   const _base=location.origin+location.pathname;
   history.pushState({page:idx},'',_base+'#p'+idx);
 }
