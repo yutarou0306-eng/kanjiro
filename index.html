@@ -427,9 +427,10 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 // ===== NAVIGATION =====
 function goPage(idx){
   // ページ遷移前に参加者名入力欄の値を強制保存
-  document.querySelectorAll('#person-list input[type=text]').forEach(function(inp,i){
-    if(S.persons[i]!==undefined)S.persons[i].name=inp.value;
-  });
+  var _inputs=document.querySelectorAll('#person-list input[type=text]');
+  for(var _ii=0;_ii<_inputs.length;_ii++){
+    if(S.persons[_ii]!==undefined&&_inputs[_ii].value)S.persons[_ii].name=_inputs[_ii].value;
+  }
   currentPage=idx;
   const _pageEl=document.querySelector('.page');
   const pageW=_pageEl?_pageEl.offsetWidth:window.innerWidth;
@@ -502,8 +503,11 @@ function renderPersonList(){
     var row=document.createElement('div');row.className='person-item';
     var num=document.createElement('span');num.className='person-num';num.textContent=(i+1)+'.';
     var inp=document.createElement('input');inp.type='text';inp.placeholder='名前';inp.value=p.name;
-    inp.oninput=(function(idx){return function(e){S.persons[idx].name=e.target.value;};})(i);
-    inp.onblur=(function(idx){return function(){S.persons[idx].name=this.value;renderScene();};})(i);
+    (function(idx){
+      inp.addEventListener('input',function(){S.persons[idx].name=this.value;});
+      inp.addEventListener('change',function(){S.persons[idx].name=this.value;});
+      inp.addEventListener('blur',function(){S.persons[idx].name=this.value;renderScene();});
+    })(i);
     var kb=document.createElement('button');
     kb.className='person-kanji-btn'+(p.isKanji?' active':'');
     kb.textContent=p.isKanji?'👑 幹事':'幹事';
