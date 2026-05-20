@@ -899,8 +899,8 @@ function updateSummary(){
 
   // 均等割りボタン（幹事充当中はグレーアウト）
   if(eqBtn){
-    eqBtn.style.display=hasData&&!equalApplied?'block':'none';
-    grayout(eqBtn,kanjiApplied||r500Applied);
+    eqBtn.style.display=hasData&&!equalApplied?'block':'none';  // 500円中でも表示
+    grayout(eqBtn,kanjiApplied);  // 500円刻み中でも均等割りに切り替え可能
   }
   if(eqRevBtn)eqRevBtn.style.display=equalApplied?'block':'none';
 
@@ -929,7 +929,7 @@ function updateSummary(){
     r5Btn.style.cursor=kanjiApplied?'default':'pointer';
     r5Btn.style.pointerEvents=kanjiApplied?'none':'auto';
   }
-  if(r5RevBtn)r5RevBtn.style.display=r500Applied?'block':'none';
+  if(r5RevBtn)r5RevBtn.style.display=r500Applied?'block':'none';  // 500円戻るボタン
 }
 
 function showCatPopup(pIdx,anchorEl){
@@ -981,6 +981,8 @@ function applyEqualSplit(){
     Object.entries(S.kanjiSnapshot).forEach(function(e){var idx=e[0],amt=e[1];S.amounts[idx]=amt;});
     S.kanjiSnapshot=null;
   }
+  // 500円刻み中なら先にリセット
+  if(S.r500Snapshot){S.r500Snapshot=null;}
   // 均等割りスナップショット保存
   S.equalSplitSnapshot={};
   people.forEach(function(p){S.equalSplitSnapshot[p.idx]=S.amounts[p.idx]||0;});
