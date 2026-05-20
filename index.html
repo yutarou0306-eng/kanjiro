@@ -1020,9 +1020,10 @@ function revertEqualSplit(){
 function renderBillingPage(){
   var tiEl=document.getElementById('total-input');
   if(S.total&&tiEl&&!tiEl.value)tiEl.value=S.total;
+  // peopleを一度だけ取得して使い回す
+  var people=getAssignedPersons();
   var hint=document.getElementById('per-person-hint');
   if(hint){
-    var people=getAssignedPersons();
     if(S.total>0&&people.length>0){
       var each=Math.round(S.total/people.length);
       hint.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:#888">👤 '+people.length+'人均等割り（参考）</span><span style="font-size:18px;font-weight:500;color:#185FA5">¥'+each.toLocaleString()+'<span style="font-size:11px;font-weight:400;color:#888">／人</span></span></div>';
@@ -1031,7 +1032,6 @@ function renderBillingPage(){
   }
   updateSummary();
   var list=document.getElementById('billing-list');list.innerHTML='';
-  var people=getAssignedPersons();
   if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">基本情報タブで参加者を登録してください</p>';return;}
   people.forEach(function(p){
     var c=(S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');}))||S.cats[0];
