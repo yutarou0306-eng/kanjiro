@@ -445,9 +445,6 @@ function goPage(idx){
   window.scrollTo({top:0,behavior:'instant'});
   if(idx===1)renderScene();
   if(idx===2){
-    // デバッグ：S.personsの状態を確認
-    var _names=S.persons.map(function(p){return p.name||'(空)';}).join(',');
-    alert('goPage(2): persons='+S.persons.length+'名 ['+_names+']');
     renderBillingPage();
   }
   const _base=location.origin+location.pathname;
@@ -1027,10 +1024,52 @@ function revertEqualSplit(){
 }
 
 function renderBillingPage(){
+  // 参加者リストを先に描画（updateSummaryより前）
+  var people=S.persons.map(function(p,i){return Object.assign({idx:i},p);}).filter(function(p){return p.name;});
+  
+  var list=document.getElementById('billing-list');
+  if(!list)return;
+  list.innerHTML='';
+  
+  if(!people.length){
+    list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">基本情報タブで参加者を登録してください</p>';
+    return;
+  }
+  
+  people.forEach(function(p){
+    var c=(S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');})||S.cats[0]);
+    var isPaid=!!S.paid[p.idx];
+    var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;
+    var row=document.createElement('div');row.className='br'+(isPaid?' is-paid':'');
+    // 名前
+    var nameSpan=document.createElement('span');nameSpan.className='br-name';
+    var nameText=document.createElement('span');nameText.textContent=p.name;nameText.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0';nameSpan.appendChild(nameText);
+    if(isKanji){var badge=document.createElement('span');badge.className='kanji-badge';badge.textContent='👑';nameSpan.appendChild(badge);}
+    // カテゴリ
+    var catEl=document.createElement('span');catEl.className='br-cat';
+    if(c)catEl.innerHTML='<span class="pill-tag" style="background:'+c.color+';color:'+c.tc+';cursor:pointer">'+(c.name||'?')+'</span>';
+    catEl.onclick=(function(pidx){return function(e){e.stopPropagation();showCatPopup(pidx,catEl);};})(p.idx);
+    // 金額
+    var amtWrap=document.createElement('span');amtWrap.className='br-amt';
+    var amtText=document.createElement('span');amtText.textContent=S.amounts[p.idx]!==undefined?fmt(S.amounts[p.idx]):'—';
+    var editIcon=document.createElement('span');editIcon.style.cssText='font-size:10px;opacity:0.55';editIcon.textContent='✎';
+    amtWrap.appendChild(amtText);if(!isPaid)amtWrap.appendChild(editIcon);
+    amtWrap.onclick=(function(pidx){return function(){if(!S.paid[pidx])startEditAmt(pidx,amtWrap);};})(p.idx);
+    // 幹事ボタン
+    var kBtn=document.createElement('button');kBtn.className='br-kanji-btn'+(isKanji?' active':'');kBtn.textContent=isKanji?'👑':'幹事';
+    kBtn.onclick=(function(pidx){return function(){if(S.persons[pidx])S.persons[pidx].isKanji=!S.persons[pidx].isKanji;renderBillingPage();};})(p.idx);
+    // 集金ボタン
+    var payBtn=document.createElement('button');payBtn.className='br-pay-btn'+(isPaid?' paid':'');
+    payBtn.textContent=isPaid?'✓ 集金済み':'💰 集金する';
+    payBtn.onclick=(function(pidx){return function(){togglePaid(pidx);};})(p.idx);
+    row.appendChild(nameSpan);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(kBtn);row.appendChild(payBtn);list.appendChild(row);
+  });
+  
+  // 合計金額入力欄の復元
   var tiEl=document.getElementById('total-input');
   if(S.total&&tiEl&&!tiEl.value)tiEl.value=S.total;
-  // peopleを一度だけ取得して使い回す
-  var people=getAssignedPersons();
+  
+  // 均等割り参考金額
   var hint=document.getElementById('per-person-hint');
   if(hint){
     if(S.total>0&&people.length>0){
@@ -1039,32 +1078,11 @@ function renderBillingPage(){
       hint.style.display='block';
     } else hint.style.display='none';
   }
-  updateSummary();
-  var list=document.getElementById('billing-list');list.innerHTML='';
-  if(!people.length){list.innerHTML='<p style="font-size:12px;color:#888;padding:12px 0">基本情報タブで参加者を登録してください</p>';return;}
-  people.forEach(function(p){
-    var c=(S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');}))||S.cats[0];
-    var isPaid=!!S.paid[p.idx];
-    var row=document.createElement('div');row.className='br'+(isPaid?' is-paid':'');
-    var nameSpan=document.createElement('span');nameSpan.className='br-name';
-    var nameText=document.createElement('span');nameText.textContent=p.name;nameText.style.cssText='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0';nameSpan.appendChild(nameText);
-    var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;
-    if(isKanji){var badge=document.createElement('span');badge.className='kanji-badge';badge.textContent='👑';nameSpan.appendChild(badge);}
-    var catEl=document.createElement('span');catEl.className='br-cat';
-    if(c)catEl.innerHTML='<span class="pill-tag" style="background:'+c.color+';color:'+c.tc+';cursor:pointer">'+(c.name||'?')+'</span>';
-    catEl.onclick=(function(pidx){return function(e){e.stopPropagation();showCatPopup(pidx,catEl);};})(p.idx);
-    var amtWrap=document.createElement('span');amtWrap.className='br-amt';
-    var amtText=document.createElement('span');amtText.textContent=S.amounts[p.idx]!==undefined?fmt(S.amounts[p.idx]):'—';
-    var editIcon=document.createElement('span');editIcon.style.cssText='font-size:10px;opacity:0.55';editIcon.textContent='✎';
-    amtWrap.appendChild(amtText);if(!isPaid)amtWrap.appendChild(editIcon);
-    amtWrap.onclick=(function(pidx){return function(){if(!isPaid)startEditAmt(pidx,amtWrap);};})(p.idx);
-    var kBtn=document.createElement('button');kBtn.className='br-kanji-btn'+(isKanji?' active':'');kBtn.textContent=isKanji?'👑':'幹事';
-    kBtn.onclick=(function(pidx){return function(){if(S.persons[pidx])S.persons[pidx].isKanji=!S.persons[pidx].isKanji;renderBillingPage();updateSummary();};})(p.idx);
-    var payBtn=document.createElement('button');payBtn.className='br-pay-btn'+(isPaid?' paid':'');
-    payBtn.textContent=isPaid?'✓ 集金済み':'💰 集金する';payBtn.onclick=(function(pidx){return function(){togglePaid(pidx);};})(p.idx);
-    row.appendChild(nameSpan);row.appendChild(catEl);row.appendChild(amtWrap);row.appendChild(kBtn);row.appendChild(payBtn);list.appendChild(row);
-  });
+  
+  // サマリー更新（最後に呼ぶ）
+  try{updateSummary();}catch(e){console.error('updateSummary error:',e);}
 }
+
 
 function togglePaid(idx){
   if(S.paid[idx]){S.paid[idx]=false;var i=S.doneRecords.findIndex(function(r){return r.idx===idx;});if(i>=0)S.doneRecords.splice(i,1);}
