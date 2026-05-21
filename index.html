@@ -176,7 +176,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <div class="nav" id="nav">
   <button class="nav-btn active" onclick="goPage(0)">🗓 基本情報</button>
   <button class="nav-btn" onclick="goToBilling()">🧾 お会計</button>
-  <button class="nav-btn" onclick="goPage(1)">🪑 座席登録<span style="font-size:9px;color:#aaa;display:block;line-height:1">（任意）</span></button>
+  <button class="nav-btn" onclick="goPage(2)">🪑 座席登録<span style="font-size:9px;color:#aaa;display:block;line-height:1">（任意）</span></button>
 </div>
 
 <div class="page-wrap" id="page-wrap">
@@ -231,7 +231,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <div style="font-size:12px;font-weight:500;color:#555;margin-bottom:1px">🪑 座席を登録する場合（任意）</div>
       <div style="font-size:11px;color:#aaa">誰がどの席に座るか記録できます</div>
     </div>
-    <button onclick="goPage(1)" style="padding:7px 12px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #ddd;background:#fff;color:#666;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">座席登録へ</button>
+    <button onclick="goPage(2)" style="padding:7px 12px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #ddd;background:#fff;color:#666;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">座席登録へ</button>
   </div>
   <!-- 途中保存 -->
   <div style="display:flex;align-items:center;gap:8px;border:0.5px solid #e0e0d8;border-radius:8px;padding:8px 12px;margin-top:6px;background:#fafaf8">
@@ -240,57 +240,8 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   </div>
 </div>
 
-<!-- PAGE 1: 座席登録 -->
+<!-- PAGE 2: 座席登録 -->
 <div class="page" id="page-1">
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 style="margin:0">🪑 座席配置</h3>
-      <div id="pax-badge" class="pax-badge">👤 0名</div>
-    </div>
-    <p style="font-size:11px;color:#888;margin-bottom:8px">席の＋をタップ→参加者割り当て・カテゴリ変更・新規追加。テーブルをタップ→種別変更。</p>
-    <!-- 座席図：横スクロール可 -->
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px">
-      <div class="table-scene" id="table-scene"></div>
-    </div>
-    <!-- テーブル追加（配置図の下） -->
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:0.5px solid #e0e0d8;align-items:center">
-      <span style="font-size:11px;color:#888">テーブル追加：</span>
-      <button class="btn btn-sm" onclick="addTable('rect');renderScene()">＋ 四角</button>
-      <button class="btn btn-sm" onclick="addTable('round');renderScene()">＋ 円卓</button>
-      <button class="btn btn-sm" onclick="addTable('counter');renderScene()">＋ カウンター</button>
-    </div>
-  </div>
-
-  <!-- 幹事未設定の警告 -->
-  <div id="kanji-warning" style="display:none;background:#FFF3CD;border:0.5px solid #FFDA6A;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#856404;font-weight:500">
-    👑 幹事が設定されていません。席をタップして幹事を1人以上設定してください。
-  </div>
-
-  <!-- 未割当て一覧 -->
-  <div class="card" id="unassigned-card">
-    <h3 style="margin-bottom:6px">未割当て</h3>
-    <div id="unassigned-list"><p style="font-size:12px;color:#888">全員割り当て済みです ✅</p></div>
-  </div>
-
-  <!-- 途中保存カード -->
-  <div class="card" style="background:#f0f7ff;border-color:#a0bfef;margin-bottom:8px">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:500;color:#185FA5;margin-bottom:2px">💾 座席情報も含めて保存する</div>
-        <div style="font-size:11px;color:#555">基本情報＋座席配置まで含めた最新の状態をURLに保存します</div>
-      </div>
-      <button onclick="saveStateUrl()" style="padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:8px;margin-top:4px">
-    <button class="btn" onclick="goPage(0)" style="flex:1;font-size:13px">← 基本情報</button>
-    <button class="btn btn-primary" onclick="goToBilling()" style="flex:2;font-size:13px">🧾 お会計へ</button>
-  </div>
-</div>
-
-<!-- PAGE 2: お会計 -->
-<div class="page" id="page-2">
   <div class="card">
     <div class="billing-input-area">
       <label>💴 お会計の合計金額を入力してください</label>
@@ -354,6 +305,61 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <button class="btn btn-success" onclick="goResult()" style="width:100%;font-size:14px;padding:13px;margin-top:4px">🎉 集金完了・結果を見る</button>
 </div>
 
+<!-- PAGE 1: お会計 -->
+<div class="page" id="page-2">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 style="margin:0">🪑 座席配置</h3>
+      <div id="pax-badge" class="pax-badge">👤 0名</div>
+    </div>
+    <p style="font-size:11px;color:#888;margin-bottom:8px">席の＋をタップ→参加者割り当て・カテゴリ変更・新規追加。テーブルをタップ→種別変更。</p>
+    <!-- 座席図：横スクロール可 -->
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px">
+      <div class="table-scene" id="table-scene"></div>
+    </div>
+    <!-- テーブル追加（配置図の下） -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:0.5px solid #e0e0d8;align-items:center">
+      <span style="font-size:11px;color:#888">テーブル追加：</span>
+      <button class="btn btn-sm" onclick="addTable('rect');renderScene()">＋ 四角</button>
+      <button class="btn btn-sm" onclick="addTable('round');renderScene()">＋ 円卓</button>
+      <button class="btn btn-sm" onclick="addTable('counter');renderScene()">＋ カウンター</button>
+    </div>
+  </div>
+
+  <!-- 幹事未設定の警告 -->
+  <div id="kanji-warning" style="display:none;background:#FFF3CD;border:0.5px solid #FFDA6A;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#856404;font-weight:500">
+    👑 幹事が設定されていません。席をタップして幹事を1人以上設定してください。
+  </div>
+
+  <!-- 未割当て一覧 -->
+  <div class="card" id="unassigned-card">
+    <h3 style="margin-bottom:6px">未割当て</h3>
+    <div id="unassigned-list"><p style="font-size:12px;color:#888">全員割り当て済みです ✅</p></div>
+  </div>
+
+  <!-- 途中保存カード -->
+  <div class="card" style="background:#f0f7ff;border-color:#a0bfef;margin-bottom:8px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:#185FA5;margin-bottom:2px">💾 座席情報も含めて保存する</div>
+        <div style="font-size:11px;color:#555">基本情報＋座席配置まで含めた最新の状態をURLに保存します</div>
+      </div>
+      <button onclick="saveStateUrl()" style="padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0">URLを発行</button>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:4px">
+    <button class="btn" onclick="goPage(0)" style="flex:1;font-size:13px">← 基本情報</button>
+    <button class="btn btn-primary" onclick="goToBilling()" style="flex:2;font-size:13px">🧾 お会計へ</button>
+  </div>
+</div>
+
+<!-- PAGE 2: 座席登録 -->
+
+
+<!-- PAGE 1: お会計 -->
+
+
 <!-- PAGE 3: 結果 -->
 <div class="page" id="page-3">
   <!-- ヘッダー：タイトル＋集計結果 -->
@@ -366,7 +372,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 
   <!-- 上部ナビ：戻る＋保存URL -->
   <div style="display:flex;gap:8px;margin-bottom:10px;align-items:stretch">
-    <button class="btn" onclick="goPage(2)" style="flex:1;font-size:13px">← お会計に戻る</button>
+    <button class="btn" onclick="goPage(1)" style="flex:1;font-size:13px">← お会計に戻る</button>
     <button onclick="saveStateUrl()" style="flex:1;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid #a0bfef;background:#185FA5;color:#fff;font-family:inherit;-webkit-tap-highlight-color:transparent">💾 結果URLを発行</button>
   </div>
 
@@ -449,15 +455,15 @@ function goPage(idx){
   const pageW=_pageEl?_pageEl.offsetWidth:window.innerWidth;
   document.getElementById('pages').style.transform=`translateX(-${idx*pageW}px)`;
   // タブ順: 0=基本情報, 1=お会計, 2=座席登録 → ページ順: 0=基本情報, 1=座席登録, 2=お会計
-  var tabMap={0:0, 1:2, 2:1}; // pageIdx -> tabIdx
+  var tabMap={0:0, 1:1, 2:2}; // pageIdx -> tabIdx
   document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===(tabMap[idx]||0)));
   document.getElementById('nav').style.display=idx===3?'none':'flex';
   // 結果ページではヘッダーのLINE/リンクボタンを非表示
   var hdrBtns=document.getElementById('header-share-btns');
   if(hdrBtns)hdrBtns.style.display=idx===3?'none':'flex';
   window.scrollTo({top:0,behavior:'instant'});
-  if(idx===1)renderScene();
-  if(idx===2){
+  if(idx===2)renderScene();
+  if(idx===1){
     renderBillingPage();
   }
   const _base=location.origin+location.pathname;
@@ -480,12 +486,13 @@ window.addEventListener('popstate',e=>{
     if(!moved){tracking=false;return;}
     var dx=e.changedTouches[0].clientX-sx;
     // タブ順: 基本情報(0) → お会計(2) → 座席登録(1)
-    // 右スワイプ（タブ右方向）: 0→2→1
-    // 左スワイプ（タブ左方向）: 1→2→0
-    var rightMap={0:2, 2:1};  // 右スワイプ先（タブを右に進む）
-    var leftMap={1:2, 2:0};   // 左スワイプ先（タブを左に戻る）
-    if(dx>50&&rightMap[currentPage]!==undefined)goPage(rightMap[currentPage]);
-    else if(dx<-50&&leftMap[currentPage]!==undefined)goPage(leftMap[currentPage]);
+    // ページ物理配置: 0=基本情報, 1=座席登録, 2=お会計
+    // 左スワイプ = タブを右に進む: 基本情報→お会計, お会計→座席登録
+    // 右スワイプ = タブを左に戻る: 座席登録→お会計, お会計→基本情報
+    var leftMap={0:1, 1:2};   // 左スワイプ（前進）: 基本情報→お会計→座席登録
+    var rightMap={1:0, 2:1};  // 右スワイプ（後退）: 座席登録→お会計→基本情報
+    if(dx<-50&&leftMap[currentPage]!==undefined)goPage(leftMap[currentPage]);
+    else if(dx>50&&rightMap[currentPage]!==undefined)goPage(rightMap[currentPage]);
     tracking=false;moved=false;
   },{passive:true});
 })();
@@ -1136,7 +1143,7 @@ function goToBilling(){
   if(!hasKanji&&namedPersons.length>0){
     alert('幹事が設定されていません。\n基本情報または座席配置で幹事を1名以上設定してください。');return;
   }
-  goPage(2);
+  goPage(1);
 }
 
 function goResult(){
@@ -1302,7 +1309,7 @@ window.addEventListener('resize',function(){
   document.getElementById('pages').style.transition='none';
   document.getElementById('pages').style.transform='translateX(-'+(currentPage*pageW)+'px)';
   setTimeout(function(){document.getElementById('pages').style.transition='';},50);
-  if(currentPage===1)renderScene();
+  if(currentPage===2)renderScene();
 });
 
 </script>
