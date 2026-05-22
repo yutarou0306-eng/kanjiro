@@ -149,6 +149,9 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
 .color-dot.selected{border-color:#1a1a1a}
 
+.calc-btn{flex:1;padding:8px 4px;font-size:11px;font-weight:500;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:center;line-height:1.4;border:1.5px solid #e0e0d8;background:#f5f5f0;color:#888;transition:all 0.1s}
+.calc-btn.active{border-color:#185FA5;background:#e8f0fb;color:#185FA5}
+.calc-btn:active{opacity:0.7}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 @media(max-width:480px){body{padding:10px}.grid3{gap:4px}.metric-value{font-size:15px}.metric-label{font-size:9px}.br-name{font-size:13px}.br-amt{font-size:13px;min-width:50px}.br-pay-btn{padding:4px 8px;font-size:11px}.billing-input-area{padding:10px 12px}}
@@ -269,28 +272,20 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <button class="btn-kanji-surplus" id="btn-kanji-surplus" onclick="applyRemainderToKanji()">👑 余りを幹事に充当する</button>
       <button class="btn-kanji-revert" id="btn-kanji-revert" onclick="revertKanjiSurplus()" style="display:none">↩️ 幹事充当を元に戻す</button>
     </div>
-    <!-- ボタングループ -->
-    <!-- 通常時：均等割り・500円刻み2種 -->
-    <div id="btn-group-default" style="display:none;margin-top:6px">
-      <button onclick="applyEqualSplit()" style="width:100%;padding:9px;font-size:12px;background:#e8f0fb;border:0.5px solid #a0bfef;color:#185FA5;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent;margin-bottom:6px">⚖️ 均等割りにする</button>
-      <div style="display:flex;gap:6px">
-        <button onclick="apply500Split('up')" style="flex:1;padding:9px;font-size:12px;background:#e6f4ef;border:0.5px solid #8ecdb5;color:#1a7a56;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">🪙 500円刻み<br><span style="font-size:10px">切り上げ</span></button>
-        <button onclick="apply500Split('down')" style="flex:1;padding:9px;font-size:12px;background:#e6f4ef;border:0.5px solid #8ecdb5;color:#1a7a56;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">🪙 500円刻み<br><span style="font-size:10px">切り下げ</span></button>
+    <!-- 配分方式・端数処理ボタン（常時表示・アクティブ表示） -->
+    <div id="calc-mode-btns" style="display:none;margin-top:8px">
+      <div style="font-size:10px;color:#888;margin-bottom:4px">配分方式</div>
+      <div style="display:flex;gap:5px;margin-bottom:8px">
+        <button id="btn-split-weighted" onclick="setSplitMode('weighted')" class="calc-btn calc-btn-split">⚖️ 傾斜配分</button>
+        <button id="btn-split-equal" onclick="setSplitMode('equal')" class="calc-btn calc-btn-split">👥 均等割り</button>
+        <button id="btn-split-flat" onclick="setSplitMode('flat')" class="calc-btn calc-btn-split">👥 均等割り<br><span style="font-size:9px">（傾斜無視）</span></button>
       </div>
-    </div>
-    <!-- 均等割り後：100円刻み・500円刻み2種・戻る -->
-    <div id="btn-group-equal" style="display:none;margin-top:6px">
-      <div style="font-size:11px;color:#185FA5;font-weight:500;margin-bottom:5px;padding:2px 0">⚖️ 均等割り適用中 — 端数処理を選択:</div>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <button onclick="applyRoundAfterEqual('r100')" style="flex:1;padding:9px;font-size:12px;background:#f0f7ff;border:0.5px solid #a0bfef;color:#185FA5;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">🔢 100円刻み<br><span style="font-size:10px">四捨五入</span></button>
-        <button onclick="applyRoundAfterEqual('r500up')" style="flex:1;padding:9px;font-size:12px;background:#e6f4ef;border:0.5px solid #8ecdb5;color:#1a7a56;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">🪙 500円刻み<br><span style="font-size:10px">切り上げ</span></button>
-        <button onclick="applyRoundAfterEqual('r500dn')" style="flex:1;padding:9px;font-size:12px;background:#e6f4ef;border:0.5px solid #8ecdb5;color:#1a7a56;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">🪙 500円刻み<br><span style="font-size:10px">切り下げ</span></button>
+      <div style="font-size:10px;color:#888;margin-bottom:4px">端数処理</div>
+      <div style="display:flex;gap:5px">
+        <button id="btn-round-100" onclick="setRoundMode('r100')" class="calc-btn calc-btn-round">🔢 100円<br><span style="font-size:9px">四捨五入</span></button>
+        <button id="btn-round-500up" onclick="setRoundMode('r500up')" class="calc-btn calc-btn-round">🪙 500円<br><span style="font-size:9px">切り上げ</span></button>
+        <button id="btn-round-500dn" onclick="setRoundMode('r500dn')" class="calc-btn calc-btn-round">🪙 500円<br><span style="font-size:9px">切り下げ</span></button>
       </div>
-      <button onclick="revertEqualSplit()" style="width:100%;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent">↩️ 均等割りを元に戻す（デフォルトに戻る）</button>
-    </div>
-    <!-- 500円刻み適用後：戻る -->
-    <div id="btn-group-r500" style="display:none;margin-top:6px">
-      <button onclick="revert500Split()" style="width:100%;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent">↩️ 500円刻みを元に戻す</button>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
   </div>
@@ -430,7 +425,9 @@ const S={
   doneRecords:[],
   kanjiSnapshot:null,
   equalSplitSnapshot:null,
-  r500Snapshot:null
+  r500Snapshot:null,
+  splitMode:'weighted',  // 'weighted'=傾斜配分, 'equal'=均等割り, 'flat'=均等割り(傾斜無視)
+  roundMode:'r100'       // 'r100'=100円四捨五入, 'r500up'=500円切り上げ, 'r500dn'=500円切り下げ
 };
 let catIdCnt=3,editCatIdx=null,currentPage=0,activeSeatKey=null;
 const fmt=n=>{const v=Math.round(n);return isNaN(v)||!isFinite(v)?'¥0':'¥'+v.toLocaleString();};
@@ -586,7 +583,7 @@ function saveAddCatModal(){
   if(editCatIdx!==null){S.cats[editCatIdx]=Object.assign({},S.cats[editCatIdx],{name:name,rate:rate,color:col.color,tc:col.tc});}
   else S.cats.push({id:'c'+(catIdCnt++),name:name,rate:rate,color:col.color,tc:col.tc});
   closeAddCatModal();renderCatList();renderPersonList();calcAmounts();
-  if(currentPage===2)renderBillingPage();
+  if(currentPage===1)renderBillingPage();
 }
 var ghostCats=[{name:'遅参',rate:0.5,color:'#F5C4B3',tc:'#993C1D'}];
 function renderCatList(){
@@ -838,20 +835,68 @@ function getAssignedPersons(){
 }
 
 function calcAmounts(){
-  var total=S.total;var people=getAssignedPersons();if(!total||!people.length)return;
-  var getCat=function(p){return S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');})|| S.cats[0];};
-  var ws=people.reduce(function(s,p){var c=getCat(p);return s+(c?c.rate:1);},0);if(!ws)return;
-  var raws=people.map(function(p){var c=getCat(p);return((c?c.rate:1)/ws)*total;});
-  // デフォルト：100円四捨五入
-  people.forEach(function(p,i){S.amounts[p.idx]=r100(raws[i]);});
-  // スナップショット系はリセットしない（ボタン状態を保持）
-  if(currentPage===2)renderBillingPage();
+  var total=S.total;
+  var people=getAssignedPersons();
+  if(!total||!people.length)return;
+  var roundFn=S.roundMode==='r500up'?r500up:S.roundMode==='r500dn'?r500dn:r100;
+  var getCat=function(p){return S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');})||S.cats[0];};
+
+  if(S.splitMode==='flat'){
+    // 均等割り（傾斜無視）：全員同額
+    var each=roundFn(total/people.length);
+    people.forEach(function(p){S.amounts[p.idx]=each;});
+  } else if(S.splitMode==='equal'){
+    // 均等割り（傾斜考慮）：傾斜の重みで按分してから均等化→全員同じ基準額×倍率
+    // ※「傾斜を考慮した均等割り」＝傾斜配分と同じ計算
+    var ws=people.reduce(function(s,p){var c=getCat(p);return s+(c?c.rate:1);},0);
+    if(!ws)return;
+    people.forEach(function(p){
+      var c=getCat(p);var rate=c?c.rate:1;
+      S.amounts[p.idx]=roundFn((rate/ws)*total);
+    });
+  } else {
+    // 傾斜配分（デフォルト）：カテゴリ倍率で按分
+    var ws2=people.reduce(function(s,p){var c=getCat(p);return s+(c?c.rate:1);},0);
+    if(!ws2)return;
+    people.forEach(function(p){
+      var c=getCat(p);var rate=c?c.rate:1;
+      S.amounts[p.idx]=roundFn((rate/ws2)*total);
+    });
+  }
+  S.kanjiSnapshot=null;
+  if(currentPage===1)renderBillingPage();
+}
+
+function setSplitMode(mode){
+  S.splitMode=mode;
+  calcAmounts();
+  updateCalcButtons();
+  updateSummary();
+}
+
+function setRoundMode(mode){
+  S.roundMode=mode;
+  calcAmounts();
+  updateCalcButtons();
+  updateSummary();
+}
+
+function updateCalcButtons(){
+  ['weighted','equal','flat'].forEach(function(m){
+    var el=document.getElementById('btn-split-'+m);
+    if(el)el.classList.toggle('active',S.splitMode===m);
+  });
+  ['100','500up','500dn'].forEach(function(m){
+    var el=document.getElementById('btn-round-'+m);
+    if(el)el.classList.toggle('active',S.roundMode==='r'+m);
+  });
 }
 
 function onTotalInput(v){
   S.total=parseInt(v)||0;
-  // 金額変更時はスナップショット系をリセットしてデフォルト計算に戻す
-  S.amounts={};S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;
+  S.amounts={};S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;S.splitMode='weighted';S.roundMode='r100';
+  // 金額変更時はモードをデフォルトに戻す
+  S.splitMode='weighted';S.roundMode='r100';
   var hint=document.getElementById('per-person-hint');
   if(hint){
     var people=getAssignedPersons();
@@ -918,25 +963,10 @@ function updateSummary(){
   }
 
   // ボタングループ表示制御
-  var grpDefault=document.getElementById('btn-group-default');
-  var grpEqual=document.getElementById('btn-group-equal');
-  var grpR500=document.getElementById('btn-group-r500');
-  if(grpDefault&&grpEqual&&grpR500){
-    if(kanjiApplied){
-      // 幹事充当中：全グループ非表示
-      grpDefault.style.display='none';grpEqual.style.display='none';grpR500.style.display='none';
-    } else if(equalApplied){
-      // 均等割り適用中
-      grpDefault.style.display='none';grpEqual.style.display='block';grpR500.style.display='none';
-    } else if(r500Applied){
-      // 500円刻み適用中
-      grpDefault.style.display='none';grpEqual.style.display='none';grpR500.style.display='block';
-    } else {
-      // デフォルト状態（金額あり・なしに関わらず表示）
-      grpDefault.style.display=total>0?'block':'none';grpEqual.style.display='none';grpR500.style.display='none';
-    }
-  }
-  if(r5RevBtn)r5RevBtn.style.display=r500Applied?'block':'none';
+  // ボタン表示：金額がある時は常に表示
+  var modeWrap=document.getElementById('calc-mode-btns');
+  if(modeWrap)modeWrap.style.display=total>0?'block':'none';
+  updateCalcButtons();
 }
 
 function showCatPopup(pIdx,anchorEl){
@@ -980,72 +1010,11 @@ function revertKanjiSurplus(){
   S.kanjiSnapshot=null;showToast('元の金額に戻しました');renderBillingPage();
 }
 
-function applyEqualSplit(){
-  // 均等割り＝傾斜を無視して純粋に人数で割る
-  var people=getAssignedPersons();
-  if(!people.length||!S.total)return;
-  S.kanjiSnapshot=null;S.r500Snapshot=null;
-  // 現在の傾斜配分値をスナップショット保存（戻る時用）
-  S.equalSplitSnapshot={};
-  people.forEach(function(p){S.equalSplitSnapshot[p.idx]=S.amounts[p.idx]||0;});
-  // 傾斜無視の純粋均等割り（100円四捨五入）
-  var each=r100(S.total/people.length);
-  people.forEach(function(p){S.amounts[p.idx]=each;});
-  showToast('均等割り ¥'+each.toLocaleString()+'／人 に変更しました');
-  renderBillingPage();
-}
-
-function apply500Split(dir){
-  var people=getAssignedPersons();
-  if(!people.length||!S.total)return;
-  // 均等割り中に押された場合→均等割りをリセットしてデフォルトに戻す
-  if(S.equalSplitSnapshot){
-    Object.entries(S.equalSplitSnapshot).forEach(function(e){S.amounts[e[0]]=e[1];});
-    S.equalSplitSnapshot=null;S.r500Snapshot=null;
-    showToast('デフォルト（100円四捨五入）に戻しました');
-    renderBillingPage();return;
-  }
-  // 通常時：傾斜カテゴリを考慮した生の按分値に500円丸めをかける
-  var getCat=function(p){return S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');})||S.cats[0];};
-  var ws=people.reduce(function(s,p){var c=getCat(p);return s+(c?c.rate:1);},0);
-  // スナップショットは元の100円四捨五入値を保存（戻る時用）
-  S.r500Snapshot={};
-  people.forEach(function(p){S.r500Snapshot[p.idx]=S.amounts[p.idx]||0;});
-  var roundFn=dir==='down'?r500dn:r500up;
-  // 傾斜按分のraw値に500円丸め適用
-  people.forEach(function(p){
-    var c=getCat(p);var rate=c?c.rate:1;
-    var raw=(rate/ws)*S.total;
-    S.amounts[p.idx]=roundFn(raw);
-  });
-  showToast(dir==='down'?'500円刻み（切り下げ）に変更しました':'500円刻み（切り上げ）に変更しました');
-  renderBillingPage();
-}
-function applyRoundAfterEqual(mode){
-  // 均等割り後の端数処理（傾斜無視の均等値に丸め適用）
-  var people=getAssignedPersons();
-  if(!people.length||!S.equalSplitSnapshot)return;
-  var roundFn=mode==='r500up'?r500up:mode==='r500dn'?r500dn:r100;
-  var each=roundFn(S.total/people.length);
-  people.forEach(function(p){S.amounts[p.idx]=each;});
-  var label=mode==='r500up'?'500円切り上げ':mode==='r500dn'?'500円切り下げ':'100円四捨五入';
-  showToast('均等割り＋'+label+' ¥'+each.toLocaleString()+'／人');
-  renderBillingPage();
-}
-
-function revert500Split(){
-  if(!S.r500Snapshot)return;
-  S.r500Snapshot=null;
-  // スナップショットに戻すのではなくcalcAmountsで再計算（傾斜を正しく反映）
-  calcAmounts();
-  showToast('元の金額（100円四捨五入）に戻しました');
-  renderBillingPage();
-}
+// 旧ボタン関数は削除（setSplitMode/setRoundModeに統合）
 function revertEqualSplit(){
-  if(!S.equalSplitSnapshot)return;
-  S.equalSplitSnapshot=null;
-  calcAmounts(); // 傾斜配分×100円四捨五入で再計算
-  showToast('傾斜配分（100円四捨五入）に戻しました');
+  // 後方互換性のため残す
+  S.splitMode='weighted';calcAmounts();updateCalcButtons();
+  showToast('傾斜配分に戻しました');
   renderBillingPage();
 }
 
@@ -1135,7 +1104,7 @@ function addPersonFromBilling(){
   document.getElementById('persons-card').style.display='block';
   renderPersonList();
   // 金額再計算
-  S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;
+  S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;S.splitMode='weighted';S.roundMode='r100';
   calcAmounts();
   showToast(n+'さんを追加しました');
   renderBillingPage();
@@ -1250,7 +1219,7 @@ function loadStateFromUrl(){
 }
 
 function resetAll(){
-  S.title='';S.date='';S.count=0;S.persons=[];S.tables=[];S.assignments={};S.amounts={};S.paid={};S.doneRecords=[];S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;
+  S.title='';S.date='';S.count=0;S.persons=[];S.tables=[];S.assignments={};S.amounts={};S.paid={};S.doneRecords=[];S.kanjiSnapshot=null;S.equalSplitSnapshot=null;S.r500Snapshot=null;S.splitMode='weighted';S.roundMode='r100';
   document.getElementById('ev-title').value='';document.getElementById('ev-date').value='';document.getElementById('date-preview').textContent='—';
   var sel=document.getElementById('count-sel');if(sel)sel.value='';
   var ti=document.getElementById('total-input');if(ti)ti.value='';
