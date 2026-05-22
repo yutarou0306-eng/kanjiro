@@ -884,6 +884,7 @@ function updateSummary(){
   var revertBtn=document.getElementById('btn-kanji-revert');
   var surplusBtn=document.getElementById('btn-kanji-surplus');
   // btn group elements handled below
+  var r5RevBtn=document.getElementById('btn-r500-revert');
 
   var kanjiApplied=S.kanjiSnapshot!==null;
   var equalApplied=S.equalSplitSnapshot!==null;
@@ -921,8 +922,8 @@ function updateSummary(){
   var grpEqual=document.getElementById('btn-group-equal');
   var grpR500=document.getElementById('btn-group-r500');
   if(grpDefault&&grpEqual&&grpR500){
-    if(!hasData||kanjiApplied){
-      // データなし or 幹事充当中：全グループ非表示
+    if(kanjiApplied){
+      // 幹事充当中：全グループ非表示
       grpDefault.style.display='none';grpEqual.style.display='none';grpR500.style.display='none';
     } else if(equalApplied){
       // 均等割り適用中
@@ -931,13 +932,11 @@ function updateSummary(){
       // 500円刻み適用中
       grpDefault.style.display='none';grpEqual.style.display='none';grpR500.style.display='block';
     } else {
-      // デフォルト状態
-      grpDefault.style.display='block';grpEqual.style.display='none';grpR500.style.display='none';
+      // デフォルト状態（金額あり・なしに関わらず表示）
+      grpDefault.style.display=total>0?'block':'none';grpEqual.style.display='none';grpR500.style.display='none';
     }
-    r5Btn.style.cursor=kanjiApplied?'default':'pointer';
-    r5Btn.style.pointerEvents=kanjiApplied?'none':'auto';
   }
-  if(r5RevBtn)r5RevBtn.style.display=r500Applied?'block':'none';  // 500円戻るボタン
+  if(r5RevBtn)r5RevBtn.style.display=r500Applied?'block':'none';
 }
 
 function showCatPopup(pIdx,anchorEl){
