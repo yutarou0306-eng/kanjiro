@@ -6,7 +6,7 @@
   <title>お勘定奉行 幹事郎</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="幹事郎">
+  <meta name="apple-mobile-web-app-title" content="幹事郎">A
   <meta name="theme-color" content="#1C3D5E">
   <link rel="apple-touch-icon" href="icon.jpg">
   <link rel="icon" type="image/jpeg" href="icon.jpg">
@@ -152,6 +152,13 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .calc-btn{flex:1;padding:12px 6px;font-size:15px;font-weight:500;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:center;line-height:1.5;border:1.5px solid #e0e0d8;background:#f5f5f0;color:#888;transition:all 0.1s}
 .calc-btn.active{border-color:#185FA5;background:#e8f0fb;color:#185FA5}
 .calc-btn:active{opacity:0.7}
+.date-roll-wrap{height:120px;overflow:hidden;border-radius:10px;background:#f5f5f0;position:relative;cursor:grab}
+.date-roll-wrap::before,.date-roll-wrap::after{content:'';position:absolute;left:0;right:0;height:40px;z-index:2;pointer-events:none}
+.date-roll-wrap::before{top:0;background:linear-gradient(to bottom,rgba(245,245,240,0.95),rgba(245,245,240,0))}
+.date-roll-wrap::after{bottom:0;background:linear-gradient(to top,rgba(245,245,240,0.95),rgba(245,245,240,0))}
+.date-roll{display:flex;flex-direction:column;transition:transform 0.15s ease;user-select:none}
+.date-roll-item{height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:#888;transition:all 0.15s;flex-shrink:0}
+.date-roll-item.selected{font-size:22px;font-weight:700;color:#185FA5}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 @media(max-width:480px){body{padding:10px}.grid3{gap:4px}.metric-value{font-size:15px}.metric-label{font-size:9px}.br-name{font-size:13px}.br-amt{font-size:13px;min-width:50px}.br-pay-btn{padding:4px 8px;font-size:11px}.billing-input-area{padding:10px 12px}}
@@ -188,20 +195,44 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 <!-- PAGE 0: 基本情報 -->
 <div class="page" id="page-0">
 
-  <div class="card" style="padding:20px">
+  <div class="card" style="padding:16px;overflow:hidden">
     <!-- タイトル入力 -->
     <div style="margin-bottom:18px">
       <div style="font-size:11px;font-weight:600;color:#185FA5;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">イベント名</div>
-      <input type="text" id="ev-title" placeholder="例：4月歓迎会" style="font-size:20px;font-weight:500;border:none;border-bottom:2px solid #e0e0d8;border-radius:0;background:transparent;color:#1a1a1a;padding:6px 0;width:100%;outline:none;transition:border-color 0.2s" onfocus="this.style.borderBottomColor='#185FA5'" onblur="this.style.borderBottomColor='#e0e0d8'">
+      <input type="text" id="ev-title" placeholder="例：4月歓迎会" style="font-size:20px;font-weight:500;border:none;border-bottom:2px solid #e0e0d8;border-radius:0;background:transparent;color:#1a1a1a;padding:6px 0;width:100%;outline:none;transition:border-color 0.2s;box-sizing:border-box" onfocus="this.style.borderBottomColor='#185FA5'" onblur="this.style.borderBottomColor='#e0e0d8'">
     </div>
-    <!-- 日付入力 -->
+    <!-- 日付入力（ロール選択） -->
+    <input type="hidden" id="ev-date">
     <div style="margin-bottom:18px">
-      <div style="font-size:11px;font-weight:600;color:#185FA5;letter-spacing:0.08em;margin-bottom:6px">開催日</div>
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <input type="date" id="ev-date" style="font-size:18px;border:none;background:transparent;color:#1a1a1a;padding:4px 0;outline:none;flex:1">
-        <span id="date-preview" style="font-size:14px;font-weight:500;color:#185FA5;background:#f0f7ff;padding:4px 10px;border-radius:100px;white-space:nowrap;margin-left:8px">—</span>
+      <div style="font-size:11px;font-weight:600;color:#185FA5;letter-spacing:0.08em;margin-bottom:10px">開催日</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <!-- 年ロール -->
+        <div style="flex:2;text-align:center">
+          <div style="font-size:10px;color:#888;margin-bottom:4px">年</div>
+          <div class="date-roll-wrap" id="roll-year-wrap">
+            <div class="date-roll" id="roll-year"></div>
+          </div>
+        </div>
+        <div style="font-size:18px;color:#ccc;margin-top:14px">/</div>
+        <!-- 月ロール -->
+        <div style="flex:1;text-align:center">
+          <div style="font-size:10px;color:#888;margin-bottom:4px">月</div>
+          <div class="date-roll-wrap" id="roll-month-wrap">
+            <div class="date-roll" id="roll-month"></div>
+          </div>
+        </div>
+        <div style="font-size:18px;color:#ccc;margin-top:14px">/</div>
+        <!-- 日ロール -->
+        <div style="flex:1;text-align:center">
+          <div style="font-size:10px;color:#888;margin-bottom:4px">日</div>
+          <div class="date-roll-wrap" id="roll-day-wrap">
+            <div class="date-roll" id="roll-day"></div>
+          </div>
+        </div>
       </div>
-      <div style="height:2px;background:#e0e0d8;border-radius:1px;margin-top:4px"></div>
+      <div style="text-align:center;margin-top:10px">
+        <span id="date-preview" style="font-size:14px;font-weight:500;color:#185FA5;background:#f0f7ff;padding:4px 14px;border-radius:100px">—</span>
+      </div>
     </div>
     <!-- 参加人数 -->
     <div>
@@ -492,6 +523,95 @@ window.addEventListener('popstate',e=>{
     else if(dx>50&&rightMap[currentPage]!==undefined)goPage(rightMap[currentPage]);
     tracking=false;moved=false;
   },{passive:true});
+})();
+
+// ===== DATE ROLL PICKER =====
+(function(){
+  var today=new Date();
+  var selYear=today.getFullYear();
+  var selMonth=today.getMonth()+1;
+  var selDay=today.getDate();
+
+  function getDaysInMonth(y,m){return new Date(y,m,0).getDate();}
+
+  function buildRoll(id, items, selectedIdx, onChange){
+    var wrap=document.getElementById(id+'-wrap');
+    var roll=document.getElementById(id);
+    if(!wrap||!roll)return;
+    roll.innerHTML='';
+    // 前後にパディングアイテムを追加（上下に空白）
+    for(var i=0;i<1;i++){var pad=document.createElement('div');pad.className='date-roll-item';pad.style.height='40px';roll.appendChild(pad);}
+    items.forEach(function(item,i){
+      var el=document.createElement('div');
+      el.className='date-roll-item'+(i===selectedIdx?' selected':'');
+      el.textContent=item;
+      roll.appendChild(el);
+    });
+    for(var i=0;i<1;i++){var pad=document.createElement('div');pad.className='date-roll-item';pad.style.height='40px';roll.appendChild(pad);}
+    // スクロール位置を選択中アイテムに合わせる
+    wrap.scrollTop=selectedIdx*40;
+
+    // スクロールイベント
+    var timer=null;
+    wrap.onscroll=function(){
+      clearTimeout(timer);
+      timer=setTimeout(function(){
+        var idx=Math.round(wrap.scrollTop/40);
+        idx=Math.max(0,Math.min(items.length-1,idx));
+        wrap.scrollTop=idx*40;
+        // 選択状態更新
+        roll.querySelectorAll('.date-roll-item').forEach(function(el,i){
+          el.classList.toggle('selected',i===idx+1);
+        });
+        onChange(idx);
+      },80);
+    };
+    // wrap自体をスクロール可能に
+    wrap.style.overflowY='scroll';
+    wrap.style.scrollSnapType='y mandatory';
+    var items2=roll.querySelectorAll('.date-roll-item');
+    items2.forEach(function(el){el.style.scrollSnapAlign='start';});
+  }
+
+  function updateDate(){
+    var days=getDaysInMonth(selYear,selMonth);
+    if(selDay>days)selDay=days;
+    var dateStr=selYear+'-'+(selMonth<10?'0':'')+selMonth+'-'+(selDay<10?'0':'')+selDay;
+    var hidInput=document.getElementById('ev-date');
+    if(hidInput){hidInput.value=dateStr;S.date=dateStr;}
+    var prev=document.getElementById('date-preview');
+    if(prev)prev.textContent=fmtDate(dateStr);
+  }
+
+  function initRolls(){
+    var years=[];for(var y=2024;y<=2030;y++)years.push(y+'年');
+    var months=[];for(var m=1;m<=12;m++)months.push(m+'月');
+    var days=[];for(var d=1;d<=getDaysInMonth(selYear,selMonth);d++)days.push(d+'日');
+
+    buildRoll('roll-year',years,selYear-2024,function(i){selYear=2024+i;updateDate();rebuildDays();});
+    buildRoll('roll-month',months,selMonth-1,function(i){selMonth=i+1;updateDate();rebuildDays();});
+    buildRoll('roll-day',days,selDay-1,function(i){selDay=i+1;updateDate();});
+    updateDate();
+  }
+
+  function rebuildDays(){
+    var days=[];for(var d=1;d<=getDaysInMonth(selYear,selMonth);d++)days.push(d+'日');
+    if(selDay>days.length)selDay=days.length;
+    buildRoll('roll-day',days,selDay-1,function(i){selDay=i+1;updateDate();});
+  }
+
+  // DOM準備後に初期化
+  setTimeout(initRolls,100);
+
+  // 外部からセットできる関数
+  window._setDateRoll=function(dateStr){
+    if(!dateStr)return;
+    var parts=dateStr.split('-');
+    if(parts.length===3){
+      selYear=parseInt(parts[0]);selMonth=parseInt(parts[1]);selDay=parseInt(parts[2]);
+      setTimeout(initRolls,150);
+    }
+  };
 })();
 
 // ===== DATE =====
@@ -1312,7 +1432,7 @@ function resetAll(){
 
 // Attach inline handlers via JS to avoid iOS Script error
 document.getElementById('ev-title').addEventListener('input', function(){S.title=this.value;});
-document.getElementById('ev-date').addEventListener('input', function(){S.date=this.value;document.getElementById('date-preview').textContent=fmtDate(this.value);});
+document.getElementById('ev-date').addEventListener('change', function(){S.date=this.value;document.getElementById('date-preview').textContent=fmtDate(this.value);});
 document.getElementById('count-sel').addEventListener('change', function(){onCountChange(this.value);});
 document.getElementById('total-input').addEventListener('input', function(){
   // 数字以外を除去して計算
@@ -1378,6 +1498,7 @@ if(_restored){
   var titleEl=document.getElementById('ev-title');if(titleEl)titleEl.value=S.title;
   var dateEl=document.getElementById('ev-date');if(dateEl)dateEl.value=S.date;
   document.getElementById('date-preview').textContent=fmtDate(S.date);
+  if(S.date&&window._setDateRoll)_setDateRoll(S.date);
   var selEl=document.getElementById('count-sel');if(selEl&&S.count)selEl.value=S.count;
   if(S.persons.length)document.getElementById('persons-card').style.display='block';
   if(S.total){var ti2=document.getElementById('total-input');if(ti2)ti2.value=S.total.toLocaleString('ja-JP');}
