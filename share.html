@@ -66,7 +66,9 @@ var encoded = params.get('d');
 
 if(encoded){
   try{
-    var data = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+    // デコード
+    var json_str = decodeURIComponent(escape(atob(encoded)));
+    var data = JSON.parse(json_str);
     _title = data.t || '';
     
     // タイトル表示
@@ -76,33 +78,30 @@ if(encoded){
       titleBox.style.display = 'block';
     }
     
-    // URL復元（kanjiro.vercel.app/?d=で開けるURL）
-    // フル版データに変換して?d=パラメータとして渡す
+    // フル版データに変換
     var cats = (data.cats||[]).map(function(c,i){
       return {id:'c'+i, name:c[0], rate:c[1], color:c[2], tc:c[3]};
     });
     var persons = (data.p||[]).map(function(p){
-      return {name:p[0], catId:'c'+(p[1]||0), isKanji:!!p[2]};
+      return {name:p[0], catId:'c'+(p[1]||0), isKanji:p[2]?true:false};
     });
     var fullData = {
-      t:data.t, d:data.d, c:persons.length,
+      t:data.t||'', d:data.d||'', c:persons.length,
       p:persons.map(function(p){return{n:p.name,c:p.catId,k:p.isKanji?1:0};}),
       cats:cats.map(function(c){return{id:c.id,n:c.name,r:c.rate,co:c.color,tc:c.tc};}),
       tbl:[], asgn:{}, amt:{}, paid:{}, total:0
     };
-    var fullEnc = btoa(unescape(encodeURIComponent(JSON.stringify(fullData))));
+    
+    // 再エンコード（日本語対応）
+    var fullJson = JSON.stringify(fullData);
+    var fullEnc = btoa(unescape(encodeURIComponent(fullJson)));
     _url = 'https://kanjiro.vercel.app/?d=' + fullEnc;
-  }catch(e){
-    _url = '';
-  }
-  
-  if(_url){
     document.getElementById('url-display').textContent = _url;
-  } else {
-    document.getElementById('url-display').textContent = 'URLの取得に失敗しました。アプリに戻って再度お試しください。';
+  }catch(e){
+    document.getElementById('url-display').textContent = 'エラー: ' + e.message;
   }
 } else {
-  document.getElementById('url-display').textContent = 'URLが見つかりません。アプリに戻って再度お試しください。';
+  document.getElementById('url-display').textContent = 'パラメータがありません（d=' + (encoded||'null') + '）。アプリに戻って再度お試しください。';
 }
 
 function copyUrl(){
