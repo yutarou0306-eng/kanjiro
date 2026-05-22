@@ -1125,12 +1125,11 @@ function encodeLite(){
 }
 
 function openSharePage(){
-  if(!S.persons.filter(function(p){return p.name;}).length){
-    showToast('先に参加者情報を入力してください');return;
-  }
-  var enc=encodeLite();
+  var named=S.persons.filter(function(p){return p.name;});
+  if(!named.length){showToast('先に参加者情報を入力してください');return;}
+  // フル版エンコード（encodeStateをそのまま使用）
+  var enc=encodeState();
   if(!enc){showToast('URLの生成に失敗しました');return;}
-  // iOSのSafariはwindow.openをブロックするためlocation.hrefで同タブ遷移
   location.href='share.html?d='+enc;
 }
 
