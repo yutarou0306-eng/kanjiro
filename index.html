@@ -245,7 +245,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <div class="card">
     <div class="billing-input-area">
       <label>💴 お会計の合計金額を入力してください</label>
-      <input type="number" id="total-input" placeholder="例：50000" inputmode="numeric">
+      <input type="text" id="total-input" placeholder="例：50,000" inputmode="numeric">
       <div id="per-person-hint" style="display:none;margin-top:10px;background:#fff;border:0.5px solid #a0bfef;border-radius:8px;padding:8px 12px"></div>
     </div>
     <div class="grid3" style="margin-bottom:6px">
@@ -1058,7 +1058,7 @@ function renderBillingPage(){
   
   // 合計金額入力欄の復元
   var tiEl=document.getElementById('total-input');
-  if(S.total&&tiEl&&!tiEl.value)tiEl.value=S.total;
+  if(S.total&&tiEl&&!tiEl.value)tiEl.value=S.total.toLocaleString('ja-JP');
   
   // 均等割り参考金額
   var hint=document.getElementById('per-person-hint');
@@ -1310,7 +1310,22 @@ function resetAll(){
 document.getElementById('ev-title').addEventListener('input', function(){S.title=this.value;});
 document.getElementById('ev-date').addEventListener('input', function(){S.date=this.value;document.getElementById('date-preview').textContent=fmtDate(this.value);});
 document.getElementById('count-sel').addEventListener('change', function(){onCountChange(this.value);});
-document.getElementById('total-input').addEventListener('input', function(){onTotalInput(this.value);});
+document.getElementById('total-input').addEventListener('input', function(){
+  // 数字以外を除去して計算
+  var raw=this.value.replace(/[^0-9]/g,'');
+  onTotalInput(raw);
+});
+document.getElementById('total-input').addEventListener('blur', function(){
+  // フォーカスが外れたらカンマ表示
+  var raw=this.value.replace(/[^0-9]/g,'');
+  if(raw){this.value=parseInt(raw).toLocaleString('ja-JP');}
+  else{this.value='';}
+});
+document.getElementById('total-input').addEventListener('focus', function(){
+  // フォーカスが当たったらカンマを除去して数字のみに
+  var raw=this.value.replace(/[^0-9]/g,'');
+  this.value=raw;
+});
 
 // ===== INIT =====
 // ?id= パラメータ：Supabaseから復元
@@ -1361,7 +1376,7 @@ if(_restored){
   document.getElementById('date-preview').textContent=fmtDate(S.date);
   var selEl=document.getElementById('count-sel');if(selEl&&S.count)selEl.value=S.count;
   if(S.persons.length)document.getElementById('persons-card').style.display='block';
-  if(S.total){var ti2=document.getElementById('total-input');if(ti2)ti2.value=S.total;}
+  if(S.total){var ti2=document.getElementById('total-input');if(ti2)ti2.value=S.total.toLocaleString('ja-JP');}
   renderPersonList();renderCatList();renderScene();
   showToast('💾 保存データを復元しました');
   S.cats.forEach(function(c){var m=c.id.match(/^c(\d+)$/);if(m)catIdCnt=Math.max(catIdCnt,parseInt(m[1])+1);});
