@@ -60,24 +60,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP'
 <script>
 var _url = '';
 var _title = '';
+var SUPA_URL = 'https://opaelfaglzewknhgqufw.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wYWVsZmFnbHpld2tuaGdxdWZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MzIxNzgsImV4cCI6MjA5MjQwODE3OH0.Gv2Udb64zcqQda85mgGOmJKumauuu89YhfHd1LW403A';
 
 var params = new URLSearchParams(location.search);
-var encoded = params.get('d');
+var eventId = params.get('id');
+var titleParam = params.get('t');
 
-if(encoded){
-  try{
-    // タイトルだけデコードして表示用に取得
-    var json_str = decodeURIComponent(escape(atob(encoded)));
-    var data = JSON.parse(json_str);
-    _title = data.t || '';
-    if(_title){
-      var titleBox = document.getElementById('event-title-box');
-      titleBox.textContent = '🍺 ' + _title;
-      titleBox.style.display = 'block';
-    }
-  }catch(e){}
-  // ?d=パラメータをそのままkanjiro.vercel.appに渡す（再エンコード不要）
-  _url = 'https://kanjiro.vercel.app/?d=' + encoded;
+if(titleParam){
+  _title = decodeURIComponent(titleParam);
+  var titleBox = document.getElementById('event-title-box');
+  titleBox.textContent = '🍺 ' + _title;
+  titleBox.style.display = 'block';
+}
+
+if(eventId){
+  // Supabase IDからURLを生成（短いURL）
+  _url = 'https://kanjiro.vercel.app/?id=' + eventId;
   document.getElementById('url-display').textContent = _url;
 } else {
   document.getElementById('url-display').textContent = 'URLが見つかりません。アプリに戻って再度お試しください。';
