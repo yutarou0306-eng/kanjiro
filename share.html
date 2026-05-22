@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>URLを発行 | お勘定奉行 幹事郎</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:16px;padding:28px 24px;width:100%;max-width:480px;box-shadow:0 4px 24px rgba(0,0,0,0.07)}
+.header{text-align:center;margin-bottom:24px}
+.header h1{font-size:20px;font-weight:600;margin-bottom:6px}
+.header p{font-size:13px;color:#888;line-height:1.6}
+.event-title{font-size:18px;font-weight:600;color:#185FA5;text-align:center;margin-bottom:20px;padding:10px 16px;background:#f0f7ff;border-radius:10px;border:0.5px solid #a0bfef}
+.url-box{background:#f9f9f7;border:0.5px solid #e0e0d8;border-radius:10px;padding:14px;margin-bottom:20px;word-break:break-all;font-size:13px;color:#555;line-height:1.5}
+.copy-btn{width:100%;padding:14px;background:#185FA5;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:16px;-webkit-tap-highlight-color:transparent}
+.copy-btn:active{opacity:0.85}
+.divider{text-align:center;font-size:12px;color:#aaa;margin-bottom:16px;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:0.5px;background:#e0e0d8}
+.divider::before{left:0}.divider::after{right:0}
+.share-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.share-btn{width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;border:none;-webkit-tap-highlight-color:transparent}
+.share-btn:active{opacity:0.85}
+.btn-line{background:#06C755;color:#fff}
+.btn-viber{background:#7360F2;color:#fff}
+.btn-sms{background:#34C759;color:#fff}
+.back-btn{width:100%;padding:12px;background:transparent;border:0.5px solid #ddd;border-radius:10px;font-size:14px;color:#888;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 22px;border-radius:100px;font-size:14px;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div style="font-size:36px;margin-bottom:8px">🔗</div>
+    <h1>飲み会用URLを発行しました</h1>
+    <p>このURLを共有すると、入力した内容を引き継いでアプリを開けます</p>
+  </div>
+  <div id="event-title-box" class="event-title" style="display:none"></div>
+  <div class="url-box" id="url-display">URLを読み込み中...</div>
+  <button class="copy-btn" onclick="copyUrl()">📋 URLをコピーする</button>
+  <div class="divider">または</div>
+  <div class="share-btns">
+    <button class="share-btn btn-line" onclick="shareViaLine()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      LINEで送る
+    </button>
+    <button class="share-btn btn-viber" onclick="shareViaViber()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.985 0C5.37 0 .015 5.355.015 11.97c0 2.84.995 5.445 2.64 7.485L.9 23.25l3.975-1.725A11.88 11.88 0 0011.985 24C18.6 24 24 18.645 24 12.03 24 5.37 18.6 0 11.985 0zm6.15 16.665c-.27.765-1.35 1.41-2.205 1.59-.585.12-1.35.21-3.93-.84-3.285-1.335-5.415-4.665-5.58-4.875-.165-.225-1.32-1.755-1.32-3.345s.84-2.37 1.14-2.685c.27-.285.585-.36.78-.36s.39 0 .555.015c.18.015.42-.06.66.495.24.585.81 1.98.885 2.13.075.135.12.3.03.48-.09.195-.135.315-.27.48-.135.165-.285.36-.405.48-.135.135-.27.285-.12.555.15.27.675 1.11 1.455 1.8 1.005.885 1.845 1.17 2.115 1.305.27.12.42.105.585-.06.165-.18.705-.825.885-1.11.18-.27.36-.225.615-.135.255.09 1.62.765 1.89.9.27.135.45.21.525.315.06.12.06.675-.21 1.44z"/></svg>
+      Viberで送る
+    </button>
+    <button class="share-btn btn-sms" onclick="shareViaSms()">
+      💬 SMSで送る
+    </button>
+  </div>
+  <button class="back-btn" onclick="goBack()">← アプリに戻る</button>
+</div>
+<div class="toast" id="toast">コピーしました！</div>
+
+<script>
+var _url = '';
+var _title = '';
+
+// URLパラメータから情報を取得
+var params = new URLSearchParams(location.search);
+var encoded = params.get('d');
+var title = params.get('t');
+
+if(title){
+  _title = decodeURIComponent(title);
+  var titleBox = document.getElementById('event-title-box');
+  titleBox.textContent = '🍺 ' + _title;
+  titleBox.style.display = 'block';
+}
+
+if(encoded){
+  // kanjiro.vercel.appの?d=付きURLを復元
+  _url = 'https://kanjiro.vercel.app/?d=' + encoded;
+  document.getElementById('url-display').textContent = _url;
+} else {
+  document.getElementById('url-display').textContent = 'URLの取得に失敗しました。アプリに戻って再度お試しください。';
+}
+
+function copyUrl(){
+  if(!_url)return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(_url).then(function(){showToast('コピーしました！');});
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = _url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('コピーしました！');
+  }
+}
+
+function buildMsg(){
+  var msg = '🍺 飲み会の集金管理アプリ「お勘定奉行 幹事郎」\n';
+  if(_title) msg += '📅 ' + _title + '\n';
+  msg += '\n以下のURLから参加してください👇\n' + _url;
+  return msg;
+}
+
+function shareViaLine(){
+  window.open('https://line.me/R/share?text=' + encodeURIComponent(buildMsg()), '_blank');
+}
+function shareViaViber(){
+  window.open('viber://forward?text=' + encodeURIComponent(buildMsg()), '_blank');
+}
+function shareViaSms(){
+  window.open('sms:?body=' + encodeURIComponent(buildMsg()), '_blank');
+}
+function goBack(){
+  history.back();
+}
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');}, 2200);
+}
+</script>
+</body>
+</html>
