@@ -12,13 +12,13 @@
   <link rel="icon" type="image/jpeg" href="icon.jpg">
   <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:12px;max-width:780px;margin:0 auto;-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP',sans-serif;background:#f5f5f0;color:#1a1a1a;padding:8px;max-width:100%;margin:0 auto;-webkit-text-size-adjust:100%;overflow-x:hidden;box-sizing:border-box}
 input,select{border:0.5px solid #ccc;border-radius:6px;padding:8px 10px;font-size:16px;width:100%;font-family:inherit;background:#fff;color:#1a1a1a}
 input:focus,select:focus{outline:none;border-color:#378ADD}
-.page-wrap{overflow:hidden;width:100%}
+.page-wrap{overflow:hidden;width:100%;max-width:100%;box-sizing:border-box}
 .pages{display:flex;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);will-change:transform;touch-action:pan-y}
-.page{width:100vw;max-width:780px;min-width:0;flex-shrink:0;padding:0.5rem 0;overflow-x:hidden;box-sizing:border-box}
-.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:0.875rem 1rem;margin-bottom:10px;width:100%;overflow:hidden}
+.page{width:100vw;max-width:100vw;min-width:0;flex-shrink:0;padding:0.5rem 0;overflow-x:hidden;box-sizing:border-box}
+.card{background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:0.75rem 0.875rem;margin-bottom:8px;width:100%;overflow:hidden;box-sizing:border-box}
 h3{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:8px}
 label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .btn{background:#fff;border:0.5px solid #ccc;border-radius:8px;padding:10px 16px;font-size:14px;cursor:pointer;color:#1a1a1a;font-family:inherit;-webkit-tap-highlight-color:transparent}
@@ -28,7 +28,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .btn-sm{padding:6px 11px;font-size:12px}
 .btn-icon{padding:5px 8px;font-size:12px;border:0.5px solid #e0e0d8;border-radius:6px;cursor:pointer;background:transparent;color:#888;-webkit-tap-highlight-color:transparent}
 .nav{display:flex;gap:4px;margin-bottom:0.75rem;border-bottom:0.5px solid #e0e0d8;padding-bottom:0.5rem}
-.nav-btn{flex:1;padding:6px 4px;font-size:11px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;background:transparent;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:center}
+.nav-btn{flex:1;padding:8px 4px;font-size:15px;border:none;border-radius:100px;cursor:pointer;white-space:nowrap;background:transparent;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:center}
 .nav-btn.active{background:#e8f0fb;color:#185FA5;font-weight:500}
 .pill-tag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
 
@@ -58,7 +58,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .rect-body{background:#B5D4F4;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute}
 .round-body{background:#C0DD97;border-radius:50%;display:flex;align-items:center;justify-content:center;position:absolute}
 .counter-body{background:#F5C4B3;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute}
-.t-label{font-size:10px;font-weight:500;color:#0C447C;text-align:center;line-height:1.3}
+.t-label{font-size:12px;font-weight:500;color:#0C447C;text-align:center;line-height:1.3}
 .round-body .t-label{color:#27500A}
 .counter-body .t-label{color:#993C1D}
 .seat{position:absolute;width:42px;height:42px;border-radius:50%;background:#f0f0ea;border:0.5px solid #ddd;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:9px;text-align:center;color:#888;line-height:1.2;word-break:break-all;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:border-color 0.1s}
@@ -69,45 +69,45 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 /* テーブルコントロール */
 .tbl-ctrl{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;justify-content:center}
 .seat-stepper{display:flex;align-items:center;border:0.5px solid #e0e0d8;border-radius:100px;overflow:hidden;background:#fff}
-.seat-stepper button{width:32px;height:28px;border:none;background:#f5f5f0;color:#1a1a1a;font-size:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center}
+.seat-stepper button{width:34px;height:30px;border:none;background:#f5f5f0;color:#1a1a1a;font-size:18px;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center}
 .seat-stepper button:active{background:#e5e5e0}
-.seat-stepper span{min-width:34px;text-align:center;font-size:12px;font-weight:500;background:#fff;line-height:28px}
+.seat-stepper span{min-width:38px;text-align:center;font-size:14px;font-weight:500;background:#fff;line-height:30px}
 .tbl-type-select{font-size:11px;border:0.5px solid #e0e0d8;border-radius:100px;padding:2px 8px;background:#f5f5f0;color:#888;width:auto;height:28px}
-.tbl-del-btn{padding:3px 8px;font-size:11px;border:0.5px solid #f0a0a0;border-radius:100px;cursor:pointer;background:#fdeaea;color:#c0392b;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.tbl-del-btn{padding:5px 10px;font-size:13px;border:0.5px solid #f0a0a0;border-radius:100px;cursor:pointer;background:#fdeaea;color:#c0392b;font-family:inherit;-webkit-tap-highlight-color:transparent}
 
 /* 座席選択ポップオーバー */
 .seat-popup{position:fixed;z-index:200;background:#fff;border:0.5px solid #e0e0d8;border-radius:12px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,0.14);min-width:150px;max-width:220px;max-height:260px;overflow-y:auto}
-.seat-popup-item{padding:8px 12px;font-size:13px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
+.seat-popup-item{padding:10px 14px;font-size:15px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:8px;-webkit-tap-highlight-color:transparent}
 .seat-popup-item:active{background:#f5f5f0}
 .seat-popup-item.assigned-elsewhere{opacity:0.35;pointer-events:none}
-.seat-popup-clear{padding:8px 12px;font-size:12px;cursor:pointer;border-radius:8px;color:#c0392b;border-top:0.5px solid #e0e0d8;margin-top:4px}
+.seat-popup-clear{padding:10px 14px;font-size:14px;cursor:pointer;border-radius:8px;color:#c0392b;border-top:0.5px solid #e0e0d8;margin-top:4px}
 .seat-popup-clear:active{background:#fdeaea}
 
 /* 個人別請求 */
 .br{display:flex;align-items:center;padding:13px 2px;border-bottom:0.5px solid #e0e0d8;gap:6px}
 .br:first-child{border-top:0.5px solid #e0e0d8}
 .br.is-paid .br-name,.br.is-paid .br-amt{color:#aaa}
-.br-name{font-size:14px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow:hidden}
-.br-cat{font-size:11px;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.br-amt{font-size:14px;font-weight:500;color:#185FA5;white-space:nowrap;cursor:pointer;padding:4px 8px;border-radius:6px;min-width:58px;text-align:right;flex-shrink:0;border:0.5px solid #a0bfef;background:#f0f7ff;display:flex;align-items:center;gap:3px}
+.br-name{font-size:16px;font-weight:500;color:#1a1a1a;flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow:hidden}
+.br-cat{font-size:13px;flex-shrink:0;max-width:68px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.br-amt{font-size:16px;font-weight:500;color:#185FA5;white-space:nowrap;cursor:pointer;padding:5px 10px;border-radius:6px;min-width:64px;text-align:right;flex-shrink:0;border:0.5px solid #a0bfef;background:#f0f7ff;display:flex;align-items:center;gap:3px}
 .br-amt:active{background:#d8eaf8}
 .br-amt-input{width:78px;font-size:16px;font-weight:500;text-align:right;border:none;border-bottom:1.5px solid #378ADD;background:transparent;color:#1a1a1a;outline:none;padding:2px 4px;flex-shrink:0}
-.br-pay-btn{padding:6px 12px;font-size:12px;border:0.5px solid #a0bfef;border-radius:100px;cursor:pointer;background:#185FA5;color:#fff;white-space:nowrap;flex-shrink:0;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
+.br-pay-btn{padding:7px 14px;font-size:14px;border:0.5px solid #a0bfef;border-radius:100px;cursor:pointer;background:#185FA5;color:#fff;white-space:nowrap;flex-shrink:0;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
 .br-pay-btn:active{opacity:0.8}
-.br-pay-btn.paid{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500}
-.br-kanji-btn{padding:3px 7px;font-size:10px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0}
-.br-kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500}
+.br-pay-btn.paid{background:#e6f4ef;border-color:#8ecdb5;color:#1a7a56;font-weight:500;font-size:14px}
+.br-kanji-btn{padding:5px 10px;font-size:12px;border:0.5px solid #ddd;border-radius:100px;cursor:pointer;background:#fff;color:#888;font-family:inherit;-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0}
+.br-kanji-btn.active{background:#FFF3CD;border-color:#FFDA6A;color:#856404;font-weight:500;font-size:12px}
 
 /* サマリー */
-.metric{background:#f5f5f0;border-radius:8px;padding:8px;min-width:0;overflow:hidden}
-.metric-label{font-size:10px;color:#888;margin-bottom:3px}
-.metric-value{font-size:16px;font-weight:500;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric{background:#f5f5f0;border-radius:8px;padding:6px 7px;min-width:0;overflow:hidden;box-sizing:border-box}
+.metric-label{font-size:13px;color:#888;margin-bottom:3px}
+.metric-value{font-size:20px;font-weight:500;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .metric-value.hi{color:#185FA5}
-.metric-sub{font-size:9px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.metric-sub{font-size:11px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .surplus{color:#1D9E75}.deficit{color:#E24B4A}
 .progress-bar{height:5px;background:#e0e0d8;border-radius:4px;overflow:hidden;margin:8px 0}
 .progress-fill{height:100%;background:#1D9E75;border-radius:4px;transition:width 0.3s}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;width:100%}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;width:100%;box-sizing:border-box}
 .billing-input-area{background:#eaf3ff;border:1.5px solid #a0bfef;border-radius:10px;padding:12px 14px;margin-bottom:12px;width:100%}
 .billing-input-area label{font-size:13px;color:#185FA5;font-weight:500;margin-bottom:6px;display:block}
 .billing-input-area input{font-size:20px;font-weight:500;border:none;border-bottom:2px solid #378ADD;border-radius:0;background:transparent;color:#1a1a1a;padding:4px 2px;width:100%}
@@ -115,9 +115,9 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 
 /* 幹事 */
 .kanji-badge{display:inline-block;padding:1px 5px;border-radius:100px;font-size:10px;font-weight:500;background:#FFF3CD;color:#856404;border:0.5px solid #FFDA6A;flex-shrink:0}
-.btn-kanji-surplus{width:100%;margin-top:6px;padding:9px;font-size:12px;background:#FFF3CD;border:0.5px solid #FFDA6A;color:#856404;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
+.btn-kanji-surplus{width:100%;margin-top:6px;padding:10px;font-size:14px;background:#FFF3CD;border:0.5px solid #FFDA6A;color:#856404;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent}
 .btn-kanji-surplus:active{opacity:0.7}
-.btn-kanji-revert{width:100%;margin-top:4px;padding:7px;font-size:11px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.btn-kanji-revert{width:100%;margin-top:4px;padding:8px;font-size:13px;background:#fff;border:0.5px solid #ccc;color:#888;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
 
 /* 結果 */
 .result-header{text-align:center;padding:16px 0 14px}
@@ -190,20 +190,20 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 
   <div class="card">
     <h3>🗓 飲み会情報</h3>
-    <label>タイトル</label>
-    <input type="text" id="ev-title" placeholder="例：4月歓迎会" style="margin-bottom:10px">
-    <label>日付</label>
-    <input type="date" id="ev-date" style="margin-bottom:10px">
+    <label style="font-size:14px">タイトル</label>
+    <input type="text" id="ev-title" placeholder="例：4月歓迎会" style="margin-bottom:10px;font-size:18px">
+    <label style="font-size:14px">日付</label>
+    <input type="date" id="ev-date" style="margin-bottom:10px;font-size:18px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
       <span style="font-size:12px;color:#888">表示：</span>
       <span id="date-preview" style="font-size:14px;font-weight:500">—</span>
     </div>
-    <label>参加人数</label>
+    <label style="font-size:14px">参加人数</label>
     <div class="count-roll-wrap">
       <select id="count-sel" class="count-roll" >
         <option value="">—</option>
       </select>
-      <span style="font-size:14px;color:#888">名</span>
+      <span style="font-size:16px;color:#888">名</span>
     </div>
   </div>
 
@@ -276,7 +276,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <div id="calc-mode-btns" style="display:none;margin-top:8px">
       <div style="font-size:14px;color:#666;font-weight:500;margin-bottom:6px">配分方式</div>
       <div style="display:flex;gap:6px;margin-bottom:10px">
-        <button id="btn-split-weighted" onclick="setSplitMode('weighted')" class="calc-btn calc-btn-split">⚖️ 傾斜配分<br><span style="font-size:12px;font-weight:400">カテゴリ倍率で按分</span></button>
+        <button id="btn-split-weighted" onclick="setSplitMode('weighted')" class="calc-btn calc-btn-split">⚖️ 傾斜有り<br><span style="font-size:12px;font-weight:400">カテゴリ倍率で按分</span></button>
         <button id="btn-split-flat" onclick="setSplitMode('flat')" class="calc-btn calc-btn-split">👥 均等割り<br><span style="font-size:12px;font-weight:400">全員同額</span></button>
       </div>
       <div style="font-size:14px;color:#666;font-weight:500;margin-bottom:6px">端数処理</div>
@@ -291,7 +291,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
       <h3 style="margin:0">👥 個人別請求</h3>
-      <button onclick="addPersonFromBilling()" style="padding:4px 10px;font-size:11px;border:0.5px solid #a0bfef;border-radius:100px;background:#e8f0fb;color:#185FA5;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">＋ 参加者追加</button>
+      <button onclick="addPersonFromBilling()" style="padding:6px 12px;font-size:13px;border:0.5px solid #a0bfef;border-radius:100px;background:#e8f0fb;color:#185FA5;cursor:pointer;font-family:inherit;font-weight:500;-webkit-tap-highlight-color:transparent">＋ 参加者追加</button>
     </div>
     <p style="font-size:11px;color:#888;margin-bottom:6px">金額・カテゴリ・幹事をタップで変更</p>
     <div id="billing-list"></div>
@@ -306,7 +306,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
       <h3 style="margin:0">🪑 座席配置</h3>
       <div id="pax-badge" class="pax-badge">👤 0名</div>
     </div>
-    <p style="font-size:11px;color:#888;margin-bottom:8px">席の＋をタップ→参加者割り当て・カテゴリ変更・新規追加。テーブルをタップ→種別変更。</p>
+    <p style="font-size:13px;color:#888;margin-bottom:8px">席の＋をタップ→参加者割り当て・カテゴリ変更・新規追加。テーブルをタップ→種別変更。</p>
     <!-- 座席図：横スクロール可 -->
     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px">
       <div class="table-scene" id="table-scene"></div>
@@ -314,20 +314,20 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     <!-- テーブル追加（配置図の下） -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:0.5px solid #e0e0d8;align-items:center">
       <span style="font-size:11px;color:#888">テーブル追加：</span>
-      <button class="btn btn-sm" onclick="addTable('rect');renderScene()">＋ 四角</button>
-      <button class="btn btn-sm" onclick="addTable('round');renderScene()">＋ 円卓</button>
-      <button class="btn btn-sm" onclick="addTable('counter');renderScene()">＋ カウンター</button>
+      <button class="btn" onclick="addTable('rect');renderScene()" style="font-size:14px;padding:8px 14px">＋ 四角</button>
+      <button class="btn" onclick="addTable('round');renderScene()" style="font-size:14px;padding:8px 14px">＋ 円卓</button>
+      <button class="btn" onclick="addTable('counter');renderScene()" style="font-size:14px;padding:8px 14px">＋ カウンター</button>
     </div>
   </div>
 
   <!-- 幹事未設定の警告 -->
-  <div id="kanji-warning" style="display:none;background:#FFF3CD;border:0.5px solid #FFDA6A;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#856404;font-weight:500">
+  <div id="kanji-warning" style="display:none;background:#FFF3CD;border:0.5px solid #FFDA6A;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:15px;color:#856404;font-weight:500">
     👑 幹事が設定されていません。席をタップして幹事を1人以上設定してください。
   </div>
 
   <!-- 未割当て一覧 -->
   <div class="card" id="unassigned-card">
-    <h3 style="margin-bottom:6px">未割当て</h3>
+    <h3 style="margin-bottom:6px;font-size:16px">未割当て</h3>
     <div id="unassigned-list"><p style="font-size:12px;color:#888">全員割り当て済みです ✅</p></div>
   </div>
 
@@ -718,7 +718,7 @@ function openTableTypePopup(ti,anchorEl){
   var hdr=document.createElement('div');hdr.style.cssText='font-size:11px;color:#888;padding:4px 10px 6px';hdr.textContent='テーブル種別を変更';popup.appendChild(hdr);
   [{v:'rect',label:'四角テーブル',emoji:'⬛'},{v:'round',label:'円卓',emoji:'⭕'},{v:'counter',label:'カウンター席',emoji:'🟧'}].forEach(function(opt){
     var item=document.createElement('div');item.className='seat-popup-item';
-    item.innerHTML='<span style="font-size:14px">'+opt.emoji+'</span><span style="flex:1">'+opt.label+'</span>';
+    item.innerHTML='<span style="font-size:16px">'+opt.emoji+'</span><span style="flex:1;font-size:15px">'+opt.label+'</span>';
     if(t.type===opt.v)item.style.background='#e8f0fb';
     item.onclick=(function(v){return function(){S.tables[ti].type=v;closeSeatPopup();renderScene();};})(opt.v);
     popup.appendChild(item);
@@ -822,7 +822,7 @@ function renderUnassigned(){
   if(!unassigned.length){el.innerHTML='<p style="font-size:12px;color:#1D9E75;padding:4px 0">全員割り当て済みです ✅</p>';return;}
   el.innerHTML='';
   unassigned.forEach(function(p){
-    var span=document.createElement('span');span.style.cssText='display:inline-block;padding:4px 10px;background:#f5f5f0;border-radius:100px;font-size:13px;font-weight:500;margin:3px 3px;color:#1a1a1a';
+    var span=document.createElement('span');span.style.cssText='display:inline-block;padding:5px 12px;background:#f5f5f0;border-radius:100px;font-size:15px;font-weight:500;margin:3px 3px;color:#1a1a1a';
     span.textContent=p.name;el.appendChild(span);
   });
 }
@@ -1046,7 +1046,7 @@ function renderBillingPage(){
     // 金額
     var amtWrap=document.createElement('span');amtWrap.className='br-amt';
     var amtText=document.createElement('span');amtText.textContent=S.amounts[p.idx]!==undefined?fmt(S.amounts[p.idx]):'—';
-    var editIcon=document.createElement('span');editIcon.style.cssText='font-size:10px;opacity:0.55';editIcon.textContent='✎';
+    var editIcon=document.createElement('span');editIcon.style.cssText='font-size:12px;opacity:0.55';editIcon.textContent='✎';
     amtWrap.appendChild(amtText);if(!isPaid)amtWrap.appendChild(editIcon);
     amtWrap.onclick=(function(pidx){return function(){if(!S.paid[pidx])startEditAmt(pidx,amtWrap);};})(p.idx);
     // 幹事ボタン
