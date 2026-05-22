@@ -149,7 +149,7 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
 .color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;-webkit-tap-highlight-color:transparent}
 .color-dot.selected{border-color:#1a1a1a}
 
-.calc-btn{flex:1;padding:10px 4px;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:center;line-height:1.4;border:1.5px solid #e0e0d8;background:#f5f5f0;color:#888;transition:all 0.1s}
+.calc-btn{flex:1;padding:12px 6px;font-size:15px;font-weight:500;border-radius:8px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;text-align:center;line-height:1.5;border:1.5px solid #e0e0d8;background:#f5f5f0;color:#888;transition:all 0.1s}
 .calc-btn.active{border-color:#185FA5;background:#e8f0fb;color:#185FA5}
 .calc-btn:active{opacity:0.7}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 20px;border-radius:100px;font-size:13px;opacity:0;transition:opacity 0.3s;z-index:300;pointer-events:none;white-space:nowrap}
@@ -274,16 +274,16 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
     </div>
     <!-- 配分方式・端数処理ボタン（常時表示・アクティブ表示） -->
     <div id="calc-mode-btns" style="display:none;margin-top:8px">
-      <div style="font-size:12px;color:#666;font-weight:500;margin-bottom:5px">配分方式</div>
+      <div style="font-size:14px;color:#666;font-weight:500;margin-bottom:6px">配分方式</div>
       <div style="display:flex;gap:6px;margin-bottom:10px">
-        <button id="btn-split-weighted" onclick="setSplitMode('weighted')" class="calc-btn calc-btn-split">⚖️ 傾斜配分<br><span style="font-size:10px;font-weight:400">カテゴリ倍率で按分</span></button>
-        <button id="btn-split-flat" onclick="setSplitMode('flat')" class="calc-btn calc-btn-split">👥 均等割り<br><span style="font-size:10px;font-weight:400">全員同額</span></button>
+        <button id="btn-split-weighted" onclick="setSplitMode('weighted')" class="calc-btn calc-btn-split">⚖️ 傾斜配分<br><span style="font-size:12px;font-weight:400">カテゴリ倍率で按分</span></button>
+        <button id="btn-split-flat" onclick="setSplitMode('flat')" class="calc-btn calc-btn-split">👥 均等割り<br><span style="font-size:12px;font-weight:400">全員同額</span></button>
       </div>
-      <div style="font-size:11px;color:#888;margin-bottom:5px">端数処理</div>
+      <div style="font-size:14px;color:#666;font-weight:500;margin-bottom:6px">端数処理</div>
       <div style="display:flex;gap:6px">
-        <button id="btn-round-100" onclick="setRoundMode('r100')" class="calc-btn calc-btn-round">🔢 100円<br><span style="font-size:10px;font-weight:400">四捨五入</span></button>
-        <button id="btn-round-500up" onclick="setRoundMode('r500up')" class="calc-btn calc-btn-round">🪙 500円<br><span style="font-size:10px;font-weight:400">切り上げ</span></button>
-        <button id="btn-round-500dn" onclick="setRoundMode('r500dn')" class="calc-btn calc-btn-round">🪙 500円<br><span style="font-size:10px;font-weight:400">切り下げ</span></button>
+        <button id="btn-round-100" onclick="setRoundMode('r100')" class="calc-btn calc-btn-round">🔢 100円<br><span style="font-size:12px;font-weight:400">四捨五入</span></button>
+        <button id="btn-round-500up" onclick="setRoundMode('r500up')" class="calc-btn calc-btn-round">🪙 500円<br><span style="font-size:12px;font-weight:400">切り上げ</span></button>
+        <button id="btn-round-500dn" onclick="setRoundMode('r500dn')" class="calc-btn calc-btn-round">🪙 500円<br><span style="font-size:12px;font-weight:400">切り下げ</span></button>
       </div>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
