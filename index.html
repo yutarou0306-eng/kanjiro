@@ -1220,6 +1220,10 @@ function decodeState(b64){
   try{
     if(!b64||typeof b64!=='string')return false;
     var data=JSON.parse(decodeURIComponent(escape(atob(b64))));
+    // デバッグ：最初の参加者を確認
+    var dbgp=data.p&&data.p[0]?JSON.stringify(data.p[0]):'none';
+    var dbgc=data.cats&&data.cats[0]?JSON.stringify(data.cats[0]):'none';
+    alert('decode: p[0]='+dbgp+'\ncats[0]='+dbgc);
     S.title=data.t||'';S.date=data.d||'';S.count=data.c||0;
     S.persons=(data.p||[]).map(function(p){return{name:p.n,catId:p.c,isKanji:!!p.k};});
     if(data.cats&&data.cats.length)S.cats=data.cats.map(function(c){return{id:c.id,name:c.n,rate:c.r,color:c.co,tc:c.tc};});
