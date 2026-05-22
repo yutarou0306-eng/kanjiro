@@ -1110,42 +1110,83 @@ function addPersonFromBilling(){
 var SUPA_URL='https://opaelfaglzewknhgqufw.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wYWVsZmFnbHpld2tuaGdxdWZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MzIxNzgsImV4cCI6MjA5MjQwODE3OH0.Gv2Udb64zcqQda85mgGOmJKumauuu89YhfHd1LW403A';
 
-async function saveEventToSupabase(){
+function saveEventToSupabase(onSuccess, onError){
   var named=S.persons.filter(function(p){return p.name;});
-  if(!named.length){showToast('先に参加者情報を入力してください');return null;}
+  if(!named.length){showToast('先に参加者情報を入力してください');return;}
   var enc=encodeState();
-  if(!enc){showToast('データの生成に失敗しました');return null;}
-  try{
-    var res=await fetch(SUPA_URL+'/rest/v1/kanjiro_events',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=representation'},
-      body:JSON.stringify({data:enc})
-    });
-    if(!res.ok){var err=await res.text();showToast('保存エラー: '+err);return null;}
-    var rows=await res.json();
-    return rows[0]?rows[0].id:null;
-  }catch(e){showToast('通信エラー: '+e.message);return null;}
+  if(!enc){showToast('データの生成に失敗しました');return;}
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST', SUPA_URL+'/rest/v1/kanjiro_events', true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.setRequestHeader('apikey', SUPA_KEY);
+  xhr.setRequestHeader('Authorization','Bearer '+SUPA_KEY);
+  xhr.setRequestHeader('Prefer','return=representation');
+  xhr.onload=function(){
+    if(xhr.status>=200&&xhr.status<300){
+      try{
+        var rows=JSON.parse(xhr.responseText);
+        if(rows[0]&&rows[0].id){onSuccess(rows[0].id);}
+        else{onError('IDが取得できませんでした');}
+      }catch(e){onError('レスポンス解析エラー: '+e.message);}
+    } else {
+      onError('サーバーエラー: '+xhr.status+' '+xhr.responseText);
+    }
+  };
+  xhr.onerror=function(){onError('通信エラー（XHR）');};
+  xhr.send(JSON.stringify({data:enc}));
 }
 
-async function loadEventFromSupabase(id){
-  try{
-    var res=await fetch(SUPA_URL+'/rest/v1/kanjiro_events?id=eq.'+id+'&select=data',{
-      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
-    });
-    if(!res.ok)return null;
-    var rows=await res.json();
-    return rows[0]?rows[0].data:null;
-  }catch(e){return null;}
+function loadEventFromSupabase(id, onSuccess, onError){
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET', SUPA_URL+'/rest/v1/kanjiro_events?id=eq.'+id+'&select=data', true);
+  xhr.setRequestHeader('apikey', SUPA_KEY);
+  xhr.setRequestHeader('Authorization','Bearer '+SUPA_KEY);
+  xhr.onload=function(){
+    if(xhr.status>=200&&xhr.status<300){
+      try{
+        var rows=JSON.parse(xhr.responseText);
+        if(rows[0]&&rows[0].data){onSuccess(rows[0].data);}
+        else{onError('データが見つかりません');}
+      }catch(e){onError('解析エラー: '+e.message);}
+    } else {
+      onError('取得エラー: '+xhr.status);
+    }
+  };
+  xhr.onerror=function(){onError('通信エラー');};
+  xhr.send();
 }
 
 function openSharePage(){
   var named=S.persons.filter(function(p){return p.name;});
   if(!named.length){showToast('先に参加者情報を入力してください');return;}
+  var enc=encodeState();
+  if(!enc){showToast('データの生成に失敗しました');return;}
   showToast('URLを生成中...');
-  saveEventToSupabase().then(function(id){
-    if(!id)return;
-    location.href='share.html?id='+id+'&t='+encodeURIComponent(S.title||'');
-  });
+  var xhr=new XMLHttpRequest();
+  xhr.open('POST', SUPA_URL+'/rest/v1/kanjiro_events', true);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.setRequestHeader('apikey', SUPA_KEY);
+  xhr.setRequestHeader('Authorization','Bearer '+SUPA_KEY);
+  xhr.setRequestHeader('Prefer','return=representation');
+  xhr.onload=function(){
+    alert('status:'+xhr.status+'\nresponse:'+xhr.responseText.substring(0,200));
+    if(xhr.status>=200&&xhr.status<300){
+      try{
+        var rows=JSON.parse(xhr.responseText);
+        if(rows[0]&&rows[0].id){
+          location.href='share.html?id='+rows[0].id+'&t='+encodeURIComponent(S.title||'');
+        } else {
+          alert('IDなし: '+xhr.responseText);
+        }
+      }catch(e){alert('parse error: '+e.message);}
+    } else {
+      alert('HTTPエラー: '+xhr.status+'\n'+xhr.responseText.substring(0,300));
+    }
+  };
+  xhr.onerror=function(){alert('onerror発火\nstatus:'+xhr.status+'\nstatusText:'+xhr.statusText);};
+  xhr.ontimeout=function(){alert('timeout');};
+  xhr.timeout=10000;
+  xhr.send(JSON.stringify({data:enc}));
 }
 
 function goToBilling(){
@@ -1276,19 +1317,21 @@ document.getElementById('total-input').addEventListener('input', function(){onTo
 // ?id= パラメータ：Supabaseから復元
 var _idParam=new URLSearchParams(location.search).get('id');
 if(_idParam){
-  loadEventFromSupabase(_idParam).then(function(enc){
-    if(!enc){showToast('データの取得に失敗しました');return;}
-    if(decodeState(enc)){
-      var titleEl=document.getElementById('ev-title');if(titleEl)titleEl.value=S.title;
-      var dateEl=document.getElementById('ev-date');if(dateEl)dateEl.value=S.date;
-      document.getElementById('date-preview').textContent=fmtDate(S.date);
-      var selEl=document.getElementById('count-sel');if(selEl&&S.count)selEl.value=S.count;
-      if(S.persons.length)document.getElementById('persons-card').style.display='block';
-      renderPersonList();renderCatList();renderScene();
-      showToast('💾 データを復元しました');
-      S.cats.forEach(function(c){var m=c.id.match(/^c(\d+)$/);if(m)catIdCnt=Math.max(catIdCnt,parseInt(m[1])+1);});
-    }
-  });
+  loadEventFromSupabase(_idParam,
+    function(enc){
+      if(decodeState(enc)){
+        var titleEl=document.getElementById('ev-title');if(titleEl)titleEl.value=S.title;
+        var dateEl=document.getElementById('ev-date');if(dateEl)dateEl.value=S.date;
+        document.getElementById('date-preview').textContent=fmtDate(S.date);
+        var selEl=document.getElementById('count-sel');if(selEl&&S.count)selEl.value=S.count;
+        if(S.persons.length)document.getElementById('persons-card').style.display='block';
+        renderPersonList();renderCatList();renderScene();
+        showToast('💾 データを復元しました');
+        S.cats.forEach(function(c){var m=c.id.match(/^c(\d+)$/);if(m)catIdCnt=Math.max(catIdCnt,parseInt(m[1])+1);});
+      }
+    },
+    function(err){showToast('読み込みエラー: '+err);}
+  );
 }
 // ?r= パラメータ：結果のみの軽量URL
 var _rParam=new URLSearchParams(location.search).get('r');
