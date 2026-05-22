@@ -1169,23 +1169,22 @@ function openSharePage(){
   xhr.setRequestHeader('Authorization','Bearer '+SUPA_KEY);
   xhr.setRequestHeader('Prefer','return=representation');
   xhr.onload=function(){
-    alert('status:'+xhr.status+'\nresponse:'+xhr.responseText.substring(0,200));
     if(xhr.status>=200&&xhr.status<300){
       try{
         var rows=JSON.parse(xhr.responseText);
         if(rows[0]&&rows[0].id){
           location.href='share.html?id='+rows[0].id+'&t='+encodeURIComponent(S.title||'');
         } else {
-          alert('IDなし: '+xhr.responseText);
+          showToast('IDの取得に失敗しました');
         }
-      }catch(e){alert('parse error: '+e.message);}
+      }catch(e){showToast('エラー: '+e.message);}
     } else {
-      alert('HTTPエラー: '+xhr.status+'\n'+xhr.responseText.substring(0,300));
+      showToast('サーバーエラー: '+xhr.status);
     }
   };
-  xhr.onerror=function(){alert('onerror発火\nstatus:'+xhr.status+'\nstatusText:'+xhr.statusText);};
-  xhr.ontimeout=function(){alert('timeout');};
+  xhr.onerror=function(){showToast('通信エラー');};
   xhr.timeout=10000;
+  xhr.ontimeout=function(){showToast('タイムアウト');};
   xhr.send(JSON.stringify({data:enc}));
 }
 
