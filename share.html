@@ -61,24 +61,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP'
 var _url = '';
 var _title = '';
 
-// URLパラメータから情報を取得
 var params = new URLSearchParams(location.search);
 var encoded = params.get('d');
-var title = params.get('t');
-
-if(title){
-  _title = decodeURIComponent(title);
-  var titleBox = document.getElementById('event-title-box');
-  titleBox.textContent = '🍺 ' + _title;
-  titleBox.style.display = 'block';
-}
 
 if(encoded){
-  // kanjiro.vercel.appの?d=付きURLを復元
-  _url = 'https://kanjiro.vercel.app/?d=' + encoded;
-  document.getElementById('url-display').textContent = _url;
+  try{
+    var data = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+    _title = data.t || '';
+    
+    // タイトル表示
+    if(_title){
+      var titleBox = document.getElementById('event-title-box');
+      titleBox.textContent = '🍺 ' + _title;
+      titleBox.style.display = 'block';
+    }
+    
+    // URL復元（kanjiro.vercel.app/?d=で開けるURL）
+    // フル版データに変換して?d=パラメータとして渡す
+    var cats = (data.cats||[]).map(function(c,i){
+      return {id:'c'+i, name:c[0], rate:c[1], color:c[2], tc:c[3]};
+    });
+    var persons = (data.p||[]).map(function(p){
+      return {name:p[0], catId:'c'+(p[1]||0), isKanji:!!p[2]};
+    });
+    var fullData = {
+      t:data.t, d:data.d, c:persons.length,
+      p:persons.map(function(p){return{n:p.name,c:p.catId,k:p.isKanji?1:0};}),
+      cats:cats.map(function(c){return{id:c.id,n:c.name,r:c.rate,co:c.color,tc:c.tc};}),
+      tbl:[], asgn:{}, amt:{}, paid:{}, total:0
+    };
+    var fullEnc = btoa(unescape(encodeURIComponent(JSON.stringify(fullData))));
+    _url = 'https://kanjiro.vercel.app/?d=' + fullEnc;
+  }catch(e){
+    _url = '';
+  }
+  
+  if(_url){
+    document.getElementById('url-display').textContent = _url;
+  } else {
+    document.getElementById('url-display').textContent = 'URLの取得に失敗しました。アプリに戻って再度お試しください。';
+  }
 } else {
-  document.getElementById('url-display').textContent = 'URLの取得に失敗しました。アプリに戻って再度お試しください。';
+  document.getElementById('url-display').textContent = 'URLが見つかりません。アプリに戻って再度お試しください。';
 }
 
 function copyUrl(){
