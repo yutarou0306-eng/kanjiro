@@ -6,7 +6,7 @@
   <title>お勘定奉行 幹事郎</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="幹事郎">A
+  <meta name="apple-mobile-web-app-title" content="幹事郎">
   <meta name="theme-color" content="#1C3D5E">
   <link rel="apple-touch-icon" href="icon.jpg">
   <link rel="icon" type="image/jpeg" href="icon.jpg">
@@ -268,9 +268,9 @@ label{font-size:12px;color:#666;display:block;margin-bottom:3px}
   </div>
 
   <!-- メインCTA：お会計へ -->
-  <button class="btn btn-primary" onclick="goToBilling()" style="width:100%;margin-top:4px;padding:13px;font-size:15px;font-weight:500">🧾 お会計へ →</button>
+  <button class="btn btn-primary" onclick="goToBilling()" style="width:100%;margin-top:4px;padding:13px;font-size:15px;font-weight:500">🧾 お会計登録へ →</button>
   <!-- サブ：座席登録（任意） -->
-  <button onclick="goPage(2)" style="width:100%;margin-top:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;border:1.5px solid #c8c8c0;background:#fff;color:#555;border-radius:10px;font-family:inherit;-webkit-tap-highlight-color:transparent">🪑 座席登録へ →<span style="font-size:11px;color:#aaa;margin-left:6px">（任意）</span></button>
+  <button onclick="goPage(2)" style="width:100%;margin-top:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;border:1.5px solid #c8c8c0;background:#fff;color:#555;border-radius:10px;font-family:inherit;-webkit-tap-highlight-color:transparent">🪑 座席登録へ（任意）→</button>
   <!-- URL発行 -->
   <button onclick="openSharePage()" style="width:100%;margin-top:8px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;border:none;background:#27ae60;color:#fff;border-radius:10px;font-family:inherit;-webkit-tap-highlight-color:transparent">🔗 この飲み会用のURLを発行する</button>
 </div>
@@ -528,7 +528,7 @@ window.addEventListener('popstate',e=>{
 // ===== DATE ROLL PICKER =====
 (function(){
   var today=new Date();
-  var selYear=today.getFullYear();
+  var selYear=Math.max(2026,today.getFullYear());
   var selMonth=today.getMonth()+1;
   var selDay=today.getDate();
 
@@ -584,11 +584,11 @@ window.addEventListener('popstate',e=>{
   }
 
   function initRolls(){
-    var years=[];for(var y=2024;y<=2030;y++)years.push(y+'年');
+    var years=[];for(var y=2026;y<=2046;y++)years.push(y+'年');
     var months=[];for(var m=1;m<=12;m++)months.push(m+'月');
     var days=[];for(var d=1;d<=getDaysInMonth(selYear,selMonth);d++)days.push(d+'日');
 
-    buildRoll('roll-year',years,selYear-2024,function(i){selYear=2024+i;updateDate();rebuildDays();});
+    buildRoll('roll-year',years,Math.max(0,selYear-2026),function(i){selYear=2026+i;updateDate();rebuildDays();});
     buildRoll('roll-month',months,selMonth-1,function(i){selMonth=i+1;updateDate();rebuildDays();});
     buildRoll('roll-day',days,selDay-1,function(i){selDay=i+1;updateDate();});
     updateDate();
@@ -608,7 +608,7 @@ window.addEventListener('popstate',e=>{
     if(!dateStr)return;
     var parts=dateStr.split('-');
     if(parts.length===3){
-      selYear=parseInt(parts[0]);selMonth=parseInt(parts[1]);selDay=parseInt(parts[2]);
+      selYear=Math.max(2026,parseInt(parts[0]));selMonth=parseInt(parts[1]);selDay=parseInt(parts[2]);
       setTimeout(initRolls,150);
     }
   };
@@ -1206,9 +1206,48 @@ function togglePaid(idx){
 }
 
 function startEditAmt(idx,el){
-  var cur=S.amounts[idx]||'';var inp=document.createElement('input');inp.type='number';inp.className='br-amt-input';inp.value=cur;inp.step=500;inp.inputMode='numeric';el.replaceWith(inp);inp.focus();inp.select();
-  function commit(){var v=parseInt(inp.value)||0;S.amounts[idx]=v;var r=S.doneRecords.find(function(r){return r.idx===idx;});if(r)r.amount=v;var span=document.createElement('span');span.className='br-amt';span.textContent=v?fmt(v):'—';span.onclick=function(){startEditAmt(idx,span);};inp.replaceWith(span);updateSummary();}
+  var cur=S.amounts[idx]||'';var inp=document.createElement('input');inp.type='number';inp.className='br-amt-input';inp.value=cur;inp.step=100;inp.inputMode='numeric';el.replaceWith(inp);inp.focus();inp.select();
+  function commit(){
+    var v=parseInt(inp.value)||0;
+    S.amounts[idx]=v;
+    var r=S.doneRecords.find(function(r){return r.idx===idx;});if(r)r.amount=v;
+    // 残額を他の人に自動再配分
+    recalcRemaining(idx);
+    var span=document.createElement('span');span.className='br-amt';
+    var amtText=document.createElement('span');amtText.textContent=v?fmt(v):'—';
+    var editIcon=document.createElement('span');editIcon.style.cssText='font-size:10px;opacity:0.55';editIcon.textContent='✎';
+    span.appendChild(amtText);if(!S.paid[idx])span.appendChild(editIcon);
+    span.onclick=function(){startEditAmt(idx,span);};
+    inp.replaceWith(span);renderBillingPage();
+  }
   inp.onblur=commit;inp.onkeydown=function(e){if(e.key==='Enter')inp.blur();};
+}
+
+function recalcRemaining(fixedIdx){
+  // 手動入力した人の金額を固定し、残額を他の人にsplitMode/roundModeで再配分
+  if(!S.total)return;
+  var people=getAssignedPersons();
+  var fixedAmt=S.amounts[fixedIdx]||0;
+  var others=people.filter(function(p){return p.idx!==fixedIdx&&!S.paid[p.idx];});
+  if(!others.length)return;
+  var remaining=S.total-fixedAmt;
+  if(remaining<=0){others.forEach(function(p){S.amounts[p.idx]=0;});return;}
+  // 残額をsplitMode/roundModeで按分
+  var roundFn=S.roundMode==='r500up'?r500up:S.roundMode==='r500dn'?r500dn:r100;
+  if(S.splitMode==='flat'){
+    // 均等：残額を人数で均等割り
+    var each=roundFn(remaining/others.length);
+    others.forEach(function(p){S.amounts[p.idx]=each;});
+  } else {
+    // 傾斜：残額をカテゴリ比率で按分
+    var getCat=function(p){return S.cats.find(function(c){return c.id===(S.persons[p.idx]?S.persons[p.idx].catId:'');})||S.cats[0];};
+    var ws=others.reduce(function(s,p){var c=getCat(p);return s+(c?c.rate:1);},0);
+    if(!ws){others.forEach(function(p){S.amounts[p.idx]=roundFn(remaining/others.length);});return;}
+    others.forEach(function(p){
+      var c=getCat(p);var rate=c?c.rate:1;
+      S.amounts[p.idx]=roundFn((rate/ws)*remaining);
+    });
+  }
 }
 
 function addPersonFromBilling(){
