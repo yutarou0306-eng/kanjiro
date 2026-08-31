@@ -1497,14 +1497,17 @@ if(_idParam){
   loadEventFromSupabase(_idParam,
     function(enc){
       if(decodeState(enc)){
-        var titleEl=document.getElementById('ev-title');if(titleEl)titleEl.value=S.title;
-        var dateEl=document.getElementById('ev-date');if(dateEl)dateEl.value=S.date;
+        var titleEl=document.getElementById('ev-title');
+        if(titleEl)titleEl.value=S.title;
+        if(S.date&&window._setDateRoll){_setDateRoll(S.date);}
         document.getElementById('date-preview').textContent=fmtDate(S.date);
-        var selEl=document.getElementById('count-sel');if(selEl&&S.count)selEl.value=S.count;
-        if(S.persons.length)document.getElementById('persons-card').style.display='block';
+        var selEl=document.getElementById('count-sel');
+        if(selEl&&S.count)selEl.value=S.count;
+        var namedPersons=S.persons.filter(function(p){return p.name;});
+        if(namedPersons.length)document.getElementById('persons-card').style.display='block';
+        S.cats.forEach(function(c){var m=c.id.match(/^c(\d+)$/);if(m)catIdCnt=Math.max(catIdCnt,parseInt(m[1])+1);});
         renderPersonList();renderCatList();renderScene();
         showToast('💾 データを復元しました');
-        S.cats.forEach(function(c){var m=c.id.match(/^c(\d+)$/);if(m)catIdCnt=Math.max(catIdCnt,parseInt(m[1])+1);});
       }
     },
     function(err){showToast('読み込みエラー: '+err);}
