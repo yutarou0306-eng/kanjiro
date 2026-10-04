@@ -1420,10 +1420,59 @@ function buildShareText(){
   }catch(e){}
   return txt;
 }
-function shareLine(){window.open('https://line.me/R/share?text='+encodeURIComponent(buildShareText()),'_blank');}
-function shareViber(){window.open('viber://forward?text='+encodeURIComponent(buildShareText()),'_blank');}
-function shareSMS(){window.open('sms:?body='+encodeURIComponent(buildShareText()),'_blank');}
-function copyResult(){var txt=buildShareText();if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){showToast('コピーしました！');});}else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました！');}}
+function buildShareTextWithUrl(shortUrl){
+  var people=getAssignedPersons(),total=S.total;
+  var allAmt=people.reduce(function(s,p){return s+(S.amounts[p.idx]||0);},0);
+  var paidAmt=S.doneRecords.reduce(function(s,r){return s+r.amount;},0);
+  var remainder=paidAmt-total;
+  var txt='🍺 '+(S.title||'飲み会')+' '+fmtDate(S.date)+'\n━━━━━━━━━━━━\n代金合計：'+fmt(total)+'\n集計金額：'+fmt(allAmt)+'\n実集金額：'+fmt(paidAmt)+'\n';
+  txt+=remainder>=0?('余り：+'+fmt(remainder)+'\n'):('不足：'+fmt(Math.abs(remainder))+'\n');
+  txt+='━━━━━━━━━━━━\n';
+  people.forEach(function(p){var isKanji=S.persons[p.idx]?S.persons[p.idx].isKanji:false;txt+=(S.paid[p.idx]?'✅':'⬜')+' '+p.name+(isKanji?'（幹事）':'')+' : '+fmt(S.amounts[p.idx]||0)+'\n';});
+  var hasAssignments=Object.keys(S.assignments).length>0;
+  if(hasAssignments&&S.tables.length>0){
+    txt+='\n🪑 座席配置\n';
+    S.tables.forEach(function(t,ti){
+      var tLabel=['四角テーブル','円卓','カウンター席'][['rect','round','counter'].indexOf(t.type)]||'テーブル';
+      txt+='['+(tLabel)+(ti+1)+']\n';
+      var seats=[];
+      for(var i=0;i<(t.seats||0);i++){var key=t.id+'_'+i;var pIdx=S.assignments[key];var p2=pIdx!==undefined&&pIdx!==null?S.persons[pIdx]:null;seats.push((i+1)+'.'+(p2&&p2.name?p2.name:'空席'));}
+      txt+=seats.join(' / ')+'\n';
+    });
+  }
+  if(shortUrl)txt+='\n📎 '+shortUrl;
+  return txt;
+}
+
+function shareWithUrl(action){
+  showToast('URLを生成中...');
+  saveEventToSupabase(
+    function(id){
+      var shortUrl='https://kanjiro.vercel.app/?id='+id;
+      var txt=buildShareTextWithUrl(shortUrl);
+      if(action==='line')window.open('https://line.me/R/share?text='+encodeURIComponent(txt),'_blank');
+      else if(action==='viber')window.open('viber://forward?text='+encodeURIComponent(txt),'_blank');
+      else if(action==='sms')window.open('sms:?body='+encodeURIComponent(txt),'_blank');
+      else if(action==='copy'){
+        if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){showToast('コピーしました！');});}
+        else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('コピーしました！');}
+      }
+    },
+    function(err){
+      // Supabase失敗時はURLなしでシェア
+      var txt=buildShareTextWithUrl('');
+      if(action==='line')window.open('https://line.me/R/share?text='+encodeURIComponent(txt),'_blank');
+      else if(action==='viber')window.open('viber://forward?text='+encodeURIComponent(txt),'_blank');
+      else if(action==='sms')window.open('sms:?body='+encodeURIComponent(txt),'_blank');
+      else if(action==='copy'){if(navigator.clipboard)navigator.clipboard.writeText(txt).then(function(){showToast('コピーしました！');});}
+    }
+  );
+}
+
+function shareLine(){shareWithUrl('line');}
+function shareViber(){shareWithUrl('viber');}
+function shareSMS(){shareWithUrl('sms');}
+function copyResult(){shareWithUrl('copy');}
 
 function shareHeaderLine(){var txt=encodeURIComponent('🍺 飲み会の集金管理アプリ「お勘定奉行 幹事郎」\n'+location.href);window.open('https://line.me/R/share?text='+txt,'_blank');}
 function shareHeaderCopy(){var url=location.href;if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){showToast('リンクをコピーしました！');});}else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('リンクをコピーしました！');}}
